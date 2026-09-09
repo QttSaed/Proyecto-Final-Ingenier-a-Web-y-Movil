@@ -1,8 +1,9 @@
 # Plataforma E-commerce Especializada en Trading Card Games (TCG)
 
 # Presentado por:
-- Pepo Mendoza
-- Pepa Palacios
+- Alfonso Duran Araya   
+- Joaquin Alegria Vargas
+- Martín Albarrán Alcorta
 
 ## Índice
 1. [Justificación del problema](#justificación-del-problema)
