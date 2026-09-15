@@ -8,7 +8,7 @@ import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import CategoryPill from '../components/CategoryPill';
+
 
 const Home: React.FC = () => {
   
@@ -27,14 +27,7 @@ const Home: React.FC = () => {
     hasButton: true
   }));
 
-  const categories = [
-    { title: 'Pokémon TCG', subtitle: 'Cartas sueltas' },
-    { title: 'Pokémon TCG', subtitle: 'Productos sellados' },
-    { title: 'One Piece TCG', subtitle: 'Cartas sueltas' },
-    { title: 'One Piece TCG', subtitle: 'Productos sellados' },
-    { title: 'Pokémon TCG', subtitle: 'Cartas japonesas' },
-    { title: 'Riftbound', subtitle: 'Cartas sueltas' }
-  ];
+
 
   return (
     <IonPage>
@@ -56,12 +49,7 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Cajas de Categorías Inferiores */}
-        <div className="categories-row">
-          {categories.map((cat, i) => (
-            <CategoryPill key={i} title={cat.title} subtitle={cat.subtitle} />
-          ))}
-        </div>
+
 
         {/* Barra de Descuento */}
         <div className="discount-bar">
