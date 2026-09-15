@@ -1,5 +1,6 @@
 import React from 'react';
 import { IonContent, IonPage } from '@ionic/react';
+import { Link } from 'react-router-dom';
 import './Home.css';
 
 // Componentes extraídos
@@ -72,10 +73,12 @@ const Home: React.FC = () => {
           <h2 className="section-title">Elige tu TCG favorito &lt;3</h2>
           <div className="circular-icons-row">
             {['Pokemon', 'One Piece', 'Riftbound', 'Magic', 'Digimon', 'Gundam', 'Lotes'].map((juego, i) => (
-              <div className="circular-icon" key={i}>
-                <div className="circle-placeholder"></div>
-                <span className="circle-label">{juego}</span>
-              </div>
+              <Link to={`/catalog/${juego.toLowerCase().replace(' ', '')}`} key={i} style={{textDecoration: 'none'}}>
+                <div className="circular-icon">
+                  <div className="circle-placeholder"></div>
+                  <span className="circle-label">{juego}</span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -85,7 +88,7 @@ const Home: React.FC = () => {
           <h2 className="section-title">Sobres Sueltos de tus TCG favoritos</h2>
           <div className="product-grid">
             {mockProductsNoBtn.map(p => (
-              <ProductCard key={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
+              <ProductCard key={p.id} id={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
             ))}
           </div>
         </div>
@@ -95,12 +98,14 @@ const Home: React.FC = () => {
           <h2 className="section-title">Singles Riftbound</h2>
           <div className="product-grid">
             {mockProductsNoBtn.map(p => (
-              <ProductCard key={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
+              <ProductCard key={p.id} id={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
             ))}
           </div>
           <div className="pagination-controls">
             <span>&lt; 1/3 &gt;</span>
-            <button className="btn-view-all">Ver todo</button>
+            <Link to="/catalog/riftbound-singles">
+              <button className="btn-view-all">Ver todo</button>
+            </Link>
           </div>
         </div>
 
@@ -109,12 +114,14 @@ const Home: React.FC = () => {
           <h2 className="section-title">Singles Pokémon</h2>
           <div className="product-grid">
             {mockProductsWithBtn.map(p => (
-              <ProductCard key={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
+              <ProductCard key={p.id} id={p.id} title={p.title} price={p.price} hasButton={p.hasButton} />
             ))}
           </div>
           <div className="pagination-controls">
             <span>&lt; 1/8 &gt;</span>
-            <button className="btn-view-all">Ver todo</button>
+            <Link to="/catalog/pokemon-singles">
+              <button className="btn-view-all">Ver todo</button>
+            </Link>
           </div>
         </div>
 
