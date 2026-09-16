@@ -1,0 +1,915 @@
+{
+  "banners": [
+    "/assets/banners/Gundamn.webp",
+    "/assets/banners/Magic-the-Gathering.jpg",
+    "/assets/banners/onepiece-play.webp",
+    "/assets/banners/pokemon-tcg-30th-celebration-mew-mewtwo-1024x576.webp",
+    "/assets/banners/Riftbound-TCG-Radiance-Key-Art.webp"
+  ],
+  "logos": [
+    {
+      "name": "Icono Digimon",
+      "image": "/assets/Logo iconos/Icono Digimon.avif"
+    },
+    {
+      "name": "Icono Gundam",
+      "image": "/assets/Logo iconos/Icono Gundam.avif"
+    },
+    {
+      "name": "Icono Lotes",
+      "image": "/assets/Logo iconos/Icono Lotes.avif"
+    },
+    {
+      "name": "Icono Magic",
+      "image": "/assets/Logo iconos/Icono Magic.avif"
+    },
+    {
+      "name": "icono One Piece",
+      "image": "/assets/Logo iconos/icono One Piece.avif"
+    },
+    {
+      "name": "icono pokemon",
+      "image": "/assets/Logo iconos/icono pokemon.avif"
+    },
+    {
+      "name": "Icono rIFTBOUND",
+      "image": "/assets/Logo iconos/Icono rIFTBOUND.avif"
+    }
+  ],
+  "sections": {
+    "accesorios": [
+      {
+        "id": "accesorios-0",
+        "title": "160 Top Deck Azul",
+        "price": "$23.000",
+        "image": "/assets/secciones pagina/accesorios/160 top deck azul.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-1",
+        "title": "160 Top Deck Blanco",
+        "price": "$17.000",
+        "image": "/assets/secciones pagina/accesorios/160 top deck blanco.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-2",
+        "title": "160 Top Deck Negro",
+        "price": "$98.000",
+        "image": "/assets/secciones pagina/accesorios/160 top deck negro.webp",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-3",
+        "title": "Deck Box Pokedex",
+        "price": "$24.000",
+        "image": "/assets/secciones pagina/accesorios/deck box pokedex.webp",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-4",
+        "title": "Deck Box Premiun",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/accesorios/deck box premiun.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-5",
+        "title": "Dragon Shield Blue",
+        "price": "$58.000",
+        "image": "/assets/secciones pagina/accesorios/dragon shield blue.webp",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-6",
+        "title": "Dragon Shield Turquoise",
+        "price": "$80.000",
+        "image": "/assets/secciones pagina/accesorios/dragon shield turquoise.webp",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-7",
+        "title": "Dsbloodred Dragon Shield",
+        "price": "$28.000",
+        "image": "/assets/secciones pagina/accesorios/dsbloodred dragon shield.webp",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-8",
+        "title": "Protector Estandar",
+        "price": "$36.000",
+        "image": "/assets/secciones pagina/accesorios/PROTECTOR ESTANDAR.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "accesorios-9",
+        "title": "Tapete Riftbound",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/accesorios/Tapete Riftbound.webp",
+        "hasButton": true
+      }
+    ],
+    "Digimon": [
+      {
+        "id": "digimon-0",
+        "title": "Digimon Debuggers Set",
+        "price": "$19.000",
+        "image": "/assets/secciones pagina/Digimon/digimon debuggers set.webp",
+        "hasButton": true
+      },
+      {
+        "id": "digimon-1",
+        "title": "Digimonstarter",
+        "price": "$64.000",
+        "image": "/assets/secciones pagina/Digimon/digimonstarter.webp",
+        "hasButton": true
+      },
+      {
+        "id": "digimon-2",
+        "title": "Digimonstarter 1",
+        "price": "$23.000",
+        "image": "/assets/secciones pagina/Digimon/digimonstarter_1.webp",
+        "hasButton": true
+      },
+      {
+        "id": "digimon-3",
+        "title": "Limited Card Pack Final Crest Digimon",
+        "price": "$74.000",
+        "image": "/assets/secciones pagina/Digimon/limited card pack final crest digimon.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "digimon-4",
+        "title": "X Digimoncardgamepb21tamer Sevolutionbox Riseofdigimon 19746 300x300",
+        "price": "$81.000",
+        "image": "/assets/secciones pagina/Digimon/X_digimoncardgamepb21tamer-sevolutionbox-riseofdigimon-19746-300x300.png",
+        "hasButton": true
+      }
+    ],
+    "eventos": [
+      {
+        "id": "eventos-0",
+        "title": "League Challenge Pokemon Viña",
+        "price": "$40.000",
+        "image": "/assets/secciones pagina/eventos/League challenge pokemon viña.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "eventos-1",
+        "title": "League Cup Pokemon Santiago",
+        "price": "$10.000",
+        "image": "/assets/secciones pagina/eventos/league-cup pokemon santiago.webp",
+        "hasButton": true
+      }
+    ],
+    "Gundam": [
+      {
+        "id": "gundam-0",
+        "title": "Deck Bobuild Box Freedom Ascension",
+        "price": "$34.000",
+        "image": "/assets/secciones pagina/Gundam/Deck bobuild box freedom ascension.webp",
+        "hasButton": true
+      },
+      {
+        "id": "gundam-1",
+        "title": "Gundam Card Game Booster Box",
+        "price": "$42.000",
+        "image": "/assets/secciones pagina/Gundam/gundam card game booster box.webp",
+        "hasButton": true
+      },
+      {
+        "id": "gundam-2",
+        "title": "Gundam Card Game Booster Steel Requiem",
+        "price": "$73.000",
+        "image": "/assets/secciones pagina/Gundam/gundam card game booster steel requiem.webp",
+        "hasButton": true
+      },
+      {
+        "id": "gundam-3",
+        "title": "Gundam Card Game Dual Impact",
+        "price": "$44.000",
+        "image": "/assets/secciones pagina/Gundam/gundam card game dual impact.webp",
+        "hasButton": true
+      },
+      {
+        "id": "gundam-4",
+        "title": "Premiun Card Collection Gundam Assemble Mobile",
+        "price": "$69.000",
+        "image": "/assets/secciones pagina/Gundam/premiun card collection gundam assemble mobile.webp",
+        "hasButton": true
+      }
+    ],
+    "LotesDCarta": [
+      {
+        "id": "lotesdcarta-0",
+        "title": "Lote 100 Cartas Surtidas",
+        "price": "$33.000",
+        "image": "/assets/secciones pagina/LotesDCarta/Lote 100 cartas surtidas.webp",
+        "hasButton": true
+      },
+      {
+        "id": "lotesdcarta-1",
+        "title": "Lote Cartas Con Legendary Ultra Rar",
+        "price": "$94.000",
+        "image": "/assets/secciones pagina/LotesDCarta/lote cartas con legendary ultra rar.webp",
+        "hasButton": true
+      },
+      {
+        "id": "lotesdcarta-2",
+        "title": "Lote Pokemon Barajas Groundhog",
+        "price": "$87.000",
+        "image": "/assets/secciones pagina/LotesDCarta/lote pokemon barajas groundhog.webp",
+        "hasButton": true
+      }
+    ],
+    "Magic": [
+      {
+        "id": "magic-0",
+        "title": "Fantastic Four  Super Heroe Commander Pack",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/Magic/fantastic four  super heroe commander pack.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "magic-1",
+        "title": "Magic  God Of War Secret Lair Pack",
+        "price": "$46.000",
+        "image": "/assets/secciones pagina/Magic/magic  god of war secret lair pack.png",
+        "hasButton": true
+      },
+      {
+        "id": "magic-2",
+        "title": "Spiderman Play Booster Magic",
+        "price": "$81.000",
+        "image": "/assets/secciones pagina/Magic/Spiderman play booster magic.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "magic-3",
+        "title": "Super Heroe Colector Booster",
+        "price": "$60.000",
+        "image": "/assets/secciones pagina/Magic/super heroe colector booster.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "magic-4",
+        "title": "Super Heroe Play Booster",
+        "price": "$81.000",
+        "image": "/assets/secciones pagina/Magic/super heroe play booster.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "magic-5",
+        "title": "Tmntcollector",
+        "price": "$90.000",
+        "image": "/assets/secciones pagina/Magic/TMNTcollector.webp",
+        "hasButton": true
+      },
+      {
+        "id": "magic-6",
+        "title": "Wakanda Forever Super Heroe Commander Pack",
+        "price": "$18.000",
+        "image": "/assets/secciones pagina/Magic/wakanda forever super heroe commander pack.jpg",
+        "hasButton": true
+      }
+    ],
+    "One Piece": [
+      {
+        "id": "one-piece-0",
+        "title": "Boa Hancock",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/One Piece/Boa Hancock.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-1",
+        "title": "Brook Straw Hat",
+        "price": "$15.000",
+        "image": "/assets/secciones pagina/One Piece/Brook Straw Hat.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-2",
+        "title": "Donquixote",
+        "price": "$27.000",
+        "image": "/assets/secciones pagina/One Piece/donquixote.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-3",
+        "title": "Dr.kureha",
+        "price": "$35.000",
+        "image": "/assets/secciones pagina/One Piece/Dr.Kureha.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-4",
+        "title": "Enel",
+        "price": "$85.000",
+        "image": "/assets/secciones pagina/One Piece/Enel.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-5",
+        "title": "Franky",
+        "price": "$56.000",
+        "image": "/assets/secciones pagina/One Piece/Franky.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-6",
+        "title": "Gol.d.roger King Prime",
+        "price": "$79.000",
+        "image": "/assets/secciones pagina/One Piece/Gol.D.Roger King Prime.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-7",
+        "title": "Gol.d.roger King",
+        "price": "$25.000",
+        "image": "/assets/secciones pagina/One Piece/Gol.D.Roger King.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-8",
+        "title": "Koby",
+        "price": "$38.000",
+        "image": "/assets/secciones pagina/One Piece/Koby.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-9",
+        "title": "Kouzuki Wano",
+        "price": "$61.000",
+        "image": "/assets/secciones pagina/One Piece/Kouzuki Wano.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-10",
+        "title": "Laboon",
+        "price": "$27.000",
+        "image": "/assets/secciones pagina/One Piece/Laboon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-11",
+        "title": "Luffy Attack",
+        "price": "$55.000",
+        "image": "/assets/secciones pagina/One Piece/Luffy Attack.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-12",
+        "title": "Luffy Gear 3",
+        "price": "$55.000",
+        "image": "/assets/secciones pagina/One Piece/Luffy Gear 3.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-13",
+        "title": "Luffy Gear",
+        "price": "$44.000",
+        "image": "/assets/secciones pagina/One Piece/Luffy Gear.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-14",
+        "title": "Luffy Impel Down",
+        "price": "$61.000",
+        "image": "/assets/secciones pagina/One Piece/Luffy Impel Down.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-15",
+        "title": "Luffy Y Ace",
+        "price": "$49.000",
+        "image": "/assets/secciones pagina/One Piece/Luffy Y Ace.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-16",
+        "title": "Mazo One Piece Sabo",
+        "price": "$27.000",
+        "image": "/assets/secciones pagina/One Piece/Mazo One piece Sabo.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-17",
+        "title": "Mazos De Carta One Piece",
+        "price": "$67.000",
+        "image": "/assets/secciones pagina/One Piece/Mazos de carta One piece.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-18",
+        "title": "Monkey.d.luffy Skye Island",
+        "price": "$61.000",
+        "image": "/assets/secciones pagina/One Piece/Monkey.D.Luffy Skye island.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-19",
+        "title": "Monkey.d.luffy Supernovas",
+        "price": "$52.000",
+        "image": "/assets/secciones pagina/One Piece/Monkey.D.Luffy Supernovas.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-20",
+        "title": "Nami Egghead",
+        "price": "$14.000",
+        "image": "/assets/secciones pagina/One Piece/Nami Egghead.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-21",
+        "title": "Newgate Four Emperors",
+        "price": "$17.000",
+        "image": "/assets/secciones pagina/One Piece/Newgate Four Emperors.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-22",
+        "title": "Nico Robin Straw Hat",
+        "price": "$68.000",
+        "image": "/assets/secciones pagina/One Piece/Nico Robin Straw Hat.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-23",
+        "title": "Sanji Alabasta",
+        "price": "$24.000",
+        "image": "/assets/secciones pagina/One Piece/sanji alabasta.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-24",
+        "title": "Sanji Straw Hat Crew",
+        "price": "$86.000",
+        "image": "/assets/secciones pagina/One Piece/Sanji Straw Hat Crew.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-25",
+        "title": "Sobre Cartas",
+        "price": "$48.000",
+        "image": "/assets/secciones pagina/One Piece/Sobre Cartas.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-26",
+        "title": "Tony Tony Chopper",
+        "price": "$15.000",
+        "image": "/assets/secciones pagina/One Piece/Tony Tony Chopper.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-27",
+        "title": "Yamato",
+        "price": "$53.000",
+        "image": "/assets/secciones pagina/One Piece/Yamato.webp",
+        "hasButton": true
+      },
+      {
+        "id": "one-piece-28",
+        "title": "Zoro Prime",
+        "price": "$50.000",
+        "image": "/assets/secciones pagina/One Piece/Zoro Prime.webp",
+        "hasButton": true
+      }
+    ],
+    "Pokemon": [
+      {
+        "id": "pokemon-0",
+        "title": "Caja Pokemon Prismatic",
+        "price": "$67.000",
+        "image": "/assets/secciones pagina/Pokemon/Caja pokemon prismatic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-1",
+        "title": "Charizar",
+        "price": "$37.000",
+        "image": "/assets/secciones pagina/Pokemon/Charizar.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-2",
+        "title": "Charizard Ex",
+        "price": "$34.000",
+        "image": "/assets/secciones pagina/Pokemon/Charizard EX.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-3",
+        "title": "Ditto",
+        "price": "$38.000",
+        "image": "/assets/secciones pagina/Pokemon/ditto.jpg",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-4",
+        "title": "Fezandipiti",
+        "price": "$16.000",
+        "image": "/assets/secciones pagina/Pokemon/fezandipiti.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-5",
+        "title": "Groudon",
+        "price": "$25.000",
+        "image": "/assets/secciones pagina/Pokemon/Groudon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-6",
+        "title": "Kit Inicio Pokemon",
+        "price": "$16.000",
+        "image": "/assets/secciones pagina/Pokemon/Kit inicio Pokemon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-7",
+        "title": "Kyogre",
+        "price": "$48.000",
+        "image": "/assets/secciones pagina/Pokemon/Kyogre.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-8",
+        "title": "Lapras",
+        "price": "$61.000",
+        "image": "/assets/secciones pagina/Pokemon/lapras.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-9",
+        "title": "Magikarp Y Wailord",
+        "price": "$33.000",
+        "image": "/assets/secciones pagina/Pokemon/magikarp y wailord.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-10",
+        "title": "Magikarp",
+        "price": "$73.000",
+        "image": "/assets/secciones pagina/Pokemon/Magikarp.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-11",
+        "title": "Mega Charizard",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/Pokemon/Mega charizard.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-12",
+        "title": "Mew",
+        "price": "$56.000",
+        "image": "/assets/secciones pagina/Pokemon/MEW.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-13",
+        "title": "Mewto Y Mew",
+        "price": "$87.000",
+        "image": "/assets/secciones pagina/Pokemon/mewto y mew.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-14",
+        "title": "Pikachu Max",
+        "price": "$21.000",
+        "image": "/assets/secciones pagina/Pokemon/Pikachu Max.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-15",
+        "title": "Pikachu",
+        "price": "$84.000",
+        "image": "/assets/secciones pagina/Pokemon/Pikachu.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-16",
+        "title": "Set 10 Sobres Pokemon",
+        "price": "$49.000",
+        "image": "/assets/secciones pagina/Pokemon/Set 10 Sobres Pokemon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-17",
+        "title": "Slowpoke",
+        "price": "$84.000",
+        "image": "/assets/secciones pagina/Pokemon/slowpoke.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-18",
+        "title": "Sobre Pokemon",
+        "price": "$31.000",
+        "image": "/assets/secciones pagina/Pokemon/Sobre pokemon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-19",
+        "title": "Sylveon",
+        "price": "$42.000",
+        "image": "/assets/secciones pagina/Pokemon/sylveon.webp",
+        "hasButton": true
+      },
+      {
+        "id": "pokemon-20",
+        "title": "Vaporeon",
+        "price": "$98.000",
+        "image": "/assets/secciones pagina/Pokemon/Vaporeon.webp",
+        "hasButton": true
+      }
+    ],
+    "preventa": [
+      {
+        "id": "preventa-0",
+        "title": "Avatarbooster",
+        "price": "$81.000",
+        "image": "/assets/secciones pagina/preventa/avatarbooster.webp",
+        "hasButton": true
+      },
+      {
+        "id": "preventa-1",
+        "title": "Boosterboxpitch",
+        "price": "$26.000",
+        "image": "/assets/secciones pagina/preventa/BOOSTERBOXPITCH.webp",
+        "hasButton": true
+      },
+      {
+        "id": "preventa-2",
+        "title": "Disenosintitulo 53",
+        "price": "$46.000",
+        "image": "/assets/secciones pagina/preventa/Disenosintitulo_53.webp",
+        "hasButton": true
+      },
+      {
+        "id": "preventa-3",
+        "title": "Diseno Sin Titulo 78",
+        "price": "$62.000",
+        "image": "/assets/secciones pagina/preventa/Diseno_sin_titulo_78.webp",
+        "hasButton": true
+      },
+      {
+        "id": "preventa-4",
+        "title": "Playboosterhobbit 1",
+        "price": "$79.000",
+        "image": "/assets/secciones pagina/preventa/playboosterhobbit_1.webp",
+        "hasButton": true
+      },
+      {
+        "id": "preventa-5",
+        "title": "Tmntbundle",
+        "price": "$38.000",
+        "image": "/assets/secciones pagina/preventa/TMNTBUNDLE.webp",
+        "hasButton": true
+      }
+    ],
+    "RiftBound": [
+      {
+        "id": "riftbound-0",
+        "title": "Caja Riftbound Starter",
+        "price": "$92.000",
+        "image": "/assets/secciones pagina/RiftBound/imagen_2026-06-23_122420752.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-1",
+        "title": "Caja Riftbound Booster",
+        "price": "$26.000",
+        "image": "/assets/secciones pagina/RiftBound/imagen_2026-06-23_135429765.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-2",
+        "title": "Caja Riftbound Origins",
+        "price": "$54.000",
+        "image": "/assets/secciones pagina/RiftBound/image_2026-05-28_172319783_940x-300x300.png",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-3",
+        "title": "Caja Riftbound Vendetta",
+        "price": "$59.000",
+        "image": "/assets/secciones pagina/RiftBound/image_2026-05-28_172516390_570x-300x300.png",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-4",
+        "title": "Origins Convergent Mutation Rare",
+        "price": "$46.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-convergent-mutation-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-5",
+        "title": "Origins Daring Poro Common",
+        "price": "$12.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-daring-poro-common.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-6",
+        "title": "Origins Miss Fortune Bounty Hunter Rare",
+        "price": "$13.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-miss-fortune-bounty-hunter-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-7",
+        "title": "Origins Mystic Poro Common",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-mystic-poro-common.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-8",
+        "title": "Origins Pouty Poro Common",
+        "price": "$64.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-pouty-poro-common.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-9",
+        "title": "Origins Primal Strength Rare",
+        "price": "$66.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-primal-strength-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-10",
+        "title": "Origins Sett Brawler Epic",
+        "price": "$88.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-sett-brawler-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-11",
+        "title": "Origins Teemo Scout Alternate Art Showcase",
+        "price": "$60.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-teemo-scout-alternate-art-showcase.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-12",
+        "title": "Origins Volibear Furious Epic",
+        "price": "$37.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-volibear-furious-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-13",
+        "title": "Spiritforged Aphelios Exalted Rare",
+        "price": "$24.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-aphelios-exalted-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-14",
+        "title": "Spiritforged Card Sharp Rare",
+        "price": "$17.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-card-sharp-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-15",
+        "title": "Spiritforged Fizz Trickster Rare",
+        "price": "$83.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-fizz-trickster-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-16",
+        "title": "Spiritforged Here To Help Rare",
+        "price": "$65.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-here-to-help-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-17",
+        "title": "Spiritforged Jax Unrelenting Epic",
+        "price": "$49.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-jax-unrelenting-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-18",
+        "title": "Unleashed Galio Indefatigable Rare",
+        "price": "$82.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-galio-indefatigable-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-19",
+        "title": "Unleashed Ivern Friend To All Alternate Art Showcase",
+        "price": "$67.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-ivern-friend-to-all-alternate-art-showcase.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-20",
+        "title": "Unleashed Jhin Virtuoso Rare",
+        "price": "$26.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-jhin-virtuoso-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-21",
+        "title": "Unleashed Loyal Poro Common",
+        "price": "$28.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-loyal-poro-common.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-22",
+        "title": "Unleashed Pyke Bloodharbor Ripper Overnumbered Showcase",
+        "price": "$28.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-pyke-bloodharbor-ripper-overnumbered-showcase.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-23",
+        "title": "Unleashed Scuttle Crab Rare",
+        "price": "$93.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-scuttle-crab-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-24",
+        "title": "Unleashed Voracious Gromp Common",
+        "price": "$51.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-voracious-gromp-common.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-25",
+        "title": "Vendetta Ahri Inquisitive Epic",
+        "price": "$33.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-ahri-inquisitive-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-26",
+        "title": "Vendetta Akali Deadly Weapon Epic",
+        "price": "$96.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-akali-deadly-weapon-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-27",
+        "title": "Vendetta Ezreal Prodigy Epic",
+        "price": "$88.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-ezreal-prodigy-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-28",
+        "title": "Vendetta Jayce Man Of Progress Rare",
+        "price": "$27.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-jayce-man-of-progress-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-29",
+        "title": "Vendetta Lux Crownguard Epic",
+        "price": "$18.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-lux-crownguard-epic.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-30",
+        "title": "Vendetta Morgana Vindictive Overnumbered Rare",
+        "price": "$72.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-morgana-vindictive-overnumbered-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-31",
+        "title": "Vendetta Nasus Curator Of The Sands Overnumbered Rare",
+        "price": "$99.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-nasus-curator-of-the-sands-overnumbered-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-32",
+        "title": "Vendetta Renekton Rage Fueled Alternate Art Rare",
+        "price": "$89.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-renekton-rage-fueled-alternate-art-rare.webp",
+        "hasButton": true
+      },
+      {
+        "id": "riftbound-33",
+        "title": "Vendetta Zed Master Of Shadows Overnumbered Rare",
+        "price": "$53.000",
+        "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-zed-master-of-shadows-overnumbered-rare.webp",
+        "hasButton": true
+      }
+    ]
+  }
+}

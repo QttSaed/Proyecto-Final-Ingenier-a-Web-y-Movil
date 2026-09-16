@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 interface ProductCardProps {
-  id: number;
+  id: number | string;
   title: string;
   price: string;
+  image?: string;
   hasButton?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, hasButton = false }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, image, hasButton = false }) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -29,7 +30,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, hasButton =
   return (
     <Link to={`/product/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div className="product-card">
-        <div className="product-image-placeholder">IMG Carta/Sobre</div>
+        {image ? (
+          <img src={image} alt={title} className="product-image" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '8px' }} />
+        ) : (
+          <div className="product-image-placeholder">IMG Carta/Sobre</div>
+        )}
         <div className="product-info">
           <p className="product-title">{title}</p>
           <p className="product-price">{price}</p>

@@ -18,11 +18,8 @@ const Header: React.FC = () => {
           <span className="dropdown-trigger">Singles ⌄</span>
           <div className="dropdown-menu">
             <Link to="/catalog/pokemon-singles">Pokémon</Link>
-            <Link to="/catalog/magic-singles">Magic</Link>
             <Link to="/catalog/onepiece-singles">One Piece</Link>
             <Link to="/catalog/riftbound-singles">Riftbound</Link>
-            <Link to="/catalog/digimon-singles">Digimon</Link>
-            <Link to="/catalog/gundam-singles">Gundam</Link>
           </div>
         </div>
 
@@ -38,13 +35,13 @@ const Header: React.FC = () => {
           <div className="dropdown-menu">
             <Link to="/catalog/digimon">Digimon</Link>
             <Link to="/catalog/gundam">Gundam</Link>
-            <Link to="/catalog/lotes">Lotes de Cartas</Link>
+            <Link to="/catalog/lotesdcarta">Lotes de Cartas</Link>
           </div>
         </div>
 
         <Link to="/catalog/accesorios"><span>Accesorios</span></Link>
         <Link to="/catalog/ofertas"><span>Ofertas</span></Link>
-        <Link to="/catalog/preventas"><span>Preventas</span></Link>
+        <Link to="/catalog/preventa"><span>Preventas</span></Link>
         <Link to="/catalog/eventos"><span>Eventos</span></Link>
       </nav>
 
