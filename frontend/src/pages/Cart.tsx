@@ -7,7 +7,7 @@ import './Cart.css'; // Importamos los estilos específicos del carrito
 
 // Tipo para nuestros productos del carrito
 interface CartItemType {
-  id: number;
+  id: string | number;
   title: string;
   game: string;
   price: number;
@@ -51,7 +51,15 @@ const Cart: React.FC = () => {
                 {cartItems.map((item) => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-info">
-                      <div className="cart-item-image">IMG</div>
+                      <div className="cart-item-image" style={{ 
+                        backgroundImage: item.image ? `url('${item.image}')` : 'none',
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundColor: '#fff'
+                      }}>
+                        {!item.image && "IMG"}
+                      </div>
                       <div className="cart-item-details">
                         <p>{item.game}</p>
                         <h3>{item.title}</h3>

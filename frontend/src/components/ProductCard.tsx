@@ -19,10 +19,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, image, hasB
     const priceNumber = parseInt(price.replace(/[^0-9]/g, '')) || 9990;
     
     addToCart({
-      id: id,
+      id: id, // Pass raw ID directly
       title: title,
-      game: 'TCG Genérico', // placeholder
-      price: priceNumber
+      game: 'TCGStore', // placeholder
+      price: priceNumber,
+      image: image
     });
     alert("¡Producto agregado al carrito!");
   };
