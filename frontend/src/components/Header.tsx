@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { IonIcon } from '@ionic/react';
 import { searchOutline, personOutline, cartOutline, menuOutline, closeOutline, chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
-import { Link } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import './Header.css';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,58 +27,60 @@ const Header: React.FC = () => {
         </div>
 
         <div className="logo-container">
-          <Link to="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <NavLink to="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="logo-placeholder">TCGStore</div>
-          </Link>
+          </NavLink>
         </div>
         
         <nav className="nav-links desktop-only">
           {/* Menú desplegable para Singles */}
           <div className="nav-dropdown">
-            <span className="dropdown-trigger">Singles ⌄</span>
+            <span className={`dropdown-trigger ${['/catalog/pokemon-singles', '/catalog/onepiece-singles', '/catalog/riftbound-singles'].includes(location.pathname) ? 'active-link' : ''}`}>Singles ⌄</span>
             <div className="dropdown-menu">
-              <Link to="/catalog/pokemon-singles">Pokémon</Link>
-              <Link to="/catalog/onepiece-singles">One Piece</Link>
-              <Link to="/catalog/riftbound-singles">Riftbound</Link>
+              <NavLink to="/catalog/pokemon-singles" className={({isActive}) => isActive ? "active-link" : ""}>Pokémon</NavLink>
+              <NavLink to="/catalog/onepiece-singles" className={({isActive}) => isActive ? "active-link" : ""}>One Piece</NavLink>
+              <NavLink to="/catalog/riftbound-singles" className={({isActive}) => isActive ? "active-link" : ""}>Riftbound</NavLink>
             </div>
           </div>
 
           {/* Resto de enlaces normales */}
-          <Link to="/catalog/pokemon"><span>Pokemon</span></Link>
-          <Link to="/catalog/magic"><span>Magic</span></Link>
-          <Link to="/catalog/onepiece"><span>One Piece</span></Link>
-          <Link to="/catalog/riftbound"><span>Riftbound</span></Link>
+          <NavLink to="/catalog/pokemon" className={({isActive}) => isActive ? "active-link" : ""}><span>Pokemon</span></NavLink>
+          <NavLink to="/catalog/magic" className={({isActive}) => isActive ? "active-link" : ""}><span>Magic</span></NavLink>
+          <NavLink to="/catalog/onepiece" className={({isActive}) => isActive ? "active-link" : ""}><span>One Piece</span></NavLink>
+          <NavLink to="/catalog/riftbound" className={({isActive}) => isActive ? "active-link" : ""}><span>Riftbound</span></NavLink>
 
           {/* Menú desplegable para Otros */}
           <div className="nav-dropdown">
-            <span className="dropdown-trigger">Otros ⌄</span>
+            <span className={`dropdown-trigger ${['/catalog/digimon', '/catalog/gundam', '/catalog/lotesdcarta'].includes(location.pathname) ? 'active-link' : ''}`}>Otros ⌄</span>
             <div className="dropdown-menu">
-              <Link to="/catalog/digimon">Digimon</Link>
-              <Link to="/catalog/gundam">Gundam</Link>
-              <Link to="/catalog/lotesdcarta">Lotes de Cartas</Link>
+              <NavLink to="/catalog/digimon" className={({isActive}) => isActive ? "active-link" : ""}>Digimon</NavLink>
+              <NavLink to="/catalog/gundam" className={({isActive}) => isActive ? "active-link" : ""}>Gundam</NavLink>
+              <NavLink to="/catalog/lotesdcarta" className={({isActive}) => isActive ? "active-link" : ""}>Lotes de Cartas</NavLink>
             </div>
           </div>
 
-          <Link to="/catalog/accesorios"><span>Accesorios</span></Link>
-          <Link to="/catalog/ofertas"><span>Ofertas</span></Link>
-          <Link to="/catalog/preventa"><span>Preventas</span></Link>
-          <Link to="/catalog/eventos"><span>Eventos</span></Link>
+          <NavLink to="/catalog/accesorios" className={({isActive}) => isActive ? "active-link" : ""}><span>Accesorios</span></NavLink>
+          <NavLink to="/catalog/ofertas" className={({isActive}) => isActive ? "active-link" : ""}><span>Ofertas</span></NavLink>
+          <NavLink to="/catalog/preventa" className={({isActive}) => isActive ? "active-link" : ""}><span>Preventas</span></NavLink>
+          <NavLink to="/catalog/eventos" className={({isActive}) => isActive ? "active-link" : ""}><span>Eventos</span></NavLink>
         </nav>
 
         <div className="header-icons">
-          <Link to="/search" style={{ color: 'inherit' }}><IonIcon icon={searchOutline} /></Link>
-          <Link to="/login" style={{ color: 'inherit' }}><IonIcon icon={personOutline} /></Link>
-          <Link to="/cart" style={{ color: 'inherit' }}><IonIcon icon={cartOutline} /></Link>
+          <NavLink to="/search" style={{ color: 'inherit' }}><IonIcon icon={searchOutline} /></NavLink>
+          <NavLink to="/login" style={{ color: 'inherit' }}><IonIcon icon={personOutline} /></NavLink>
+          <NavLink to="/cart" style={{ color: 'inherit' }}><IonIcon icon={cartOutline} /></NavLink>
         </div>
       </header>
 
-      {/* Mobile Side Menu Overlay */}
-      <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMenu}>
-        <div className="mobile-side-menu" onClick={(e) => e.stopPropagation()}>
+      {/* Mobile Side Menu Overlay - via Portal para escapar del IonHeader */}
+      {ReactDOM.createPortal(
+        <>
+        <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMenu}>
+          <div className="mobile-side-menu" onClick={(e) => e.stopPropagation()}>
           <div className="mobile-menu-header">
-            <Link to="/home" onClick={closeMenu} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <NavLink to="/home" onClick={closeMenu} style={{ textDecoration: 'none', color: 'inherit' }}>
               <span className="logo-placeholder">TCGStore</span>
-            </Link>
+            </NavLink>
             <IonIcon icon={closeOutline} onClick={closeMenu} className="close-menu-icon" />
           </div>
           
@@ -87,19 +91,19 @@ const Header: React.FC = () => {
                 <div className="mobile-nav-item" onClick={() => setActiveSubMenu('singles')}>
                   Singles <IonIcon icon={chevronForwardOutline} />
                 </div>
-                <Link to="/catalog/pokemon" onClick={closeMenu}>Pokemon</Link>
-                <Link to="/catalog/magic" onClick={closeMenu}>Magic</Link>
-                <Link to="/catalog/onepiece" onClick={closeMenu}>One Piece</Link>
-                <Link to="/catalog/riftbound" onClick={closeMenu}>Riftbound</Link>
+                <NavLink to="/catalog/pokemon" onClick={closeMenu}>Pokemon</NavLink>
+                <NavLink to="/catalog/magic" onClick={closeMenu}>Magic</NavLink>
+                <NavLink to="/catalog/onepiece" onClick={closeMenu}>One Piece</NavLink>
+                <NavLink to="/catalog/riftbound" onClick={closeMenu}>Riftbound</NavLink>
                 
                 <div className="mobile-nav-item" onClick={() => setActiveSubMenu('otros')}>
                   Otros <IonIcon icon={chevronForwardOutline} />
                 </div>
                 
-                <Link to="/catalog/accesorios" onClick={closeMenu}>Accesorios</Link>
-                <Link to="/catalog/ofertas" onClick={closeMenu}>Ofertas</Link>
-                <Link to="/catalog/preventa" onClick={closeMenu}>Preventas</Link>
-                <Link to="/catalog/eventos" onClick={closeMenu}>Eventos</Link>
+                <NavLink to="/catalog/accesorios" onClick={closeMenu}>Accesorios</NavLink>
+                <NavLink to="/catalog/ofertas" onClick={closeMenu}>Ofertas</NavLink>
+                <NavLink to="/catalog/preventa" onClick={closeMenu}>Preventas</NavLink>
+                <NavLink to="/catalog/eventos" onClick={closeMenu}>Eventos</NavLink>
               </div>
             </div>
 
@@ -110,9 +114,9 @@ const Header: React.FC = () => {
               </div>
               <div className="mobile-menu-links">
                 <div className="mobile-nav-title">Singles</div>
-                <Link to="/catalog/pokemon-singles" onClick={closeMenu}>Pokémon</Link>
-                <Link to="/catalog/onepiece-singles" onClick={closeMenu}>One Piece</Link>
-                <Link to="/catalog/riftbound-singles" onClick={closeMenu}>Riftbound</Link>
+                <NavLink to="/catalog/pokemon-singles" onClick={closeMenu}>Pokémon</NavLink>
+                <NavLink to="/catalog/onepiece-singles" onClick={closeMenu}>One Piece</NavLink>
+                <NavLink to="/catalog/riftbound-singles" onClick={closeMenu}>Riftbound</NavLink>
               </div>
             </div>
 
@@ -123,14 +127,16 @@ const Header: React.FC = () => {
               </div>
               <div className="mobile-menu-links">
                 <div className="mobile-nav-title">Otros</div>
-                <Link to="/catalog/digimon" onClick={closeMenu}>Digimon</Link>
-                <Link to="/catalog/gundam" onClick={closeMenu}>Gundam</Link>
-                <Link to="/catalog/lotesdcarta" onClick={closeMenu}>Lotes de Cartas</Link>
+                <NavLink to="/catalog/digimon" onClick={closeMenu}>Digimon</NavLink>
+                <NavLink to="/catalog/gundam" onClick={closeMenu}>Gundam</NavLink>
+                <NavLink to="/catalog/lotesdcarta" onClick={closeMenu}>Lotes de Cartas</NavLink>
               </div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+        </>, document.body
+      )}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import { IonContent, IonPage, IonHeader } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
@@ -23,10 +23,11 @@ const Home: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen className="main-content">
-        
-        <TopBar />
-        <Header />
+      <IonHeader>
+      <TopBar />
+      <Header />
+    </IonHeader>
+    <IonContent className="main-content">
 
         <div className="banners-container">
           <Link to="/catalog/gundam" className="banner-large" style={{ padding: 0, textDecoration: 'none' }}>
@@ -120,9 +121,9 @@ const Home: React.FC = () => {
               </div>
               <div className="pagination-controls" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginTop: '20px' }}>
                 <div className="pagination-arrows" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <button onClick={handlePrev} disabled={currentPage === 1} style={{ cursor: currentPage === 1 ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid #ccc', color: '#333', fontWeight: 'bold' }}>&lt;</button>
+                  <button onClick={handlePrev} disabled={currentPage === 1} style={{ cursor: currentPage === 1 ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid var(--color-border)', color: 'var(--color-text-dark)', fontWeight: 'bold' }}>&lt;</button>
                   <span style={{ fontWeight: 'bold', color: 'var(--color-text)' }}>{currentPage} / {totalPages || 1}</span>
-                  <button onClick={handleNext} disabled={currentPage === totalPages} style={{ cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid #ccc', color: '#333', fontWeight: 'bold' }}>&gt;</button>
+                  <button onClick={handleNext} disabled={currentPage === totalPages} style={{ cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid var(--color-border)', color: 'var(--color-text-dark)', fontWeight: 'bold' }}>&gt;</button>
                 </div>
                 <Link to={`/catalog/${sectionId}`}>
                   <button className="btn-view-all">Ver todo</button>
@@ -140,3 +141,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+

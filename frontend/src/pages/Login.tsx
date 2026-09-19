@@ -1,17 +1,40 @@
-import React from 'react';
-import { IonContent, IonPage } from '@ionic/react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { IonContent, IonPage, IonIcon, IonHeader } from '@ionic/react';
+import { logoGoogle, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { Link, useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Login.css';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Obtenemos el valor del input email
+    const emailInput = (document.getElementById('email') as HTMLInputElement).value;
+
+    if (emailInput === 'admin@tcgstore.com') {
+      localStorage.setItem('role', 'admin');
+      alert('¡Bienvenido Administrador!');
+      navigate('/admin');
+    } else {
+      localStorage.setItem('role', 'client');
+      alert('¡Bienvenido a TCGStore!');
+      navigate('/home');
+    }
+  };
+
   return (
     <IonPage>
-      <IonContent fullscreen className="main-content">
-        <TopBar />
-        <Header />
+      <IonHeader>
+      <TopBar />
+      <Header />
+    </IonHeader>
+    <IonContent className="main-content">
 
         <div className="login-container">
           <div className="login-card">
@@ -21,20 +44,32 @@ const Login: React.FC = () => {
               <p>Inicia sesión en TCGStore para continuar.</p>
             </div>
 
-            <form className="login-form" onSubmit={(e) => { e.preventDefault(); alert('¡Simulación de Login exitosa!'); }}>
+            <form className="login-form" onSubmit={handleLogin}>
               
               <div className="form-group">
                 <label htmlFor="email">Correo Electrónico</label>
                 <input type="email" id="email" placeholder="ejemplo@correo.com" required />
               </div>
               
-              <div className="form-group">
+              <div className="form-group password-group">
                 <label htmlFor="password">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••" required />
+                <div className="password-input-wrapper">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    id="password" 
+                    placeholder="••••••••" 
+                    required 
+                  />
+                  <IonIcon 
+                    icon={showPassword ? eyeOffOutline : eyeOutline} 
+                    className="password-toggle-icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                </div>
               </div>
 
               <div className="forgot-password">
-                <a href="#">¿Olvidaste tu contraseña?</a>
+                <Link to="/coming-soon">¿Olvidaste tu contraseña?</Link>
               </div>
 
               <button type="submit" className="btn-login">Ingresar a mi cuenta</button>
@@ -45,13 +80,15 @@ const Login: React.FC = () => {
               <span>O ingresar con</span>
             </div>
 
-            <button className="btn-google">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" />
-              Continuar con Google
-            </button>
+            <Link to="/coming-soon" style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
+              <button className="btn-google">
+                <IonIcon icon={logoGoogle} style={{ fontSize: '20px' }} />
+                Continuar con Google
+              </button>
+            </Link>
 
             <div className="register-link">
-              ¿No tienes cuenta? <Link to="/login">Regístrate aquí</Link>
+              ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
             </div>
 
           </div>
@@ -64,3 +101,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+

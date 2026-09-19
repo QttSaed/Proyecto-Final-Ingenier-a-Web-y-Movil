@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import { IonContent, IonPage, IonHeader } from '@ionic/react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import TopBar from '../components/TopBar';
@@ -62,9 +62,11 @@ const ProductDetail: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen className="main-content">
-        <TopBar />
-        <Header />
+      <IonHeader>
+      <TopBar />
+      <Header />
+    </IonHeader>
+    <IonContent className="main-content">
 
         <div className="detail-container">
           <p className="detail-breadcrumb">
@@ -126,3 +128,4 @@ const ProductDetail: React.FC = () => {
 };
 
 export default ProductDetail;
+

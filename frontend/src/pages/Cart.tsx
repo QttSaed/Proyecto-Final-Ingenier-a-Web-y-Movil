@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import { Link } from 'react-router-dom';
+import { cartOutline } from 'ionicons/icons';
+import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -31,17 +33,23 @@ const Cart: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen className="main-content">
-        <TopBar />
-        <Header />
+      <IonHeader>
+      <TopBar />
+      <Header />
+    </IonHeader>
+    <IonContent className="main-content">
 
         <div className="section-container" style={{ minHeight: '60vh', textAlign: 'left' }}>
           <h1 className="section-title" style={{ textAlign: 'left' }}>Tu Carrito de Compras</h1>
           
           {cartItems.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '50px 0' }}>
-              <h2>Tu carrito está vacío 🛒</h2>
-              <p>¡Agrega algunos sobres o singles para comenzar!</p>
+            <div className="cart-empty-state">
+              <IonIcon icon={cartOutline} className="empty-cart-icon" />
+              <h2>Tu carrito está vacío</h2>
+              <p>¡Explora nuestro catálogo y encuentra tus cartas favoritas!</p>
+              <Link to="/home" className="btn-empty-cart">
+                Ir a comprar
+              </Link>
             </div>
           ) : (
             <div className="cart-layout">
@@ -106,9 +114,11 @@ const Cart: React.FC = () => {
                   <span>{formatPrice(total)}</span>
                 </div>
 
-                <button className="btn-checkout" onClick={() => alert('¡Redirigiendo al pago!')}>
-                  Proceder al Pago
-                </button>
+                <Link to="/checkout" style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
+                  <button className="btn-checkout">
+                    Proceder al Pago
+                  </button>
+                </Link>
               </div>
 
             </div>
@@ -122,3 +132,4 @@ const Cart: React.FC = () => {
 };
 
 export default Cart;
+

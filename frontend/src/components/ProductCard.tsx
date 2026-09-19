@@ -29,10 +29,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, image, hasB
   };
 
   return (
-    <Link to={`/product/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={`/product/${id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div className="product-card">
         {image ? (
-          <img src={image} alt={title} className="product-image" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '8px' }} />
+          <img src={image} alt={title} className="product-image" style={{ width: '100%', height: '150px', objectFit: 'contain', borderRadius: '8px' }} />
         ) : (
           <div className="product-image-placeholder">IMG Carta/Sobre</div>
         )}

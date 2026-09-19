@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { logoFacebook, logoInstagram, logoTiktok } from 'ionicons/icons';
 
@@ -27,14 +28,14 @@ const Footer: React.FC = () => {
         <div className="footer-col">
           <h3>Nosotros</h3>
           <ul>
-            <li>Envíos</li>
-            <li>Términos y condiciones</li>
-            <li>Contacto</li>
+            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Envíos</Link></li>
+            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Términos y condiciones</Link></li>
+            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Contacto</Link></li>
           </ul>
           <div className="footer-socials">
-            <IonIcon icon={logoFacebook} />
-            <IonIcon icon={logoInstagram} />
-            <IonIcon icon={logoTiktok} />
+            <Link to="/coming-soon" style={{color: 'inherit'}}><IonIcon icon={logoFacebook} /></Link>
+            <Link to="/coming-soon" style={{color: 'inherit'}}><IonIcon icon={logoInstagram} /></Link>
+            <Link to="/coming-soon" style={{color: 'inherit'}}><IonIcon icon={logoTiktok} /></Link>
           </div>
         </div>
 
@@ -45,7 +46,12 @@ const Footer: React.FC = () => {
 
       <div className="footer-bottom">
         <div className="footer-links">
-          © 2026, TCGStore • Política de privacidad • Política de reembolso • Términos del servicio • Política de envío • Información de contacto
+          © 2026, TCGStore • 
+          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de privacidad</Link> • 
+          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de reembolso</Link> • 
+          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Términos del servicio</Link> • 
+          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de envío</Link> • 
+          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Información de contacto</Link>
         </div>
       </div>
     </footer>

@@ -1,0 +1,63 @@
+.coming-soon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  background-color: var(--color-bg-light);
+  padding: 40px 20px;
+}
+
+.coming-soon-card {
+  background: var(--color-bg-white);
+  width: 100%;
+  max-width: 550px;
+  padding: 50px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.coming-soon-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.coming-soon-card h1 {
+  font-size: 2.2rem;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+  font-weight: 800;
+}
+
+.coming-soon-card p {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.coming-soon-subtitle {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.coming-soon-card .btn-back-home {
+  margin-top: 30px;
+  padding: 14px 30px;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(27, 22, 66, 0.2);
+}
+
+.coming-soon-card .btn-back-home:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+}

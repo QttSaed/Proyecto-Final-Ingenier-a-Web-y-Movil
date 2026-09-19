@@ -335,3 +335,24 @@ La arquitectura de navegación fue diseñada para cumplir con el estándar de un
 - **Frontend:** Ionic Framework (v7+), React, Vite.
 - **Backend (Próximas fases):** Node.js, Express.
 - **Base de Datos (Próximas fases):** PostgreSQL.
+
+## Instrucciones de Instalación y Uso
+Para ejecutar este proyecto en un entorno local, sigue los siguientes pasos:
+
+1. Clonar el repositorio:
+```bash
+git clone <URL_DEL_REPOSITORIO>
+```
+2. Navegar a la carpeta del frontend:
+```bash
+cd frontend
+```
+3. Instalar las dependencias de Node.js:
+```bash
+npm install
+```
+4. Ejecutar el servidor de desarrollo de Ionic/Vite:
+```bash
+npm run dev
+```
+5. Abrir la aplicación en el navegador en la ruta indicada (por defecto `http://localhost:5173`).
