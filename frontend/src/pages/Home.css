@@ -672,13 +672,13 @@
   cursor: pointer;
 }
 
-/* Responsiveness (Para móviles y pantallas partidas) */
+/* Responsiveness (Para mÃ³viles y pantallas partidas) */
 @media (max-width: 1100px) {
   .desktop-only {
-    display: none; /* Escondemos el menú horizontal en pantallas pequeñas */
+    display: none; /* Escondemos el menÃº horizontal en pantallas pequeÃ±as */
   }
   .hamburger-container {
-    display: block; /* Mostramos el botón de hamburguesa */
+    display: block; /* Mostramos el botÃ³n de hamburguesa */
   }
   .main-header {
     padding: 15px 20px;
@@ -728,7 +728,7 @@
 }
 
 @media (max-width: 768px) {
-  /* Ya no necesitamos esconder nav-links aquí porque lo hacemos a los 1100px */
+  /* Ya no necesitamos esconder nav-links aquÃ­ porque lo hacemos a los 1100px */
 }
 
 @media (max-width: 600px) {
@@ -756,7 +756,7 @@
   }
 }
 
-/* ===== IonHeader: quitar sombra y bordes de Ionic para mantener dise�o propio ===== */
+/* ===== IonHeader: quitar sombra y bordes de Ionic para mantener diseño propio ===== */
 ion-header {
   box-shadow: none !important;
   border-bottom: none !important;

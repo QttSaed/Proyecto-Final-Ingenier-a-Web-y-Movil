@@ -370,7 +370,7 @@
   background: conic-gradient(
     #f6ad55 0% 15%,     /* One Piece (Naranja) */
     #805ad5 15% 40%,    /* Magic (Morado) */
-    var(--color-primary) 40% 100% /* Pokémon (Azul/Principal) */
+    var(--color-primary) 40% 100% /* PokÃ©mon (Azul/Principal) */
   );
   display: flex;
   align-items: center;

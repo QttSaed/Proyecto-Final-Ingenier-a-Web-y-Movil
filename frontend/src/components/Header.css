@@ -1,6 +1,6 @@
 /* ===== ACTIVE NAV LINK - Pill Style ===== */
 
-/* Links normales en el nav (NavLink añade clase "active" por defecto, nosotros también usamos "active-link") */
+/* Links normales en el nav (NavLink aÃ±ade clase "active" por defecto, nosotros tambiÃ©n usamos "active-link") */
 .nav-links a.active-link,
 .nav-links a.active,
 .nav-links .active-link {
@@ -13,13 +13,13 @@
   text-decoration: none;
 }
 
-/* El span interno también debe heredar el color */
+/* El span interno tambiÃ©n debe heredar el color */
 .nav-links a.active-link span,
 .nav-links .active-link span {
   color: #ffffff !important;
 }
 
-/* Trigger del dropdown cuando una sub-ruta está activa */
+/* Trigger del dropdown cuando una sub-ruta estÃ¡ activa */
 .nav-dropdown .dropdown-trigger.active-link {
   background-color: rgba(255, 255, 255, 0.18);
   color: #ffffff !important;

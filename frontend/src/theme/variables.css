@@ -2,7 +2,7 @@
    SISTEMA DE TEMAS Y ACCESIBILIDAD - TCGStore
    ============================================= */
 
-/* Variables base de accesibilidad (tamaño de fuente) */
+/* Variables base de accesibilidad (tamaÃ±o de fuente) */
 :root {
   --font-base-size: 16px;
 }
@@ -50,7 +50,7 @@ html {
   --color-border-dark: #3a2020;
 }
 
-/* ===== TEMA 3: Bosque Mágico ===== */
+/* ===== TEMA 3: Bosque MÃ¡gico ===== */
 [data-theme="forest"] {
   --color-bg-dark: #0f1f14;
   --color-bg-dark-alt: #162c1c;
