@@ -36,3 +36,7 @@
   font-weight: 700;
   border-radius: 6px;
 }
+
+.main-header { pointer-events: auto !important; z-index: 99999 !important; }
+.header-icons { pointer-events: auto !important; }
+

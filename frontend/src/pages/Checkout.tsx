@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonHeader, useIonViewWillEnter } from '@ionic/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircleOutline, ellipseOutline, homeOutline } from 'ionicons/icons';
 import TopBar from '../components/TopBar';
@@ -14,13 +14,24 @@ const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
+  const [orderId, setOrderId] = useState('');
 
-  // Reiniciar estado cuando la vista va a entrar (por el caché de Ionic)
+  const [isLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
+  const [isAdmin] = useState(localStorage.getItem('role') === 'admin');
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (isAdmin) {
+    return <Navigate to="/home" replace />;
+  }
+
   useIonViewWillEnter(() => {
     setIsSuccess(false);
+    setOrderId('');
   });
 
-  // Cálculos del resumen
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const shipping = subtotal > 50000 ? 0 : 3500;
   const total = subtotal + shipping;
@@ -32,6 +43,7 @@ const Checkout: React.FC = () => {
   const handlePayment = (e: React.FormEvent) => {
     e.preventDefault();
     setFinalTotal(total); // Guardamos el total ANTES de limpiar el carrito
+    setOrderId('ORD-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0'));
     setIsSuccess(true);
     clearCart(); // Limpiamos el carrito al pagar con exito
   };
@@ -48,7 +60,8 @@ const Checkout: React.FC = () => {
             <div className="success-card">
               <h2>🎉 ¡Orden Generada con Éxito!</h2>
               <p>Tu pago por <strong>{formatPrice(finalTotal)}</strong> ha sido procesado correctamente.</p>
-              <p>Te hemos enviado un correo con los detalles de tu orden y el número de seguimiento.</p>
+              <p>Hemos enviado un correo de confirmación con los detalles.</p>
+              <p className="order-number-display">Tu número de pedido es: <strong>{orderId}</strong></p>
               <button className="btn-back-home" onClick={() => {
                 setIsSuccess(false);
                 navigate('/home');

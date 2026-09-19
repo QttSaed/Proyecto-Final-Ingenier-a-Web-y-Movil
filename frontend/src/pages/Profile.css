@@ -1,0 +1,215 @@
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--color-text-light); /* Changed to text-light as background is dark */
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+.profile-grid.admin-layout {
+  grid-template-columns: minmax(300px, 600px);
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-card {
+  background: var(--color-bg-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  border: 1px solid var(--color-border-dark);
+}
+
+.profile-card-banner {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  height: 120px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-avatar {
+  position: absolute;
+  bottom: -40px;
+  width: 90px;
+  height: 90px;
+  background: var(--color-bg-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--color-bg-white);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-avatar ion-icon {
+  font-size: 3.5rem;
+  color: var(--color-primary);
+}
+
+.profile-details-container {
+  padding: 3.5rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.profile-name {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--color-text-dark);
+}
+
+.profile-role-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-info-list {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.profile-info-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-info-item:last-child {
+  border-bottom: none;
+}
+
+.info-icon {
+  font-size: 1.4rem;
+  color: var(--color-primary);
+  margin-right: 1rem;
+  background: var(--color-bg-light);
+  padding: 0.6rem;
+  border-radius: 50%;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.logout-btn {
+  margin-top: 2rem;
+  --color: #e74c3c;
+  --border-color: #e74c3c;
+}
+
+.order-item {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.order-id {
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.order-date {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.order-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.order-total {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.order-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.status-transit {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-delivered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.card-header {
+  background: var(--color-primary);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-header ion-icon {
+  font-size: 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+  color: var(--color-text-dark);
+}
+

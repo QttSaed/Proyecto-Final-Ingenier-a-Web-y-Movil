@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { IonIcon } from '@ionic/react';
-import { searchOutline, personOutline, cartOutline, menuOutline, closeOutline, chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { searchOutline, personOutline, cartOutline, menuOutline, closeOutline, chevronForwardOutline, chevronBackOutline, gridOutline } from 'ionicons/icons';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState<'main' | 'singles' | 'otros'>('main');
+  const navigate = useNavigate();
+
+  const handlePersonClick = () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      navigate('/perfil');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -33,7 +42,6 @@ const Header: React.FC = () => {
         </div>
         
         <nav className="nav-links desktop-only">
-          {/* Menú desplegable para Singles */}
           <div className="nav-dropdown">
             <span className={`dropdown-trigger ${['/catalog/pokemon-singles', '/catalog/onepiece-singles', '/catalog/riftbound-singles'].includes(location.pathname) ? 'active-link' : ''}`}>Singles ⌄</span>
             <div className="dropdown-menu">
@@ -43,13 +51,11 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Resto de enlaces normales */}
           <NavLink to="/catalog/pokemon" className={({isActive}) => isActive ? "active-link" : ""}><span>Pokemon</span></NavLink>
           <NavLink to="/catalog/magic" className={({isActive}) => isActive ? "active-link" : ""}><span>Magic</span></NavLink>
           <NavLink to="/catalog/onepiece" className={({isActive}) => isActive ? "active-link" : ""}><span>One Piece</span></NavLink>
           <NavLink to="/catalog/riftbound" className={({isActive}) => isActive ? "active-link" : ""}><span>Riftbound</span></NavLink>
 
-          {/* Menú desplegable para Otros */}
           <div className="nav-dropdown">
             <span className={`dropdown-trigger ${['/catalog/digimon', '/catalog/gundam', '/catalog/lotesdcarta'].includes(location.pathname) ? 'active-link' : ''}`}>Otros ⌄</span>
             <div className="dropdown-menu">
@@ -67,12 +73,18 @@ const Header: React.FC = () => {
 
         <div className="header-icons">
           <NavLink to="/search" style={{ color: 'inherit' }}><IonIcon icon={searchOutline} /></NavLink>
-          <NavLink to="/login" style={{ color: 'inherit' }}><IonIcon icon={personOutline} /></NavLink>
+          {localStorage.getItem('role') === 'admin' && (
+            <NavLink to="/admin" style={{ color: 'inherit' }} title="Panel de Control">
+              <IonIcon icon={gridOutline} />
+            </NavLink>
+          )}
+          <button onClick={handlePersonClick} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}>
+            <IonIcon icon={personOutline} />
+          </button>
           <NavLink to="/cart" style={{ color: 'inherit' }}><IonIcon icon={cartOutline} /></NavLink>
         </div>
       </header>
 
-      {/* Mobile Side Menu Overlay - via Portal para escapar del IonHeader */}
       {ReactDOM.createPortal(
         <>
         <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMenu}>
@@ -85,7 +97,6 @@ const Header: React.FC = () => {
           </div>
           
           <div className="mobile-menu-slider-container">
-            {/* MAIN MENU */}
             <div className={`mobile-menu-pane ${activeSubMenu === 'main' ? 'active' : 'hidden-left'}`}>
               <div className="mobile-menu-links">
                 <div className="mobile-nav-item" onClick={() => setActiveSubMenu('singles')}>
@@ -107,7 +118,6 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* SINGLES SUBMENU */}
             <div className={`mobile-menu-pane ${activeSubMenu === 'singles' ? 'active' : 'hidden-right'}`}>
               <div className="mobile-submenu-header" onClick={() => setActiveSubMenu('main')}>
                 <IonIcon icon={chevronBackOutline} /> Volver
@@ -120,7 +130,6 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* OTROS SUBMENU */}
             <div className={`mobile-menu-pane ${activeSubMenu === 'otros' ? 'active' : 'hidden-right'}`}>
               <div className="mobile-submenu-header" onClick={() => setActiveSubMenu('main')}>
                 <IonIcon icon={chevronBackOutline} /> Volver

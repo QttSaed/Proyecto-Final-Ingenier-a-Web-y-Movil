@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { IonContent, IonPage, IonIcon } from '@ionic/react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { 
-  addOutline, logOutOutline, cubeOutline, 
+  addOutline, cubeOutline, 
   homeOutline, cartOutline, alertCircleOutline, 
   trendingUpOutline, createOutline, trashOutline 
 } from 'ionicons/icons';
@@ -11,13 +11,24 @@ import catalogData from '../data.json';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'add-product' | 'orders'>('dashboard');
+
+  const [isAuthorized] = useState(localStorage.getItem('role') === 'admin');
+
+  if (!isAuthorized) {
+    return <Navigate to="/home" replace />;
+  }
+
+  const location = window.location.pathname;
+  
+  let initialTab: 'dashboard' | 'inventory' | 'add-product' | 'orders' = 'dashboard';
+  if (location.includes('/inventario')) initialTab = 'inventory';
+  if (location.includes('/ordenes')) initialTab = 'orders';
+
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'add-product' | 'orders'>(initialTab);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Extraemos productos de forma segura
   const inventoryProducts = (catalogData as any).sections?.Pokemon ? (catalogData as any).sections.Pokemon.slice(0, 6) : [];
 
-  // Datos mockeados para órdenes usando state para que el color cambie
   const [orders, setOrders] = useState([
     { id: 'ORD-1023', client: 'Juan Pérez', total: 45000, date: '18 Sep 2026', status: 'Pendiente' },
     { id: 'ORD-1022', client: 'María Gómez', total: 12500, date: '17 Sep 2026', status: 'Pagado' },
@@ -25,9 +36,8 @@ const AdminDashboard: React.FC = () => {
     { id: 'ORD-1020', client: 'Ana Silva', total: 32000, date: '15 Sep 2026', status: 'Enviado' },
   ]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('role');
-    navigate('/login');
+  const handleExitDashboard = () => {
+    navigate('/home');
   };
 
   const handleAddProduct = (e: React.FormEvent) => {
@@ -48,9 +58,9 @@ const AdminDashboard: React.FC = () => {
           <div className="admin-logo">TCGStore <span className="admin-badge">ADMIN</span></div>
           <div className="admin-nav">
             <span className="admin-user-greeting">Hola, Administrador</span>
-            <button className="admin-logout-btn" onClick={handleLogout}>
-              <IonIcon icon={logOutOutline} /> Salir
-            </button>
+              <button className="admin-logout-btn" onClick={handleExitDashboard}>
+                <IonIcon icon={homeOutline} /> Volver al inicio
+              </button>
           </div>
         </header>
 

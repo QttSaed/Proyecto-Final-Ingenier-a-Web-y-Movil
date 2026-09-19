@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cartOutline } from 'ionicons/icons';
 import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import './Cart.css'; // Importamos los estilos específicos del carrito
+import './Cart.css';
 
-// Tipo para nuestros productos del carrito
-interface CartItemType {
-  id: string | number;
-  title: string;
-  game: string;
-  price: number;
-  quantity: number;
-}
 
 import { useCart } from '../context/CartContext';
 
 const Cart: React.FC = () => {
   const { cartItems, updateQuantity, removeItem } = useCart();
+  const navigate = useNavigate();
 
-  // Cálculos del resumen
+  const handleCheckout = () => {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      navigate('/login');
+    } else {
+      navigate('/checkout');
+    }
+  };
+
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const shipping = subtotal > 50000 ? 0 : 3500; // Envío gratis sobre 50k
   const total = subtotal + shipping;
 
-  // Formateador de moneda (CLP)
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(price);
   };
@@ -114,11 +113,9 @@ const Cart: React.FC = () => {
                   <span>{formatPrice(total)}</span>
                 </div>
 
-                <Link to="/checkout" style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
-                  <button className="btn-checkout">
+                <button className="btn-checkout" onClick={handleCheckout}>
                     Proceder al Pago
                   </button>
-                </Link>
               </div>
 
             </div>

@@ -16,6 +16,9 @@ const Catalog: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [productsPerPage, setProductsPerPage] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('Más reciente');
+  const [filterCondition, setFilterCondition] = useState('Todas');
+  const [filterRarity, setFilterRarity] = useState('Todas');
 
   const normalize = (s: string) => (s || '').toLowerCase().replace(/[\s-]/g, '');
 
@@ -50,6 +53,32 @@ const Catalog: React.FC = () => {
     categoryProducts = categoryProducts.filter((p: any) => 
       p.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+  }
+
+  // Simulated filters (since data.json doesn't have these fields, 
+  // it will only work if the JSON is updated, but logic is 100% ready)
+  if (filterCondition !== 'Todas') {
+    categoryProducts = categoryProducts.filter((p: any) => p.condition === filterCondition);
+  }
+  if (filterRarity !== 'Todas') {
+    categoryProducts = categoryProducts.filter((p: any) => p.rarity === filterRarity);
+  }
+
+  // Sort logic (Real, as data.json has prices and titles)
+  if (sortBy === 'Precio: Menor a Mayor') {
+    categoryProducts.sort((a, b) => {
+      const pA = parseInt((a.price || '0').replace(/[^0-9]/g, ''));
+      const pB = parseInt((b.price || '0').replace(/[^0-9]/g, ''));
+      return pA - pB;
+    });
+  } else if (sortBy === 'Precio: Mayor a Menor') {
+    categoryProducts.sort((a, b) => {
+      const pA = parseInt((a.price || '0').replace(/[^0-9]/g, ''));
+      const pB = parseInt((b.price || '0').replace(/[^0-9]/g, ''));
+      return pB - pA;
+    });
+  } else if (sortBy === 'Nombre: A - Z') {
+    categoryProducts.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
   }
 
   const totalProducts = categoryProducts.length;
@@ -139,34 +168,34 @@ const Catalog: React.FC = () => {
               </button>
               {showFilters && (
                 <div className="filter-dropdown-menu">
-                  <div className="filter-group">
-                    <label>Ordenar por</label>
-                    <select className="filter-select">
-                      <option>Más reciente</option>
-                      <option>Precio: Menor a Mayor</option>
-                      <option>Precio: Mayor a Menor</option>
-                      <option>Nombre: A - Z</option>
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label>Condición</label>
-                    <select className="filter-select">
-                      <option>Todas</option>
-                      <option>Near Mint</option>
-                      <option>Lightly Played</option>
-                      <option>Moderately Played</option>
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label>Rareza</label>
-                    <select className="filter-select">
-                      <option>Todas</option>
-                      <option>Common</option>
-                      <option>Uncommon</option>
-                      <option>Rare</option>
-                      <option>Ultra Rare</option>
-                    </select>
-                  </div>
+                    <div className="filter-group">
+                      <label>Ordenar por</label>
+                      <select className="filter-select" value={sortBy} onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}>
+                        <option>Más reciente</option>
+                        <option>Precio: Menor a Mayor</option>
+                        <option>Precio: Mayor a Menor</option>
+                        <option>Nombre: A - Z</option>
+                      </select>
+                    </div>
+                    <div className="filter-group">
+                      <label>Condición</label>
+                      <select className="filter-select" value={filterCondition} onChange={(e) => { setFilterCondition(e.target.value); setCurrentPage(1); }}>
+                        <option>Todas</option>
+                        <option>Near Mint</option>
+                        <option>Lightly Played</option>
+                        <option>Moderately Played</option>
+                      </select>
+                    </div>
+                    <div className="filter-group">
+                      <label>Rareza</label>
+                      <select className="filter-select" value={filterRarity} onChange={(e) => { setFilterRarity(e.target.value); setCurrentPage(1); }}>
+                        <option>Todas</option>
+                        <option>Common</option>
+                        <option>Uncommon</option>
+                        <option>Rare</option>
+                        <option>Ultra Rare</option>
+                      </select>
+                    </div>
                   <button className="btn-apply-filters" onClick={() => setShowFilters(false)}>Aplicar</button>
                 </div>
               )}

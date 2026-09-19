@@ -11,7 +11,6 @@ const Register: React.FC = () => {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('¡Simulación de Registro exitosa! Redirigiendo al login...');
     navigate('/login');
   };
 

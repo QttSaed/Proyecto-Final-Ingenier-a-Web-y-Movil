@@ -248,7 +248,7 @@ Aplicación
 |---|:---:|:---:|:---:|
 | Explorar catálogo de cartas | ✓ | ✓ | ✓ |
 | Ver detalles del producto | ✓ | ✓ | ✓ |
-| Agregar productos al carrito | — | ✓ | ✓ |
+| Agregar productos al carrito | ✓ | ✓ | ✓ |
 | Finalizar compra | — | ✓ | — |
 | Ver historial de órdenes propio | — | ✓ | — |
 | Agregar / Editar inventario | — | — | ✓ |
@@ -344,4 +344,8 @@ El proyecto se encuentra desplegado y accesible en línea a través de Vercel. N
 
 👉 **Enlace del proyecto:** [proyecto-web-y-movil.vercel.app](https://proyecto-web-y-movil.vercel.app/)
 
-*(Para acceder a la vista de Administrador, inicia sesión en la app usando el correo `admin@tcgstore.com`).*
+### 🔑 Cuentas de Prueba (Mock Login)
+Para evaluar las rutas protegidas y los distintos roles sin un backend conectado, el sistema cuenta con autenticación simulada. Utiliza las siguientes credenciales (la contraseña para ambas es `123456`):
+
+- **Rol Cliente:** `cliente@tcgstore.com` (Habilita el Checkout y el perfil "Mi Cuenta" con historial de órdenes).
+- **Rol Administrador:** `admin@tcgstore.com` (Da acceso exclusivo al Dashboard de gestión y bloquea vistas de cliente).
