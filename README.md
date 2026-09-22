@@ -321,7 +321,7 @@ La arquitectura de navegación fue diseñada para cumplir con el estándar de un
 
 ## Bocetos UI/UX
 (https://www.figma.com/proto/sfyPtwS7DZlxlQOimMfeaz/TCGStore-Web?node-id=2-3&p=f&t=TFggwOJHHyufxtOT-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A3)
-
+Se entregaron invitaciones para ver a los correos francisco.ponce@pucv.cl y dario.fuentes.p@mail.pucv.cl
 ---
 
 ## Tecnologías y Herramientas
