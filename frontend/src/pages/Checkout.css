@@ -315,4 +315,7 @@
   .form-group-row {
     flex-direction: column;
   }
+  .checkout-summary-section {
+    position: static;
+  }
 }
