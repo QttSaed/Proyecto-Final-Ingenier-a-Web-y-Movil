@@ -1,0 +1,2 @@
+-- Este archivo contendrá las instrucciones de creación de tablas (DDL) e inserciones iniciales (DML).
+-- Rúbrica EP 2.2
