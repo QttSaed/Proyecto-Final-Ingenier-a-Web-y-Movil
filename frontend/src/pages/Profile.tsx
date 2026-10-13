@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
-import { IonPage, IonContent, IonHeader, IonIcon, IonButton } from '@ionic/react';
+import React from 'react';
+import { IonContent, IonHeader, IonIcon, IonButton } from '@ionic/react';
 import { logOutOutline, bagHandleOutline, personOutline, mailOutline, callOutline, mapOutline } from 'ionicons/icons';
-import { Navigate, useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Profile.css';
+import { ORDER_STATUSES } from '../services/orderService';
+import { authService, useAuth } from '../services/authService';
 
 const Profile: React.FC = () => {
-  const navigate = useNavigate();
-  const [isAuthorized] = useState(localStorage.getItem('isLoggedIn') === 'true');
-  const role = localStorage.getItem('role') || 'guest';
 
-  if (!isAuthorized) {
-    return <Navigate to="/home" replace />;
-  }
+  const user = useAuth();
+  const role = user?.role;
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userEmail');
-    navigate('/login');
+    authService.logout();
   };
 
   return (
-    <IonPage>
+    <>
       <IonHeader className="ion-no-border">
         <TopBar />
         <Header />
@@ -42,7 +35,7 @@ const Profile: React.FC = () => {
                 </div>
               </div>
               <div className="profile-details-container">
-                <h2 className="profile-name">{localStorage.getItem('userName') || 'Usuario Invitado'}</h2>
+                <h2 className="profile-name">{user?.name || 'Usuario Invitado'}</h2>
                 <p className="profile-role-badge">{role === 'admin' ? 'Administrador' : 'Cliente'}</p>
 
                 <div className="profile-info-list">
@@ -50,7 +43,7 @@ const Profile: React.FC = () => {
                     <IonIcon icon={mailOutline} className="info-icon" />
                     <div className="info-text">
                       <span className="info-label">Correo Electrónico</span>
-                      <span className="info-value">{localStorage.getItem('userEmail') || 'correo@tcgstore.com'}</span>
+                      <span className="info-value">{user?.email || 'correo@tcgstore.com'}</span>
                     </div>
                   </div>
                   <div className="profile-info-item">
@@ -93,7 +86,7 @@ const Profile: React.FC = () => {
                       <span>3 Productos</span>
                       <span className="order-total">$64.000</span>
                     </div>
-                    <div className="order-status status-transit">En tránsito</div>
+                    <div className="order-status status-enviado">{ORDER_STATUSES[2]}</div>
                   </div>
 
                   <div className="order-item">
@@ -105,7 +98,7 @@ const Profile: React.FC = () => {
                       <span>1 Producto</span>
                       <span className="order-total">$150.000</span>
                     </div>
-                    <div className="order-status status-delivered">Entregado</div>
+                    <div className="order-status status-entregado">{ORDER_STATUSES[3]}</div>
                   </div>
 
                 </div>
@@ -115,8 +108,9 @@ const Profile: React.FC = () => {
         </div>
         <Footer />
       </IonContent>
-    </IonPage>
+    </>
   );
 };
 
 export default Profile;
+

@@ -1,44 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IonContent, IonPage, IonIcon, IonHeader } from '@ionic/react';
 import { logoGoogle, eyeOutline, eyeOffOutline } from 'ionicons/icons';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Login.css';
+import { authService } from '../services/authService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   
-  const [wasLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
+  const location = useLocation();
+  const [error, setError] = useState('');
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ block: 'center' });
+  }, [error]);
+  const [submitting, setSubmitting] = useState(false);
 
-  if (wasLoggedIn) {
-    return <Navigate to="/perfil" replace />;
-  }
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const emailInput = (document.getElementById('email') as HTMLInputElement).value;
-    const passInput = (document.getElementById('password') as HTMLInputElement).value;
-
-    const mockUsers = [
-      { email: 'admin@tcgstore.com', pass: '123456', role: 'admin', name: 'Administrador' },
-      { email: 'cliente@tcgstore.com', pass: '123456', role: 'client', name: 'Juan Pérez' }
-    ];
-
-    const foundUser = mockUsers.find(u => u.email === emailInput && u.pass === passInput);
-
-    if (foundUser) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', foundUser.email);
-      localStorage.setItem('userName', foundUser.name);
-      localStorage.setItem('role', foundUser.role);
-      navigate('/perfil');
-    } else {
-      alert('Credenciales incorrectas. Intenta con admin@tcgstore.com o cliente@tcgstore.com y clave 123456');
-    }
+    if (submitting) return;
+    const form = e.currentTarget;
+    if (!form.checkValidity()) { setError('Ingresa un correo válido y tu contraseña.'); return; }
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+    setError(''); setSubmitting(true);
+    try {
+      const user = await authService.login(email, password);
+      const from = location.state?.from;
+      const destination = typeof from === 'string' && /^\/(?!\/)/.test(from) && !['/login', '/register'].includes(from) ? from : '/perfil';
+      navigate(user.role === 'admin' ? '/admin' : destination, { replace: true });
+    } catch { setError('Correo o contraseña incorrectos'); }
+    finally { setSubmitting(false); }
   };
 
   return (
@@ -57,35 +53,37 @@ const Login: React.FC = () => {
               <p>Inicia sesión en TCGStore para continuar.</p>
             </div>
 
-            <form className="login-form" onSubmit={handleLogin}>
+            <form noValidate className="login-form" onSubmit={handleLogin}>
 
               <div className="form-group">
-                <label htmlFor="email">Correo Electrónico</label>
-                <input type="email" id="email" placeholder="ejemplo@correo.com" required />
+                <label htmlFor="email">Correo Electrónico *</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" autoComplete="email" required />
               </div>
 
               <div className="form-group password-group">
-                <label htmlFor="password">Contraseña</label>
+                <label htmlFor="password">Contraseña *</label>
                 <div className="password-input-wrapper">
                   <input
                     type={showPassword ? "text" : "password"}
-                    id="password"
+                    id="password" name="password" autoComplete="current-password"
                     placeholder="••••••••"
                     required
                   />
-                  <IonIcon
+                  <button type="button" className="password-toggle-button" aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} onClick={() => setShowPassword(!showPassword)}><IonIcon
                     icon={showPassword ? eyeOffOutline : eyeOutline}
                     className="password-toggle-icon"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
+                  /></button>
                 </div>
               </div>
 
+              <p className="form-hint">Contraseñas nuevas: mínimo 8 caracteres, una letra y un número.</p>
+              {location.state?.registered && <p role="status">Cuenta creada. Ya puedes iniciar sesión.</p>}
               <div className="forgot-password">
                 <Link to="/coming-soon">¿Olvidaste tu contraseña?</Link>
               </div>
 
-              <button type="submit" className="btn-login">Ingresar a mi cuenta</button>
+              <p ref={errorRef} role="alert" className="form-error">{error}</p>
+              <button type="submit" className="btn-login" disabled={submitting}>{submitting ? "Ingresando…" : "Ingresar a mi cuenta"}</button>
 
             </form>
 

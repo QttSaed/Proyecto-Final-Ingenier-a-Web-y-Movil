@@ -725,3 +725,5 @@
   .activity-panel { flex: none; width: 100%; }
   .admin-table-container { overflow-x: auto; }
 }
+
+.status-select.entregado { color: #235529; background: #e5f5e8; border-color: #74ac7a; }

@@ -185,3 +185,10 @@
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.form-error { color: #b42318; min-height: 1.4em; }
+.form-hint { color: var(--color-text-dark); font-size: .875rem; }
+button:disabled { opacity: .65; cursor: wait; }
+
+.password-toggle-button { background: transparent; border: 0; min-width: 44px; min-height: 44px; position: absolute; right: 0; top: 0; }
+.password-toggle-button .password-toggle-icon { position: static; transform: none; }

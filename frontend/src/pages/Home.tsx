@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage, IonHeader } from '@ionic/react';
+import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
@@ -11,7 +12,6 @@ import ProductCard from '../components/ProductCard';
 import appData from '../data.json';
 
 const Home: React.FC = () => {
-  // Estado para la paginación funcional del Home
   const [pageState, setPageState] = useState<Record<string, number>>({});
 
   const getSectionTitle = (name: string) => {
@@ -24,10 +24,10 @@ const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-      <TopBar />
-      <Header />
-    </IonHeader>
-    <IonContent className="main-content">
+        <TopBar />
+        <Header />
+      </IonHeader>
+      <IonContent className="main-content">
 
         <div className="banners-container">
           <Link to="/catalog/gundam" className="banner-large" style={{ padding: 0, textDecoration: 'none' }}>
@@ -35,13 +35,12 @@ const Home: React.FC = () => {
           </Link>
           <div className="banner-grid-small">
             {appData.banners.slice(1, 5).map((bannerUrl, idx) => {
-               // Mapeo manual según la posición solicitada
-               const paths = ['/catalog/magic', '/catalog/onepiece', '/catalog/pokemon', '/catalog/riftbound'];
-               return (
-                 <Link to={paths[idx]} key={idx} className="banner-small" style={{ padding: 0, textDecoration: 'none' }}>
-                   <img src={bannerUrl} alt={`Banner ${idx}`} className="banner-img-inner" />
-                 </Link>
-               );
+              const paths = ['/catalog/magic', '/catalog/onepiece', '/catalog/pokemon', '/catalog/riftbound'];
+              return (
+                <Link to={paths[idx]} key={idx} className="banner-small" style={{ padding: 0, textDecoration: 'none' }}>
+                  <img src={bannerUrl} alt={`Banner ${idx}`} className="banner-img-inner" />
+                </Link>
+              );
             })}
           </div>
         </div>
@@ -59,7 +58,6 @@ const Home: React.FC = () => {
               const nameB = b.name.replace(/icono /i, '').toLowerCase();
               let indexA = order.indexOf(nameA);
               let indexB = order.indexOf(nameB);
-              // Si no están en la lista de orden, mandarlos al final
               if (indexA === -1) indexA = 999;
               if (indexB === -1) indexB = 999;
               return indexA - indexB;
@@ -69,10 +67,10 @@ const Home: React.FC = () => {
               if (targetId === 'lotes') targetId = 'lotesdcarta';
 
               return (
-                <Link to={`/catalog/${targetId}`} key={i} style={{textDecoration: 'none'}}>
+                <Link to={`/catalog/${targetId}`} key={i} style={{ textDecoration: 'none' }}>
                   <div className="circular-icon">
                     <div className="circle-placeholder" style={{ backgroundImage: `url('${logo.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                    <span className="circle-label" style={{textTransform: 'capitalize'}}>{cleanName}</span>
+                    <span className="circle-label" style={{ textTransform: 'capitalize' }}>{cleanName}</span>
                   </div>
                 </Link>
               );
@@ -101,12 +99,11 @@ const Home: React.FC = () => {
             }
           };
 
-          // Alternate background classes for visual interest
           const bgClass = idx % 2 === 0 ? 'section-bg-alt' : '';
 
           return (
             <div className={`section-container ${bgClass}`} key={idx} id={`section-${sectionId}`}>
-              <h2 className="section-title" style={{textTransform: 'capitalize'}}>{getSectionTitle(sectionName)}</h2>
+              <h2 className="section-title" style={{ textTransform: 'capitalize' }}>{getSectionTitle(sectionName)}</h2>
               <div className="product-grid">
                 {visibleProducts.map(p => (
                   <ProductCard 
@@ -119,11 +116,27 @@ const Home: React.FC = () => {
                   />
                 ))}
               </div>
-              <div className="pagination-controls" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginTop: '20px' }}>
-                <div className="pagination-arrows" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <button onClick={handlePrev} disabled={currentPage === 1} style={{ cursor: currentPage === 1 ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid var(--color-border)', color: 'var(--color-text-dark)', fontWeight: 'bold' }}>&lt;</button>
-                  <span style={{ fontWeight: 'bold', color: 'var(--color-text)' }}>{currentPage} / {totalPages || 1}</span>
-                  <button onClick={handleNext} disabled={currentPage === totalPages} style={{ cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', padding: '5px 15px', borderRadius: '5px', backgroundColor: 'var(--color-bg-light)', border: '1px solid var(--color-border)', color: 'var(--color-text-dark)', fontWeight: 'bold' }}>&gt;</button>
+              <div className="pagination-controls">
+                <div className="pagination-arrows">
+                  <button
+                    type="button"
+                    className="home-page-btn"
+                    onClick={handlePrev}
+                    disabled={currentPage === 1}
+                    aria-label="Página anterior"
+                  >
+                    <IonIcon icon={chevronBackOutline} />
+                  </button>
+                  <span className="home-page-indicator">{currentPage} / {totalPages || 1}</span>
+                  <button
+                    type="button"
+                    className="home-page-btn"
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                    aria-label="Página siguiente"
+                  >
+                    <IonIcon icon={chevronForwardOutline} />
+                  </button>
                 </div>
                 <Link to={`/catalog/${sectionId}`}>
                   <button className="btn-view-all">Ver todo</button>
@@ -141,4 +154,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-

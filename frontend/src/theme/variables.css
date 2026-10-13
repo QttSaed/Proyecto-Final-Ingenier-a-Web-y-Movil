@@ -87,3 +87,14 @@ html {
   --color-border: #334155;
   --color-border-dark: #0f172a;
 }
+
+.social-icons a {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+[data-theme="dark"] .form-error {
+  color: #ffb4ab;
+}

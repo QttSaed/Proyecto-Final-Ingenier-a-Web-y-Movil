@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { IonContent, IonPage, IonIcon } from '@ionic/react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { IonContent, IonIcon } from '@ionic/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   addOutline, cubeOutline, 
   homeOutline, cartOutline, alertCircleOutline, 
@@ -8,33 +8,27 @@ import {
 } from 'ionicons/icons';
 import './AdminDashboard.css';
 import catalogData from '../data.json';
+import { ORDER_STATUSES, OrderStatus } from '../services/orderService';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
-  const [isAuthorized] = useState(localStorage.getItem('role') === 'admin');
-
-  if (!isAuthorized) {
-    return <Navigate to="/home" replace />;
-  }
-
-  const location = window.location.pathname;
-  
-  let initialTab: 'dashboard' | 'inventory' | 'add-product' | 'orders' = 'dashboard';
-  if (location.includes('/inventario')) initialTab = 'inventory';
-  if (location.includes('/ordenes')) initialTab = 'orders';
-
+  const location = useLocation();
+  const initialTab = location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard';
   const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'add-product' | 'orders'>(initialTab);
   const [isSuccess, setIsSuccess] = useState(false);
+  useEffect(() => {
+    setActiveTab(location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard');
+  }, [location.pathname]);
 
-  const inventoryProducts = (catalogData as any).sections?.Pokemon ? (catalogData as any).sections.Pokemon.slice(0, 6) : [];
-
-  const [orders, setOrders] = useState([
+  const [orders, setOrders] = useState<{ id: string; client: string; total: number; date: string; status: OrderStatus }[]>([
     { id: 'ORD-1023', client: 'Juan Pérez', total: 45000, date: '18 Sep 2026', status: 'Pendiente' },
     { id: 'ORD-1022', client: 'María Gómez', total: 12500, date: '17 Sep 2026', status: 'Pagado' },
     { id: 'ORD-1021', client: 'Carlos Ruiz', total: 85000, date: '16 Sep 2026', status: 'Enviado' },
     { id: 'ORD-1020', client: 'Ana Silva', total: 32000, date: '15 Sep 2026', status: 'Enviado' },
   ]);
+
+  const inventoryProducts = catalogData.sections.Pokemon.slice(0, 6);
 
   const handleExitDashboard = () => {
     navigate('/home');
@@ -50,8 +44,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent fullscreen className="admin-content">
+    <IonContent fullscreen className="admin-content">
         
         {/* Admin Header */}
         <header className="admin-header">
@@ -69,13 +62,13 @@ const AdminDashboard: React.FC = () => {
           {/* Sidebar */}
           <div className="admin-sidebar">
             <ul className="admin-menu">
-              <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>
+              <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => navigate('/admin')}>
                 <IonIcon icon={homeOutline} /> Resumen General
               </li>
-              <li className={activeTab === 'inventory' || activeTab === 'add-product' ? 'active' : ''} onClick={() => setActiveTab('inventory')}>
+              <li className={activeTab === 'inventory' || activeTab === 'add-product' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); navigate('/admin/inventario'); }}>
                 <IonIcon icon={cubeOutline} /> Catálogo e Inventario
               </li>
-              <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>
+              <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => navigate('/admin/ordenes')}>
                 <IonIcon icon={cartOutline} /> Gestión de Órdenes
               </li>
             </ul>
@@ -335,7 +328,7 @@ const AdminDashboard: React.FC = () => {
                     <h2>Ingresar Nuevo Producto</h2>
                     <p>Agrega nuevas cartas o sellados al catálogo.</p>
                   </div>
-                  <button className="btn-admin-secondary" onClick={() => setActiveTab('inventory')}>
+                  <button className="btn-admin-secondary" onClick={() => { setActiveTab('inventory'); navigate('/admin/inventario'); }}>
                     Volver al Inventario
                   </button>
                 </div>
@@ -439,13 +432,11 @@ const AdminDashboard: React.FC = () => {
                               value={order.status}
                               onChange={(e) => {
                                 const newOrders = [...orders];
-                                newOrders[idx].status = e.target.value;
+                                newOrders[idx] = { ...newOrders[idx], status: e.target.value as OrderStatus };
                                 setOrders(newOrders);
                               }}
                             >
-                              <option value="Pendiente">Pendiente</option>
-                              <option value="Pagado">Pagado</option>
-                              <option value="Enviado">Enviado</option>
+                              {ORDER_STATUSES.map(status => <option key={status} value={status}>{status}</option>)}
                             </select>
                           </td>
                           <td>
@@ -462,8 +453,8 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </IonContent>
-    </IonPage>
   );
 };
 
 export default AdminDashboard;
+
