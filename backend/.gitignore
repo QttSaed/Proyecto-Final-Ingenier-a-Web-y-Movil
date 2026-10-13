@@ -1,0 +1,23 @@
+# Entorno local y secretos
+.env
+.env.*
+!.env.example
+
+# Dependencias y archivos generados
+node_modules/
+dist/
+coverage/
+logs/
+*.log
+*.log.*
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
