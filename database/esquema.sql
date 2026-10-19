@@ -1,4 +1,3 @@
--- EP 2.2: ejecutar sobre la base tcgstore; reinicia los datos de demostracion.
 BEGIN;
 
 DROP TABLE IF EXISTS order_items;

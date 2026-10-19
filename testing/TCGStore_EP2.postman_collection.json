@@ -1,0 +1,2011 @@
+{
+  "info": {
+    "name": "TCGStore API",
+    "description": "Ejecutar en orden con TCGStore Local y la base inicializada desde database/esquema.sql. Los logins usan las cuentas de demostración y contraseña 123456. Se crean un cliente, un producto de compra y un producto temporal para probar eliminación física.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Salud, categorías y autenticación",
+      "item": [
+        {
+          "name": "Salud",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('API disponible', () => pm.expect(data.status).to.equal('ok'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Categorías",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/categories"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Categorías', () => pm.expect(data).to.be.an('array').that.is.not.empty);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Registro cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman\",\n  \"email\": \"{{registrationEmail}}\",\n  \"password\": \"{{registrationPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('registrationEmail', 'postman.' + pm.variables.replaceIn('{{$guid}}') + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.test('Token y usuario seguro', () => { pm.expect(data.token).to.be.a('string'); pm.expect(data.user.id).to.exist; pm.expect(data.user).not.to.have.property('password_hash'); });",
+                  "pm.test('Rol cliente', () => pm.expect(data.user.role).to.equal('client'));",
+                  "if (pm.response.code === 201) { pm.environment.set('registeredToken', data.token); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Registro duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman\",\n  \"email\": \"{{registrationEmail}}\",\n  \"password\": \"{{registrationPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 409', () => pm.response.to.have.status(409));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Registro inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente\",\n  \"email\": \"invalido\",\n  \"password\": \"123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Login cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{clientEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Token y usuario seguro', () => { pm.expect(data.token).to.be.a('string'); pm.expect(data.user.id).to.exist; pm.expect(data.user).not.to.have.property('password_hash'); });",
+                  "pm.test('Rol client', () => pm.expect(data.user.role).to.equal('client'));",
+                  "if (pm.response.code === 200) { pm.environment.set('clientToken', data.token); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Token y usuario seguro', () => { pm.expect(data.token).to.be.a('string'); pm.expect(data.user.id).to.exist; pm.expect(data.user).not.to.have.property('password_hash'); });",
+                  "pm.test('Rol admin', () => pm.expect(data.user.role).to.equal('admin'));",
+                  "if (pm.response.code === 200) { pm.environment.set('adminToken', data.token); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Login incorrecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{clientEmail}}\",\n  \"password\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Perfil cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Perfil seguro', () => { pm.expect(data.role).to.equal('client'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Actualizar perfil registrado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{registeredToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/auth/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente Postman\",\n  \"phone\": \"+56922222222\",\n  \"address\": \"Calle 123\",\n  \"city\": \"Santiago\",\n  \"region\": \"Metropolitana\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Perfil actualizado', () => pm.expect(data.city).to.equal('Santiago'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Perfil sin token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Productos y permisos",
+      "item": [
+        {
+          "name": "Listado público",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Listado de productos', () => pm.expect(data).to.be.an('array'));",
+                  "pm.test('Formato del catálogo', () => data.forEach(p => { pm.expect(p.id).to.equal(p.code); pm.expect(p.price).to.be.a('number'); }));",
+                  "pm.test('Solo activos', () => data.forEach(p => pm.expect(p.isActive).to.equal(true)));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear producto sin token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Carta Postman\",\n  \"description\": \"Producto de prueba\",\n  \"price\": 10000,\n  \"stock\": 10,\n  \"categorySlug\": \"pokemon\",\n  \"game\": \"Pokemon\",\n  \"edition\": \"Postman\",\n  \"rarity\": \"Rare\",\n  \"color\": \"Rojo\",\n  \"cost\": 1,\n  \"cardType\": \"Carta\",\n  \"condition\": \"Near Mint\",\n  \"image\": \"/assets/card-postman.png\",\n  \"hasButton\": true,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear producto como cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Carta Postman\",\n  \"description\": \"Producto de prueba\",\n  \"price\": 10000,\n  \"stock\": 10,\n  \"categorySlug\": \"pokemon\",\n  \"game\": \"Pokemon\",\n  \"edition\": \"Postman\",\n  \"rarity\": \"Rare\",\n  \"color\": \"Rojo\",\n  \"cost\": 1,\n  \"cardType\": \"Carta\",\n  \"condition\": \"Near Mint\",\n  \"image\": \"/assets/card-postman.png\",\n  \"hasButton\": true,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear producto inválido admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Inválido\",\n  \"price\": -1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear producto admin para compra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Carta Postman\",\n  \"description\": \"Producto de prueba\",\n  \"price\": 10000,\n  \"stock\": 10,\n  \"categorySlug\": \"pokemon\",\n  \"game\": \"Pokemon\",\n  \"edition\": \"Postman\",\n  \"rarity\": \"Rare\",\n  \"color\": \"Rojo\",\n  \"cost\": 1,\n  \"cardType\": \"Carta\",\n  \"condition\": \"Near Mint\",\n  \"image\": \"/assets/card-postman.png\",\n  \"hasButton\": true,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });",
+                  "if (pm.response.code === 201) { pm.environment.set('productCode', data.code); pm.environment.set('productDbId', data.dbId); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Filtros combinados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products?category=pokemon&game=Pokemon&edition=Postman&rarity=Rare&color=Rojo&cost=1&cardType=Carta&condition=Near%20Mint&search=Carta%20Postman"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Listado de productos', () => pm.expect(data).to.be.an('array'));",
+                  "pm.test('Formato del catálogo', () => data.forEach(p => { pm.expect(p.id).to.equal(p.code); pm.expect(p.price).to.be.a('number'); }));",
+                  "pm.test('Filtros aplicados', () => { pm.expect(data).to.have.lengthOf.at.least(1); data.forEach(p => { pm.expect(p.categorySlug).to.equal('pokemon'); pm.expect(p.game).to.equal('Pokemon'); pm.expect(p.edition).to.equal('Postman'); pm.expect(p.rarity).to.equal('Rare'); pm.expect(p.color).to.equal('Rojo'); pm.expect(p.cost).to.equal(1); pm.expect(p.cardType).to.equal('Carta'); pm.expect(p.condition).to.equal('Near Mint'); pm.expect(p.title).to.include('Carta Postman'); }); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Listado admin incluye inactivos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products?includeInactive=true"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Listado de productos', () => pm.expect(data).to.be.an('array'));",
+                  "pm.test('Formato del catálogo', () => data.forEach(p => { pm.expect(p.id).to.equal(p.code); pm.expect(p.price).to.be.a('number'); }));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle por código",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle por id numérico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/{{productDbId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/postman-inexistente"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Editar producto sin token",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 12000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Editar producto como cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 12000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Editar producto admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 12000,\n  \"stock\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });",
+                  "pm.test('Precio actualizado', () => pm.expect(data.price).to.equal(12000));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pedidos y estados",
+      "item": [
+        {
+          "name": "Crear pedido sin token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"code\": \"{{productCode}}\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear pedido como admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"code\": \"{{productCode}}\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Pedido inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Pedido sin stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"code\": \"{{productCode}}\",\n      \"quantity\": 999\n    }\n  ],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Pedido producto inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"code\": \"postman-inexistente\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear pedido cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"code\": \"{{productCode}}\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingName\": \"Cliente Demo\",\n  \"shippingEmail\": \"{{clientEmail}}\",\n  \"shippingAddress\": \"Calle 123\",\n  \"shippingCity\": \"Santiago\",\n  \"shippingRegion\": \"Metropolitana\",\n  \"paymentMethod\": \"Transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedido e importes', () => { pm.expect(data.id).to.equal(data.orderNumber); pm.expect(data.total).to.equal(data.subtotal + data.shippingCost); pm.expect(data.items).to.be.an('array').that.is.not.empty; });",
+                  "pm.test('Estado y cálculo', () => { pm.expect(data.status).to.equal('Pendiente'); pm.expect(data.subtotal).to.equal(12000); pm.expect(data.shippingCost).to.equal(3500); });",
+                  "if (pm.response.code === 201) { pm.environment.set('orderNumber', data.orderNumber); pm.environment.set('orderDbId', data.dbId); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Listado cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedidos cliente', () => { pm.expect(data).to.be.an('array'); pm.expect(data.some(o => o.orderNumber === pm.environment.get('orderNumber'))).to.equal(true); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Listado admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedidos con cliente', () => { pm.expect(data).to.be.an('array'); data.forEach(o => { pm.expect(o.items).to.be.an('array'); pm.expect(o.client.email).to.be.a('string'); }); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle pedido cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderNumber}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedido e importes', () => { pm.expect(data.id).to.equal(data.orderNumber); pm.expect(data.total).to.equal(data.subtotal + data.shippingCost); pm.expect(data.items).to.be.an('array').that.is.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle pedido de otro cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{registeredToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderNumber}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Detalle pedido inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/postman-inexistente"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Cambiar estado como cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderNumber}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Pagado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Estado inválido admin",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderNumber}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Cancelado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Cambiar estado PATCH admin",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderNumber}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Pagado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedido e importes', () => { pm.expect(data.id).to.equal(data.orderNumber); pm.expect(data.total).to.equal(data.subtotal + data.shippingCost); pm.expect(data.items).to.be.an('array').that.is.not.empty; });",
+                  "pm.test('Estado pagado', () => pm.expect(data.status).to.equal('Pagado'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Cambiar estado PUT admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/orders/{{orderDbId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Enviado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Pedido e importes', () => { pm.expect(data.id).to.equal(data.orderNumber); pm.expect(data.total).to.equal(data.subtotal + data.shippingCost); pm.expect(data.items).to.be.an('array').that.is.not.empty; });",
+                  "pm.test('Estado enviado', () => pm.expect(data.status).to.equal('Enviado'));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Eliminación de productos",
+      "item": [
+        {
+          "name": "Eliminar sin token",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 401', () => pm.response.to.have.status(401));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Eliminar como cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{clientToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 403', () => pm.response.to.have.status(403));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Eliminar producto con pedido: desactivar",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Eliminación confirmada', () => pm.expect(data.id).to.equal(pm.environment.get('productCode')));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Producto desactivado oculto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Admin consulta producto desactivado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });",
+                  "pm.test('Producto inactivo', () => pm.expect(data.isActive).to.equal(false));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Crear producto temporal sin referencias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Carta Postman\",\n  \"description\": \"Producto de prueba\",\n  \"price\": 10000,\n  \"stock\": 10,\n  \"categorySlug\": \"pokemon\",\n  \"game\": \"Pokemon\",\n  \"edition\": \"Postman\",\n  \"rarity\": \"Rare\",\n  \"color\": \"Rojo\",\n  \"cost\": 1,\n  \"cardType\": \"Carta\",\n  \"condition\": \"Near Mint\",\n  \"image\": \"/assets/card-postman.png\",\n  \"hasButton\": true,\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 201', () => pm.response.to.have.status(201));",
+                  "const data = pm.response.json();",
+                  "pm.test('Formato de producto', () => { pm.expect(data.id).to.equal(data.code); pm.expect(data.dbId).to.be.a('number'); pm.expect(data.priceFormatted).to.match(/^\\$/); pm.expect(data).to.have.property('categorySlug'); });",
+                  "if (pm.response.code === 201) { pm.environment.set('temporaryProductCode', data.code); }"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Eliminar producto temporal físicamente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{temporaryProductCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200', () => pm.response.to.have.status(200));",
+                  "const data = pm.response.json();",
+                  "pm.test('Eliminación confirmada', () => pm.expect(data.id).to.equal(pm.environment.get('temporaryProductCode')));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Producto temporal eliminado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{temporaryProductCode}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "const data = pm.response.json();",
+                  "pm.test('Mensaje de error', () => pm.expect(data.message).to.be.a('string'));",
+                  "pm.test('Sin datos sensibles', () => { pm.expect(data).not.to.have.property('stack'); pm.expect(data).not.to.have.property('password_hash'); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ]
+}
