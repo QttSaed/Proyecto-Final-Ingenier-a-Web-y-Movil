@@ -1,0 +1,42 @@
+import { lazy, Suspense } from 'react';
+import { Navigate, Route, useParams } from 'react-router-dom';
+import { IonRouterOutlet, IonContent } from '@ionic/react';
+import ProtectedRoute from './ProtectedRoute';
+import Home from '../pages/Home';
+import Catalog from '../pages/Catalog';
+import Cart from '../pages/Cart';
+import Login from '../pages/Login';
+import Register from '../pages/Register';
+import ProductDetail from '../pages/ProductDetail';
+import Checkout from '../pages/Checkout';
+import ComingSoon from '../pages/ComingSoon';
+import Profile from '../pages/Profile';
+import NotFound from '../pages/NotFound';
+const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
+function ProductAlias() { const { id } = useParams(); return <Navigate to={`/product/${id}`} replace />; }
+export default function AppRouter() {
+  const admin = <ProtectedRoute allowedRoles={['admin']}><Suspense fallback={<IonContent className="admin-content ion-padding">Cargando administración…</IonContent>}><AdminDashboard /></Suspense></ProtectedRoute>;
+  return <IonRouterOutlet>
+    <Route path="/" element={<Navigate to="/home" replace />} />
+    <Route path="/home" element={<Home />} />
+    <Route path="/catalog/:category" element={<Catalog />} />
+    <Route path="/catalogo" element={<Navigate to="/catalog/todos" replace />} />
+    <Route path="/product/:id" element={<ProductDetail />} />
+    <Route path="/producto/:id" element={<ProductAlias />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/registro" element={<Navigate to="/register" replace />} />
+    <Route path="/coming-soon" element={<ComingSoon />} />
+    <Route path="/proximamente" element={<Navigate to="/coming-soon" replace />} />
+    <Route path="/search" element={<ComingSoon />} />
+    <Route path="/perfil" element={<ProtectedRoute allowedRoles={['client', 'admin']}><Profile /></ProtectedRoute>} />
+    <Route path="/cart" element={<ProtectedRoute allowedRoles={['client']} allowGuest><Cart /></ProtectedRoute>} />
+    <Route path="/carrito" element={<Navigate to="/cart" replace />} />
+    <Route path="/checkout" element={<ProtectedRoute allowedRoles={['client']}><Checkout /></ProtectedRoute>} />
+    <Route path="/admin" element={admin} />
+    <Route path="/admin/inventario" element={admin} />
+    <Route path="/admin/ordenes" element={admin} />
+    <Route path="*" element={<NotFound />} />
+  </IonRouterOutlet>;
+}
+

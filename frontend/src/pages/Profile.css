@@ -8,7 +8,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  color: var(--color-text-light); /* Changed to text-light as background is dark */
+  color: var(--color-text-dark);
 }
 
 .profile-grid {
@@ -179,12 +179,12 @@
   font-weight: bold;
 }
 
-.status-transit {
+.status-enviado {
   background: #fff3cd;
   color: #856404;
 }
 
-.status-delivered {
+.status-entregado {
   background: #d4edda;
   color: #155724;
 }
@@ -213,3 +213,6 @@
   color: var(--color-text-dark);
 }
 
+
+.status-pendiente { color: #795500; background: #fff4cc; }
+.status-pagado { color: #174b83; background: #e4efff; }

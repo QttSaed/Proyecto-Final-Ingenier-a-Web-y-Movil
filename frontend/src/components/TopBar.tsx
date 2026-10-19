@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { logoFacebook, logoInstagram, logoTiktok, logoWhatsapp } from 'ionicons/icons';
 
@@ -6,10 +7,10 @@ const TopBar: React.FC = () => {
   return (
     <div className="top-bar">
       <div className="social-icons">
-        <IonIcon icon={logoFacebook} />
-        <IonIcon icon={logoInstagram} />
-        <IonIcon icon={logoTiktok} />
-        <IonIcon icon={logoWhatsapp} />
+        <Link to="/coming-soon" aria-label="Facebook"><IonIcon icon={logoFacebook} /></Link>
+        <Link to="/coming-soon" aria-label="Instagram"><IonIcon icon={logoInstagram} /></Link>
+        <Link to="/coming-soon" aria-label="TikTok"><IonIcon icon={logoTiktok} /></Link>
+        <Link to="/coming-soon" aria-label="WhatsApp"><IonIcon icon={logoWhatsapp} /></Link>
         <span>Whatsapp</span>
       </div>
       <div className="shipping-info">

@@ -45,7 +45,13 @@
         "image": "/assets/secciones pagina/accesorios/160 top deck azul.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Azul",
+        "cost": 23000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-1",
@@ -54,7 +60,13 @@
         "image": "/assets/secciones pagina/accesorios/160 top deck blanco.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Blanco",
+        "cost": 17000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-2",
@@ -63,7 +75,13 @@
         "image": "/assets/secciones pagina/accesorios/160 top deck negro.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Negro",
+        "cost": 98000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-3",
@@ -72,7 +90,13 @@
         "image": "/assets/secciones pagina/accesorios/deck box pokedex.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 24000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-4",
@@ -81,7 +105,13 @@
         "image": "/assets/secciones pagina/accesorios/deck box premiun.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-5",
@@ -90,7 +120,13 @@
         "image": "/assets/secciones pagina/accesorios/dragon shield blue.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Azul",
+        "cost": 58000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-6",
@@ -99,7 +135,13 @@
         "image": "/assets/secciones pagina/accesorios/dragon shield turquoise.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Turquesa",
+        "cost": 80000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-7",
@@ -108,7 +150,13 @@
         "image": "/assets/secciones pagina/accesorios/dsbloodred dragon shield.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Rojo",
+        "cost": 28000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-8",
@@ -117,7 +165,13 @@
         "image": "/assets/secciones pagina/accesorios/PROTECTOR ESTANDAR.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 36000,
+        "cardType": "Accesorio"
       },
       {
         "id": "accesorios-9",
@@ -126,7 +180,13 @@
         "image": "/assets/secciones pagina/accesorios/Tapete Riftbound.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Accesorios",
+        "game": "Multijuego",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Accesorio"
       }
     ],
     "Digimon": [
@@ -137,7 +197,13 @@
         "image": "/assets/secciones pagina/Digimon/digimon debuggers set.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Digimon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 19000,
+        "cardType": "Carta"
       },
       {
         "id": "digimon-1",
@@ -146,7 +212,13 @@
         "image": "/assets/secciones pagina/Digimon/digimonstarter.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Sellados",
+        "game": "Digimon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 64000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "digimon-2",
@@ -155,7 +227,13 @@
         "image": "/assets/secciones pagina/Digimon/digimonstarter_1.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Sellados",
+        "game": "Digimon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 23000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "digimon-3",
@@ -164,7 +242,13 @@
         "image": "/assets/secciones pagina/Digimon/limited card pack final crest digimon.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Sellados",
+        "game": "Digimon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 74000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "digimon-4",
@@ -173,7 +257,13 @@
         "image": "/assets/secciones pagina/Digimon/X_digimoncardgamepb21tamer-sevolutionbox-riseofdigimon-19746-300x300.png",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Digimon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 81000,
+        "cardType": "Producto sellado"
       }
     ],
     "eventos": [
@@ -184,7 +274,13 @@
         "image": "/assets/secciones pagina/eventos/League challenge pokemon viña.jpg",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Eventos",
+        "game": "eventos",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 40000,
+        "cardType": "Eventos"
       },
       {
         "id": "eventos-1",
@@ -193,7 +289,13 @@
         "image": "/assets/secciones pagina/eventos/league-cup pokemon santiago.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Eventos",
+        "game": "eventos",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 10000,
+        "cardType": "Eventos"
       }
     ],
     "Gundam": [
@@ -204,7 +306,13 @@
         "image": "/assets/secciones pagina/Gundam/Deck bobuild box freedom ascension.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Gundam",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 34000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "gundam-1",
@@ -213,7 +321,13 @@
         "image": "/assets/secciones pagina/Gundam/gundam card game booster box.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Gundam",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 42000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "gundam-2",
@@ -222,7 +336,13 @@
         "image": "/assets/secciones pagina/Gundam/gundam card game booster steel requiem.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "Gundam",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 73000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "gundam-3",
@@ -231,7 +351,13 @@
         "image": "/assets/secciones pagina/Gundam/gundam card game dual impact.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "Gundam",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 44000,
+        "cardType": "Carta"
       },
       {
         "id": "gundam-4",
@@ -240,7 +366,13 @@
         "image": "/assets/secciones pagina/Gundam/premiun card collection gundam assemble mobile.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Gundam",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 69000,
+        "cardType": "Carta"
       }
     ],
     "LotesDCarta": [
@@ -251,7 +383,13 @@
         "image": "/assets/secciones pagina/LotesDCarta/Lote 100 cartas surtidas.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Lotes",
+        "game": "LotesDCarta",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 33000,
+        "cardType": "Lotes"
       },
       {
         "id": "lotesdcarta-1",
@@ -260,7 +398,13 @@
         "image": "/assets/secciones pagina/LotesDCarta/lote cartas con legendary ultra rar.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Lotes",
+        "game": "LotesDCarta",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 94000,
+        "cardType": "Lotes"
       },
       {
         "id": "lotesdcarta-2",
@@ -269,7 +413,13 @@
         "image": "/assets/secciones pagina/LotesDCarta/lote pokemon barajas groundhog.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Lotes",
+        "game": "LotesDCarta",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 87000,
+        "cardType": "Lotes"
       }
     ],
     "Magic": [
@@ -280,7 +430,13 @@
         "image": "/assets/secciones pagina/Magic/fantastic four  super heroe commander pack.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "magic-1",
@@ -289,7 +445,13 @@
         "image": "/assets/secciones pagina/Magic/magic  god of war secret lair pack.png",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 46000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "magic-2",
@@ -298,7 +460,13 @@
         "image": "/assets/secciones pagina/Magic/Spiderman play booster magic.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 81000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "magic-3",
@@ -307,7 +475,13 @@
         "image": "/assets/secciones pagina/Magic/super heroe colector booster.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 60000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "magic-4",
@@ -316,7 +490,13 @@
         "image": "/assets/secciones pagina/Magic/super heroe play booster.jpg",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 81000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "magic-5",
@@ -325,7 +505,13 @@
         "image": "/assets/secciones pagina/Magic/TMNTcollector.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 90000,
+        "cardType": "Carta"
       },
       {
         "id": "magic-6",
@@ -334,7 +520,13 @@
         "image": "/assets/secciones pagina/Magic/wakanda forever super heroe commander pack.jpg",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "Magic",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 18000,
+        "cardType": "Producto sellado"
       }
     ],
     "One Piece": [
@@ -345,7 +537,13 @@
         "image": "/assets/secciones pagina/One Piece/Boa Hancock.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-1",
@@ -354,7 +552,13 @@
         "image": "/assets/secciones pagina/One Piece/Brook Straw Hat.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 15000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-2",
@@ -363,7 +567,13 @@
         "image": "/assets/secciones pagina/One Piece/donquixote.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 27000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-3",
@@ -372,7 +582,13 @@
         "image": "/assets/secciones pagina/One Piece/Dr.Kureha.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 35000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-4",
@@ -381,7 +597,13 @@
         "image": "/assets/secciones pagina/One Piece/Enel.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 85000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-5",
@@ -390,7 +612,13 @@
         "image": "/assets/secciones pagina/One Piece/Franky.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 56000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-6",
@@ -399,7 +627,13 @@
         "image": "/assets/secciones pagina/One Piece/Gol.D.Roger King Prime.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 79000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-7",
@@ -408,7 +642,13 @@
         "image": "/assets/secciones pagina/One Piece/Gol.D.Roger King.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 25000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-8",
@@ -417,7 +657,13 @@
         "image": "/assets/secciones pagina/One Piece/Koby.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 38000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-9",
@@ -426,7 +672,13 @@
         "image": "/assets/secciones pagina/One Piece/Kouzuki Wano.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 61000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-10",
@@ -435,7 +687,13 @@
         "image": "/assets/secciones pagina/One Piece/Laboon.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 27000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-11",
@@ -444,7 +702,13 @@
         "image": "/assets/secciones pagina/One Piece/Luffy Attack.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 55000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-12",
@@ -453,7 +717,13 @@
         "image": "/assets/secciones pagina/One Piece/Luffy Gear 3.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 55000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-13",
@@ -462,7 +732,13 @@
         "image": "/assets/secciones pagina/One Piece/Luffy Gear.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 44000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-14",
@@ -471,7 +747,13 @@
         "image": "/assets/secciones pagina/One Piece/Luffy Impel Down.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 61000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-15",
@@ -480,7 +762,13 @@
         "image": "/assets/secciones pagina/One Piece/Luffy Y Ace.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 49000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-16",
@@ -489,7 +777,13 @@
         "image": "/assets/secciones pagina/One Piece/Mazo One piece Sabo.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 27000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "one-piece-17",
@@ -498,7 +792,13 @@
         "image": "/assets/secciones pagina/One Piece/Mazos de carta One piece.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Sellados",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 67000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "one-piece-18",
@@ -507,7 +807,13 @@
         "image": "/assets/secciones pagina/One Piece/Monkey.D.Luffy Skye island.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 61000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-19",
@@ -516,7 +822,13 @@
         "image": "/assets/secciones pagina/One Piece/Monkey.D.Luffy Supernovas.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 52000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-20",
@@ -525,7 +837,13 @@
         "image": "/assets/secciones pagina/One Piece/Nami Egghead.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 14000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-21",
@@ -534,7 +852,13 @@
         "image": "/assets/secciones pagina/One Piece/Newgate Four Emperors.jpg",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 17000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-22",
@@ -543,7 +867,13 @@
         "image": "/assets/secciones pagina/One Piece/Nico Robin Straw Hat.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 68000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-23",
@@ -552,7 +882,13 @@
         "image": "/assets/secciones pagina/One Piece/sanji alabasta.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 24000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-24",
@@ -561,7 +897,13 @@
         "image": "/assets/secciones pagina/One Piece/Sanji Straw Hat Crew.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 86000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-25",
@@ -570,7 +912,13 @@
         "image": "/assets/secciones pagina/One Piece/Sobre Cartas.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 48000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "one-piece-26",
@@ -579,7 +927,13 @@
         "image": "/assets/secciones pagina/One Piece/Tony Tony Chopper.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 15000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-27",
@@ -588,7 +942,13 @@
         "image": "/assets/secciones pagina/One Piece/Yamato.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 53000,
+        "cardType": "Carta"
       },
       {
         "id": "one-piece-28",
@@ -597,7 +957,13 @@
         "image": "/assets/secciones pagina/One Piece/Zoro Prime.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "One Piece",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 50000,
+        "cardType": "Carta"
       }
     ],
     "Pokemon": [
@@ -608,7 +974,13 @@
         "image": "/assets/secciones pagina/Pokemon/Caja pokemon prismatic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 67000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "pokemon-1",
@@ -617,7 +989,13 @@
         "image": "/assets/secciones pagina/Pokemon/Charizar.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 37000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-2",
@@ -626,7 +1004,13 @@
         "image": "/assets/secciones pagina/Pokemon/Charizard EX.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 34000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-3",
@@ -635,7 +1019,13 @@
         "image": "/assets/secciones pagina/Pokemon/ditto.jpg",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 38000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-4",
@@ -644,7 +1034,13 @@
         "image": "/assets/secciones pagina/Pokemon/fezandipiti.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 16000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-5",
@@ -653,7 +1049,13 @@
         "image": "/assets/secciones pagina/Pokemon/Groudon.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 25000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-6",
@@ -662,7 +1064,13 @@
         "image": "/assets/secciones pagina/Pokemon/Kit inicio Pokemon.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 16000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "pokemon-7",
@@ -671,7 +1079,13 @@
         "image": "/assets/secciones pagina/Pokemon/Kyogre.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 48000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-8",
@@ -680,7 +1094,13 @@
         "image": "/assets/secciones pagina/Pokemon/lapras.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 61000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-9",
@@ -689,7 +1109,13 @@
         "image": "/assets/secciones pagina/Pokemon/magikarp y wailord.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 33000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-10",
@@ -698,7 +1124,13 @@
         "image": "/assets/secciones pagina/Pokemon/Magikarp.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 73000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-11",
@@ -707,7 +1139,13 @@
         "image": "/assets/secciones pagina/Pokemon/Mega charizard.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-12",
@@ -716,7 +1154,13 @@
         "image": "/assets/secciones pagina/Pokemon/MEW.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 56000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-13",
@@ -725,7 +1169,13 @@
         "image": "/assets/secciones pagina/Pokemon/mewto y mew.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 87000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-14",
@@ -734,7 +1184,13 @@
         "image": "/assets/secciones pagina/Pokemon/Pikachu Max.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 21000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-15",
@@ -743,7 +1199,13 @@
         "image": "/assets/secciones pagina/Pokemon/Pikachu.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 84000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-16",
@@ -752,7 +1214,13 @@
         "image": "/assets/secciones pagina/Pokemon/Set 10 Sobres Pokemon.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Sellados",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 49000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "pokemon-17",
@@ -761,7 +1229,13 @@
         "image": "/assets/secciones pagina/Pokemon/slowpoke.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 84000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-18",
@@ -770,7 +1244,13 @@
         "image": "/assets/secciones pagina/Pokemon/Sobre pokemon.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 31000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "pokemon-19",
@@ -779,7 +1259,13 @@
         "image": "/assets/secciones pagina/Pokemon/sylveon.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 42000,
+        "cardType": "Carta"
       },
       {
         "id": "pokemon-20",
@@ -788,7 +1274,13 @@
         "image": "/assets/secciones pagina/Pokemon/Vaporeon.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "Pokemon",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 98000,
+        "cardType": "Carta"
       }
     ],
     "preventa": [
@@ -799,7 +1291,13 @@
         "image": "/assets/secciones pagina/preventa/avatarbooster.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 81000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "preventa-1",
@@ -808,7 +1306,13 @@
         "image": "/assets/secciones pagina/preventa/BOOSTERBOXPITCH.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 26000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "preventa-2",
@@ -817,7 +1321,13 @@
         "image": "/assets/secciones pagina/preventa/Disenosintitulo_53.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 46000,
+        "cardType": "Carta"
       },
       {
         "id": "preventa-3",
@@ -826,7 +1336,13 @@
         "image": "/assets/secciones pagina/preventa/Diseno_sin_titulo_78.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 62000,
+        "cardType": "Carta"
       },
       {
         "id": "preventa-4",
@@ -835,7 +1351,13 @@
         "image": "/assets/secciones pagina/preventa/playboosterhobbit_1.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 79000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "preventa-5",
@@ -844,7 +1366,13 @@
         "image": "/assets/secciones pagina/preventa/TMNTBUNDLE.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "preventa",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 38000,
+        "cardType": "Carta"
       }
     ],
     "RiftBound": [
@@ -855,7 +1383,13 @@
         "image": "/assets/secciones pagina/RiftBound/imagen_2026-06-23_122420752.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 92000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "riftbound-1",
@@ -864,7 +1398,13 @@
         "image": "/assets/secciones pagina/RiftBound/imagen_2026-06-23_135429765.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Sellados",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 26000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "riftbound-2",
@@ -873,7 +1413,13 @@
         "image": "/assets/secciones pagina/RiftBound/image_2026-05-28_172319783_940x-300x300.png",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Sellados",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 54000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "riftbound-3",
@@ -882,7 +1428,13 @@
         "image": "/assets/secciones pagina/RiftBound/image_2026-05-28_172516390_570x-300x300.png",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Sellados",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 59000,
+        "cardType": "Producto sellado"
       },
       {
         "id": "riftbound-4",
@@ -891,7 +1443,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-convergent-mutation-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 46000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-5",
@@ -900,7 +1458,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-daring-poro-common.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 12000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-6",
@@ -909,7 +1473,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-miss-fortune-bounty-hunter-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 13000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-7",
@@ -918,7 +1488,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-mystic-poro-common.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-8",
@@ -927,7 +1503,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-pouty-poro-common.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 64000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-9",
@@ -936,7 +1518,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-primal-strength-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 66000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-10",
@@ -945,7 +1533,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-sett-brawler-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 88000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-11",
@@ -954,7 +1548,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-teemo-scout-alternate-art-showcase.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 60000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-12",
@@ -963,7 +1563,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-origins-volibear-furious-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 37000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-13",
@@ -972,7 +1578,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-aphelios-exalted-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 24000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-14",
@@ -981,7 +1593,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-card-sharp-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 17000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-15",
@@ -990,7 +1608,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-fizz-trickster-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 83000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-16",
@@ -999,7 +1623,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-here-to-help-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 65000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-17",
@@ -1008,7 +1638,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-spiritforged-jax-unrelenting-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 49000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-18",
@@ -1017,7 +1653,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-galio-indefatigable-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 82000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-19",
@@ -1026,7 +1668,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-ivern-friend-to-all-alternate-art-showcase.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 67000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-20",
@@ -1035,7 +1683,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-jhin-virtuoso-rare.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 26000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-21",
@@ -1044,7 +1698,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-loyal-poro-common.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 28000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-22",
@@ -1053,7 +1713,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-pyke-bloodharbor-ripper-overnumbered-showcase.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Rojo",
+        "cost": 28000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-23",
@@ -1062,7 +1728,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-scuttle-crab-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 93000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-24",
@@ -1071,7 +1743,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-unleashed-voracious-gromp-common.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Rare"
+        "rarity": "Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 51000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-25",
@@ -1080,7 +1758,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-ahri-inquisitive-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 33000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-26",
@@ -1089,7 +1773,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-akali-deadly-weapon-epic.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 96000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-27",
@@ -1098,7 +1788,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-ezreal-prodigy-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 88000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-28",
@@ -1107,7 +1803,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-jayce-man-of-progress-rare.webp",
         "hasButton": true,
         "condition": "Lightly Played",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 27000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-29",
@@ -1116,7 +1818,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-lux-crownguard-epic.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 18000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-30",
@@ -1125,7 +1833,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-morgana-vindictive-overnumbered-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Common"
+        "rarity": "Common",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Rojo",
+        "cost": 72000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-31",
@@ -1134,7 +1848,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-nasus-curator-of-the-sands-overnumbered-rare.webp",
         "hasButton": true,
         "condition": "Moderately Played",
-        "rarity": "Ultra Rare"
+        "rarity": "Ultra Rare",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Rojo",
+        "cost": 99000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-32",
@@ -1143,7 +1863,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-renekton-rage-fueled-alternate-art-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Sin especificar",
+        "cost": 89000,
+        "cardType": "Carta"
       },
       {
         "id": "riftbound-33",
@@ -1152,7 +1878,13 @@
         "image": "/assets/secciones pagina/RiftBound/riftbound_3Ajusttcg_3Ariftbound-league-of-legends-trading-card-game-vendetta-zed-master-of-shadows-overnumbered-rare.webp",
         "hasButton": true,
         "condition": "Near Mint",
-        "rarity": "Uncommon"
+        "rarity": "Uncommon",
+        "category": "Singles",
+        "game": "RiftBound",
+        "edition": "Sin especificar",
+        "color": "Rojo",
+        "cost": 53000,
+        "cardType": "Carta"
       }
     ]
   }

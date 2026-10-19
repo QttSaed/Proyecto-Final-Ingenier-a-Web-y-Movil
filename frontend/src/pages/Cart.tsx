@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cartOutline } from 'ionicons/icons';
-import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
+import { IonContent, IonHeader, IonIcon } from '@ionic/react';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -14,13 +14,7 @@ const Cart: React.FC = () => {
   const { cartItems, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      navigate('/login');
-    } else {
-      navigate('/checkout');
-    }
-  };
+  const handleCheckout = () => navigate('/checkout');
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const shipping = subtotal > 50000 ? 0 : 3500; // Envío gratis sobre 50k
@@ -31,7 +25,7 @@ const Cart: React.FC = () => {
   };
 
   return (
-    <IonPage>
+    <>
       <IonHeader>
       <TopBar />
       <Header />
@@ -124,9 +118,10 @@ const Cart: React.FC = () => {
 
         <Footer />
       </IonContent>
-    </IonPage>
+    </>
   );
 };
 
 export default Cart;
+
 

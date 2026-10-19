@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IonContent, IonPage, IonIcon, IonHeader } from '@ionic/react';
 import { optionsOutline } from 'ionicons/icons';
 import { useParams } from 'react-router';
@@ -10,15 +10,21 @@ import './Catalog.css';
 
 import appData from '../data.json';
 
+type CatalogProduct = (typeof appData.sections)[keyof typeof appData.sections][number];
+
 const Catalog: React.FC = () => {
   const { category } = useParams<{ category: string }>();
+  const contentRef = useRef<HTMLIonContentElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [productsPerPage, setProductsPerPage] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Más reciente');
-  const [filterCondition, setFilterCondition] = useState('Todas');
-  const [filterRarity, setFilterRarity] = useState('Todas');
+  const attributes = [
+    ['category', 'Categoría'], ['game', 'Juego'], ['edition', 'Edición'], ['rarity', 'Rareza'],
+    ['color', 'Color'], ['cost', 'Costo (CLP)'], ['cardType', 'Tipo'], ['condition', 'Condición']
+  ] as const;
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
   const normalize = (s: string) => (s || '').toLowerCase().replace(/[\s-]/g, '');
 
@@ -26,12 +32,14 @@ const Catalog: React.FC = () => {
   const baseCategoryName = isSinglesQuery ? category.replace('-singles', '') : category || '';
   const normalizedBase = normalize(baseCategoryName);
 
-  let categoryProducts: any[] = [];
+  let categoryProducts: CatalogProduct[] = [];
   let matchedSectionKey: string | undefined = undefined;
 
-  if (normalizedBase === 'ofertas') {
+  if (normalizedBase === 'todos') {
+    categoryProducts = Object.values(appData.sections).flat();
+  } else if (normalizedBase === 'ofertas') {
     const allProducts = Object.values(appData.sections).flat();
-    categoryProducts = allProducts.sort((a: any, b: any) => {
+    categoryProducts = allProducts.sort((a, b) => {
       const pA = parseInt(a.price.replace(/[^0-9]/g, '')) || 999999;
       const pB = parseInt(b.price.replace(/[^0-9]/g, '')) || 999999;
       return pA - pB;
@@ -41,7 +49,7 @@ const Catalog: React.FC = () => {
     const allFromSection = matchedSectionKey ? appData.sections[matchedSectionKey as keyof typeof appData.sections] : [];
     if (isSinglesQuery) {
       const sealedWords = ['caja', 'sobre', 'mazo', 'pack', 'kit', 'set', 'booster', 'starter', 'box'];
-      categoryProducts = allFromSection.filter((p: any) =>
+      categoryProducts = allFromSection.filter((p) =>
         !sealedWords.some(w => p.title.toLowerCase().includes(w))
       );
     } else {
@@ -50,21 +58,15 @@ const Catalog: React.FC = () => {
   }
 
   if (searchQuery.trim() !== '') {
-    categoryProducts = categoryProducts.filter((p: any) => 
+    categoryProducts = categoryProducts.filter((p) =>
       p.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
 
-  // Simulated filters (since data.json doesn't have these fields, 
-  // it will only work if the JSON is updated, but logic is 100% ready)
-  if (filterCondition !== 'Todas') {
-    categoryProducts = categoryProducts.filter((p: any) => p.condition === filterCondition);
-  }
-  if (filterRarity !== 'Todas') {
-    categoryProducts = categoryProducts.filter((p: any) => p.rarity === filterRarity);
-  }
+  const filterProducts = [...categoryProducts];
+  categoryProducts = categoryProducts.filter(product => attributes.every(([key]) => !filters[key] || String(product[key]) === filters[key]));
+  categoryProducts = [...categoryProducts];
 
-  // Sort logic (Real, as data.json has prices and titles)
   if (sortBy === 'Precio: Menor a Mayor') {
     categoryProducts.sort((a, b) => {
       const pA = parseInt((a.price || '0').replace(/[^0-9]/g, ''));
@@ -95,17 +97,18 @@ const Catalog: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
     setSearchQuery('');
+    setFilters({});
   }, [category]);
 
   // Al cambiar productos por pagina, volver a pagina 1
   const handlePerPageChange = (val: number) => {
     setProductsPerPage(val);
     setCurrentPage(1);
-    document.querySelector('ion-content')?.scrollToTop(300);
+    contentRef.current?.scrollToTop(300);
   };
 
   const formatTitle = (cat?: string) => {
-    if (!cat) return 'Catálogo';
+    if (!cat || cat === 'todos') return 'Catálogo';
     if (cat.endsWith('-singles')) return `${cat.replace('-singles', '')} (Singles)`;
     return cat;
   };
@@ -113,7 +116,7 @@ const Catalog: React.FC = () => {
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      document.querySelector('ion-content')?.scrollToTop(300);
+      contentRef.current?.scrollToTop(300);
     }
   };
 
@@ -123,7 +126,7 @@ const Catalog: React.FC = () => {
         <TopBar />
         <Header />
       </IonHeader>
-      <IonContent className="main-content">
+      <IonContent ref={contentRef} className="main-content">
         <div className="catalog-container">
 
           <div className="catalog-header">
@@ -152,10 +155,10 @@ const Catalog: React.FC = () => {
           </div>
 
           <div className="catalog-filters-bar">
-            <input 
-              className="catalog-search" 
-              type="text" 
-              placeholder="Buscar en esta categoría..." 
+            <input
+              className="catalog-search"
+              type="text"
+              aria-label="Buscar productos" placeholder="Buscar productos..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -177,26 +180,17 @@ const Catalog: React.FC = () => {
                         <option>Nombre: A - Z</option>
                       </select>
                     </div>
-                    <div className="filter-group">
-                      <label>Condición</label>
-                      <select className="filter-select" value={filterCondition} onChange={(e) => { setFilterCondition(e.target.value); setCurrentPage(1); }}>
-                        <option>Todas</option>
-                        <option>Near Mint</option>
-                        <option>Lightly Played</option>
-                        <option>Moderately Played</option>
-                      </select>
-                    </div>
-                    <div className="filter-group">
-                      <label>Rareza</label>
-                      <select className="filter-select" value={filterRarity} onChange={(e) => { setFilterRarity(e.target.value); setCurrentPage(1); }}>
-                        <option>Todas</option>
-                        <option>Common</option>
-                        <option>Uncommon</option>
-                        <option>Rare</option>
-                        <option>Ultra Rare</option>
-                      </select>
-                    </div>
-                  <button className="btn-apply-filters" onClick={() => setShowFilters(false)}>Aplicar</button>
+                    {attributes.map(([key, label]) => (
+                      <div className="filter-group" key={key}>
+                        <label htmlFor={`filter-${key}`}>{label}</label>
+                        <select id={`filter-${key}`} className="filter-select" value={filters[key] || ''} onChange={e => { setFilters(previous => ({ ...previous, [key]: e.target.value })); setCurrentPage(1); }}>
+                          <option value="">Todas</option>
+                          {Array.from(new Set(filterProducts.map(product => String(product[key])))).sort().map(value => <option key={value} value={value}>{value}</option>)}
+                        </select>
+                      </div>
+                    ))}
+                    <button onClick={() => { setFilters({}); setCurrentPage(1); }}>Limpiar filtros</button>
+                  <button className="btn-apply-filters" onClick={() => { setShowFilters(false); contentRef.current?.scrollToTop(0); }}>Aplicar</button>
                 </div>
               )}
             </div>
@@ -209,7 +203,7 @@ const Catalog: React.FC = () => {
           ) : (
             <>
               <div className="catalog-grid">
-                {productsToDisplay.map((p: any) => (
+                {productsToDisplay.map((p) => (
                   <ProductCard key={p.id} id={p.id} title={p.title} price={p.price} image={p.image} hasButton={p.hasButton} />
                 ))}
               </div>

@@ -1,52 +1,46 @@
-import React, { useState } from 'react';
-import { IonContent, IonPage, IonHeader } from '@ionic/react';
+import React, { useState, useMemo } from 'react';
+import { IonContent, IonPage, IonHeader, IonModal } from '@ionic/react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import CartNotice from '../components/CartNotice';
 import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
 
 import appData from '../data.json';
+import { authService, useAuth } from '../services/authService';
+import NotFound from './NotFound';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const user = useAuth();
 
-  // Buscar el producto en TODAS las secciones del JSON
-  const allProducts = Object.values(appData.sections).flat();
+  const allProducts = useMemo(() => Object.values(appData.sections).flat(), []);
   const foundProduct = allProducts.find(p => p.id === id);
 
-  // Si no se encuentra, mostramos un genérico para no romper la app
-  const product = foundProduct || {
-    id: id || '1',
-    title: `Producto Genérico #${id}`,
-    price: '$9.990',
-    image: undefined,
-    hasButton: true
-  };
+  const recommendations = useMemo(() => {
+    return allProducts
+      .filter(p => p.id !== id)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 5);
+  }, [allProducts, id]);
 
-  // Convertir el precio string ($9.990) a número para el carrito
-  const numericPrice = parseInt(product.price.replace(/[^0-9]/g, '')) || 9990;
-
-  // Campos simulados que no vienen en el JSON
-  const game = 'TCGStore';
-  const category = 'General';
-  const condition = 'Near Mint';
-  const rarity = 'Rare';
+  if (!foundProduct) return <NotFound />;
+  const product = foundProduct;
+  const numericPrice = parseInt(product.price.replace(/[^0-9]/g, '')) || 0;
+  const { game, category, condition, rarity } = product;
   const stock = 5;
   const description = 'Este es un producto oficial de TCGStore. Asegúrate de revisar las promociones disponibles para llevarte la mejor oferta en este artículo.';
 
-  // Obtener 5 recomendaciones al azar (excluyendo el actual)
-  const recommendations = allProducts
-    .filter(p => p.id !== product.id)
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 5);
-
   const handleAddToCart = () => {
+    if (authService.getUser()?.role === 'admin') return;
     for (let i = 0; i < quantity; i++) {
       addToCart({
         id: product.id,
@@ -56,7 +50,7 @@ const ProductDetail: React.FC = () => {
         image: product.image
       });
     }
-    alert(`¡${quantity}x ${product.title} agregado al carrito!`);
+    setNoticeOpen(true);
     setQuantity(1);
   };
 
@@ -70,17 +64,26 @@ const ProductDetail: React.FC = () => {
 
         <div className="detail-container">
           <p className="detail-breadcrumb">
-            <Link to="/home">Inicio</Link> / <Link to={`/catalog/general`}>{category}</Link> / {product.title}
+            <Link to="/home">Inicio</Link> / <Link to={`/catalog/${encodeURIComponent(category.toLowerCase())}`}>{category}</Link> / {product.title}
           </p>
 
           <div className="detail-layout">
-            <div className="detail-image" style={{
-              backgroundImage: product.image ? `url('${product.image}')` : 'none',
-              backgroundSize: 'contain',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              backgroundColor: '#fff'
-            }}>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Ampliar imagen del producto"
+              onClick={() => setZoomOpen(true)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setZoomOpen(true); }}
+              className="detail-image"
+              style={{
+                backgroundImage: product.image ? `url('${product.image}')` : 'none',
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundColor: '#fff',
+                cursor: 'zoom-in'
+              }}
+            >
               {!product.image && "IMG Carta/Sobre"}
             </div>
 
@@ -103,8 +106,8 @@ const ProductDetail: React.FC = () => {
                   <span>{quantity}</span>
                   <button onClick={() => setQuantity(q => q + 1)}>+</button>
                 </div>
-                <button className="btn-add-cart" onClick={handleAddToCart}>
-                  Agregar al carrito
+                <button disabled={user?.role === 'admin'} className="btn-add-cart" onClick={handleAddToCart}>
+                  {user?.role === 'admin' ? 'Compras solo para clientes' : 'Agregar al carrito'}
                 </button>
               </div>
             </div>
@@ -122,6 +125,18 @@ const ProductDetail: React.FC = () => {
         </div>
 
         <Footer />
+        <CartNotice open={noticeOpen} onDismiss={() => setNoticeOpen(false)} />
+        <IonModal isOpen={zoomOpen} onDidDismiss={() => setZoomOpen(false)}>
+          <IonContent className="ion-padding">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', gap: '16px' }}>
+              <h3 style={{ margin: 0, color: 'var(--color-text-dark)', textAlign: 'center' }}>{product.title}</h3>
+              <img src={product.image} alt={product.title} style={{ maxWidth: '100%', maxHeight: '52vh', objectFit: 'contain', borderRadius: '12px', background: '#fff', padding: '12px' }} />
+              <button type="button" className="btn-add-cart" style={{ flex: 'none', maxWidth: '240px', width: '100%' }} onClick={() => setZoomOpen(false)}>
+                Cerrar vista ampliada
+              </button>
+            </div>
+          </IonContent>
+        </IonModal>
       </IonContent>
     </IonPage>
   );

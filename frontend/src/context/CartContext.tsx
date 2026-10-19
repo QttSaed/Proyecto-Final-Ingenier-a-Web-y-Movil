@@ -9,6 +9,8 @@ export interface CartItemType {
   image?: string;
 }
 
+import { authService } from '../services/authService';
+
 interface CartContextType {
   cartItems: CartItemType[];
   addToCart: (item: Omit<CartItemType, 'quantity'>) => void;
@@ -25,6 +27,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearCart = () => setCartItems([]);
 
   const addToCart = (item: Omit<CartItemType, 'quantity'>) => {
+    if (authService.getUser()?.role === 'admin') return;
     setCartItems(prev => {
       const existing = prev.find(i => i.id === item.id);
       if (existing) {

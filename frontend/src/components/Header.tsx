@@ -4,14 +4,17 @@ import { IonIcon } from '@ionic/react';
 import { searchOutline, personOutline, cartOutline, menuOutline, closeOutline, chevronForwardOutline, chevronBackOutline, gridOutline } from 'ionicons/icons';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
+import { useAuth } from '../services/authService';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSubMenu, setActiveSubMenu] = useState<'main' | 'singles' | 'otros'>('main');
   const navigate = useNavigate();
+  const location = useLocation();
+  const user = useAuth();
 
   const handlePersonClick = () => {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
+    if (user) {
       navigate('/perfil');
     } else {
       navigate('/login');
@@ -73,7 +76,7 @@ const Header: React.FC = () => {
 
         <div className="header-icons">
           <NavLink to="/search" style={{ color: 'inherit' }}><IonIcon icon={searchOutline} /></NavLink>
-          {localStorage.getItem('role') === 'admin' && (
+          {user?.role === 'admin' && (
             <NavLink to="/admin" style={{ color: 'inherit' }} title="Panel de Control">
               <IonIcon icon={gridOutline} />
             </NavLink>
@@ -81,7 +84,7 @@ const Header: React.FC = () => {
           <button onClick={handlePersonClick} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0' }}>
             <IonIcon icon={personOutline} />
           </button>
-          <NavLink to="/cart" style={{ color: 'inherit' }}><IonIcon icon={cartOutline} /></NavLink>
+          <NavLink to={user?.role === 'admin' ? '/admin' : '/cart'} style={{ color: 'inherit' }}><IonIcon icon={cartOutline} /></NavLink>
         </div>
       </header>
 

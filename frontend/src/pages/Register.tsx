@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IonContent, IonPage, IonHeader } from '@ionic/react';
 import { Link, useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Register.css';
+import { authService } from '../services/authService';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const [error, setError] = useState('');
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ block: 'center' });
+  }, [error]);
+  const [submitting, setSubmitting] = useState(false);
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/login');
+    if (submitting) return;
+    const form = e.currentTarget;
+    if (!form.checkValidity()) { setError('Completa los campos obligatorios, usa un correo válido y una contraseña de 8 caracteres con letra y número, y acepta los términos.'); return; }
+    const value = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value;
+    setError('');
+    if (value('password') !== value('confirmPassword')) { setError('Las contraseñas deben coincidir.'); return; }
+    if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(value('password'))) { setError('La contraseña debe tener 8 caracteres, una letra y un número como mínimo.'); return; }
+    setSubmitting(true);
+    try {
+      await authService.register(`${value('nombre')} ${value('apellido')}`, value('email'), value('password'));
+      navigate('/login', { replace: true, state: { registered: true } });
+    } catch (err) { setError(err instanceof Error ? err.message : 'No se pudo crear la cuenta. Intenta nuevamente.'); }
+    finally { setSubmitting(false); }
   };
 
   return (
@@ -30,34 +49,35 @@ const Register: React.FC = () => {
               <p>Únete a TCGStore y gestiona tus pedidos fácilmente.</p>
             </div>
 
-            <form className="register-form" onSubmit={handleRegister}>
+            <form noValidate className="register-form" onSubmit={handleRegister}>
               
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="nombre">Nombre</label>
-                  <input type="text" id="nombre" placeholder="Juan" required />
+                  <label htmlFor="nombre">Nombre *</label>
+                  <input type="text" id="nombre" name="nombre" placeholder="Juan" required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="apellido">Apellido</label>
-                  <input type="text" id="apellido" placeholder="Pérez" required />
+                  <label htmlFor="apellido">Apellido *</label>
+                  <input type="text" id="apellido" name="apellido" placeholder="Pérez" required />
                 </div>
               </div>
 
               <div className="form-group">
-                <label htmlFor="email">Correo Electrónico</label>
-                <input type="email" id="email" placeholder="ejemplo@correo.com" required />
+                <label htmlFor="email">Correo Electrónico *</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" autoComplete="email" required />
               </div>
               
               <div className="form-group">
-                <label htmlFor="password">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••" required />
+                <label htmlFor="password">Contraseña *</label>
+                <input type="password" id="password" name="password" autoComplete="new-password" minLength={8} pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,}" placeholder="••••••••" required />
               </div>
 
               <div className="form-group">
-                <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-                <input type="password" id="confirmPassword" placeholder="••••••••" required />
+                <label htmlFor="confirmPassword">Confirmar Contraseña *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" autoComplete="new-password" placeholder="••••••••" required />
               </div>
 
+              <p className="form-hint">Formato de correo: nombre@dominio.cl. Contraseña: mínimo 8 caracteres, una letra y un número.</p>
               <div className="terms-group">
                 <input type="checkbox" id="terms" required />
                 <label htmlFor="terms">
@@ -65,7 +85,8 @@ const Register: React.FC = () => {
                 </label>
               </div>
 
-              <button type="submit" className="btn-register">Crear mi cuenta</button>
+              <p ref={errorRef} role="alert" className="form-error">{error}</p>
+              <button type="submit" className="btn-register" disabled={submitting}>{submitting ? "Creando cuenta…" : "Crear mi cuenta"}</button>
 
             </form>
 

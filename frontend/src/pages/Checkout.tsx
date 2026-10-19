@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { IonContent, IonPage, IonHeader, useIonViewWillEnter } from '@ionic/react';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { IonContent, IonHeader, useIonViewWillEnter } from '@ionic/react';
+import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircleOutline, ellipseOutline, homeOutline } from 'ionicons/icons';
 import TopBar from '../components/TopBar';
@@ -15,17 +15,6 @@ const Checkout: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
-
-  const [isLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
-  const [isAdmin] = useState(localStorage.getItem('role') === 'admin');
-
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (isAdmin) {
-    return <Navigate to="/home" replace />;
-  }
 
   useIonViewWillEnter(() => {
     setIsSuccess(false);
@@ -50,7 +39,7 @@ const Checkout: React.FC = () => {
 
   if (isSuccess) {
     return (
-      <IonPage>
+      <>
         <IonHeader>
       <TopBar />
       <Header />
@@ -71,12 +60,12 @@ const Checkout: React.FC = () => {
           </div>
           <Footer />
         </IonContent>
-      </IonPage>
+      </>
     );
   }
 
   return (
-    <IonPage>
+    <>
       <IonHeader>
       <TopBar />
       <Header />
@@ -180,9 +169,10 @@ const Checkout: React.FC = () => {
         
         <Footer />
       </IonContent>
-    </IonPage>
+    </>
   );
 };
 
 export default Checkout;
+
 

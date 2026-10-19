@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import CartNotice from './CartNotice';
 import { useCart } from '../context/CartContext';
+import { authService, useAuth } from '../services/authService';
 
 interface ProductCardProps {
   id: number | string;
@@ -12,42 +14,29 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ id, title, price, image, hasButton = false }) => {
   const { addToCart } = useCart();
+  const user = useAuth();
+  const [noticeOpen, setNoticeOpen] = useState(false);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); // Evita que el Link cambie de página
-    // Extraemos el número del string de precio para el mock
-    const priceNumber = parseInt(price.replace(/[^0-9]/g, '')) || 9990;
-    
-    addToCart({
-      id: id, // Pass raw ID directly
-      title: title,
-      game: 'TCGStore', // placeholder
-      price: priceNumber,
-      image: image
-    });
-    alert("¡Producto agregado al carrito!");
+  const handleAddToCart = () => {
+    if (authService.getUser()?.role === 'admin') return;
+    const priceNumber = parseInt(price.replace(/[^0-9]/g, '')) || 0;
+    addToCart({ id, title, game: 'TCGStore', price: priceNumber, image });
+    setNoticeOpen(true);
   };
 
   return (
-    <Link to={`/product/${id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <>
       <div className="product-card">
-        {image ? (
-          <img src={image} alt={title} className="product-image" style={{ width: '100%', height: '150px', objectFit: 'contain', borderRadius: '8px' }} />
-        ) : (
-          <div className="product-image-placeholder">IMG Carta/Sobre</div>
-        )}
-        <div className="product-info">
-          <p className="product-title">{title}</p>
-          <p className="product-price">{price}</p>
-          {hasButton && (
-            <button className="add-to-cart-btn" onClick={handleAddToCart}>
-              Agregar al carrito
-            </button>
-          )}
-        </div>
+        <Link to={`/product/${id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', flex: 1 }}>
+          {image ? (
+            <img src={image} alt={title} className="product-image" style={{ width: '100%', height: '150px', objectFit: 'contain', borderRadius: '8px' }} />
+          ) : <div className="product-image-placeholder">IMG Carta/Sobre</div>}
+          <div className="product-info"><p className="product-title">{title}</p><p className="product-price">{price}</p></div>
+        </Link>
+        {hasButton && user?.role !== 'admin' && <button className="add-to-cart-btn" onClick={handleAddToCart}>Agregar al carrito</button>}
       </div>
-    </Link>
+      <CartNotice open={noticeOpen} onDismiss={() => setNoticeOpen(false)} />
+    </>
   );
 };
-
 export default ProductCard;
