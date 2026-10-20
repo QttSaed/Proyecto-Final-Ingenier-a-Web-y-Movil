@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { IonContent, IonPage, IonHeader, IonModal } from '@ionic/react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import CartNotice from '../components/CartNotice';
 import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
 
-import appData from '../data.json';
+import { apiService, apiRequest, ApiError, localProducts, Product, money } from '../services/apiService';
 import { authService, useAuth } from '../services/authService';
 import NotFound from './NotFound';
 
@@ -22,8 +22,19 @@ const ProductDetail: React.FC = () => {
   const [noticeOpen, setNoticeOpen] = useState(false);
   const user = useAuth();
 
-  const allProducts = useMemo(() => Object.values(appData.sections).flat(), []);
-  const foundProduct = allProducts.find(p => p.id === id);
+  const [allProducts, setAllProducts] = useState<Product[]>(localProducts);
+  const [foundProduct, setFoundProduct] = useState<Product | undefined>(() => localProducts.find(p => p.id === id));
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setFoundProduct(localProducts.find(p => p.id === id));
+    apiRequest<Product>(`/products/${encodeURIComponent(id || '')}`).then(product => { if (active) setFoundProduct(product); })
+      .catch(error => { if (active && error instanceof ApiError) setFoundProduct(undefined); })
+      .finally(() => { if (active) setLoading(false); });
+    apiService.products().then(products => { if (active) setAllProducts(products); }).catch(() => {});
+    return () => { active = false; };
+  }, [id]);
 
   const recommendations = useMemo(() => {
     return allProducts
@@ -32,11 +43,12 @@ const ProductDetail: React.FC = () => {
       .slice(0, 5);
   }, [allProducts, id]);
 
+  if (loading && !foundProduct) return <IonPage><IonContent><p role="status">Cargando producto...</p></IonContent></IonPage>;
   if (!foundProduct) return <NotFound />;
   const product = foundProduct;
-  const numericPrice = parseInt(product.price.replace(/[^0-9]/g, '')) || 0;
+  const numericPrice = product.price;
   const { game, category, condition, rarity } = product;
-  const stock = 5;
+  const stock = product.stock;
   const description = 'Este es un producto oficial de TCGStore. Asegúrate de revisar las promociones disponibles para llevarte la mejor oferta en este artículo.';
 
   const handleAddToCart = () => {
@@ -90,7 +102,7 @@ const ProductDetail: React.FC = () => {
             <div className="detail-info">
               <p className="detail-subtitle">{game} / {category}</p>
               <h1 className="detail-title">{product.title}</h1>
-              <p className="detail-price">{product.price}</p>
+              <p className="detail-price">{money(product.price)}</p>
 
               <div className="detail-badges">
                 <span className="badge badge-condition">{condition}</span>
@@ -118,7 +130,7 @@ const ProductDetail: React.FC = () => {
             <h2 className="recommendations-title">También te podría interesar</h2>
             <div className="product-grid">
               {recommendations.map(p => (
-                <ProductCard key={p.id} id={p.id} title={p.title} price={p.price} image={p.image} hasButton={p.hasButton} />
+                <ProductCard key={p.id} id={p.id} title={p.title} price={money(p.price)} image={p.image} hasButton={p.hasButton} />
               ))}
             </div>
           </div>

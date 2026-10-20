@@ -8,10 +8,17 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
 import './Checkout.css';
+import { useAuth } from '../services/authService';
+import { apiService, ApiError, Order } from '../services/apiService';
+import { localOrderService } from '../services/localOrderService';
 
 const Checkout: React.FC = () => {
   const { cartItems, clearCart } = useCart();
   const navigate = useNavigate();
+  const user = useAuth();
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
@@ -19,22 +26,69 @@ const Checkout: React.FC = () => {
   useIonViewWillEnter(() => {
     setIsSuccess(false);
     setOrderId('');
+    setError('');
+    setIsOffline(false);
   });
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const shipping = subtotal > 50000 ? 0 : 3500;
+  const shipping = subtotal >= 50000 ? 0 : 3500;
   const total = subtotal + shipping;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(price);
   };
 
-  const handlePayment = (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFinalTotal(total); // Guardamos el total ANTES de limpiar el carrito
-    setOrderId('ORD-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0'));
-    setIsSuccess(true);
-    clearCart(); // Limpiamos el carrito al pagar con exito
+    if (isSubmitting) return;
+    setError('');
+    if (!user || user.role !== 'client') {
+      setError('Inicia sesión como cliente para finalizar tu compra.');
+      return;
+    }
+    if (!cartItems.length) {
+      setError('Agrega productos al carrito antes de finalizar tu compra.');
+      return;
+    }
+    const form = new FormData(e.currentTarget);
+    const orderData = {
+      items: cartItems.map(item => ({ code: String(item.id), quantity: item.quantity })),
+      shippingName: String(form.get('shippingName')).trim(),
+      shippingEmail: String(form.get('shippingEmail')).trim(),
+      shippingAddress: String(form.get('shippingAddress')).trim(),
+      shippingCity: String(form.get('shippingCity')).trim(),
+      shippingRegion: String(form.get('shippingRegion')).trim(),
+      paymentMethod: String(form.get('payment'))
+    };
+    setIsSubmitting(true);
+    try {
+      let order: Order;
+      try {
+        order = await apiService.createOrder(orderData);
+      } catch (requestError) {
+        if (requestError instanceof ApiError) throw requestError;
+        if (!(requestError instanceof TypeError) && !(requestError instanceof DOMException &&
+          ['TimeoutError', 'AbortError', 'NetworkError'].includes(requestError.name))) throw requestError;
+        order = {
+          id: `LOCAL-${crypto.randomUUID()}`,
+          customer: orderData.shippingName,
+          total,
+          date: new Date().toISOString(),
+          status: 'Pendiente',
+          items: cartItems.map(item => ({ title: item.title, quantity: item.quantity, unitPrice: item.price }))
+        };
+        localOrderService.save(user.email, order);
+        setIsOffline(true);
+      }
+      setOrderId(order.orderNumber || order.id);
+      setFinalTotal(order.total);
+      clearCart();
+      setIsSuccess(true);
+    } catch (paymentError) {
+      setError(paymentError instanceof Error ? paymentError.message : 'No se pudo crear la orden. Inténtalo nuevamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
@@ -48,8 +102,8 @@ const Checkout: React.FC = () => {
           <div className="checkout-success-container">
             <div className="success-card">
               <h2>🎉 ¡Orden Generada con Éxito!</h2>
-              <p>Tu pago por <strong>{formatPrice(finalTotal)}</strong> ha sido procesado correctamente.</p>
-              <p>Hemos enviado un correo de confirmación con los detalles.</p>
+              <p>Tu orden por <strong>{formatPrice(finalTotal)}</strong> ha sido registrada correctamente.</p>
+              <p>{isOffline ? 'Orden guardada en este dispositivo para la demostración sin conexión.' : 'Puedes revisar los detalles y el estado de tu pedido en Mi Cuenta.'}</p>
               <p className="order-number-display">Tu número de pedido es: <strong>{orderId}</strong></p>
               <button className="btn-back-home" onClick={() => {
                 setIsSuccess(false);
@@ -105,17 +159,17 @@ const Checkout: React.FC = () => {
               <form onSubmit={handlePayment} className="checkout-form">
                 <h3>Datos de Envío</h3>
                 <div className="form-group">
-                  <input type="text" placeholder="Nombre completo" required />
+                  <input type="text" name="shippingName" placeholder="Nombre completo" required />
                 </div>
                 <div className="form-group">
-                  <input type="email" placeholder="Correo electrónico" required />
+                  <input type="email" name="shippingEmail" placeholder="Correo electrónico" required />
                 </div>
                 <div className="form-group">
-                  <input type="text" placeholder="Dirección (Ej. Av. Siempreviva 742)" required />
+                  <input type="text" name="shippingAddress" placeholder="Dirección (Ej. Av. Siempreviva 742)" required />
                 </div>
                 <div className="form-group-row">
-                  <input type="text" placeholder="Comuna" required />
-                  <input type="text" placeholder="Región" required />
+                  <input type="text" name="shippingCity" placeholder="Comuna" required />
+                  <input type="text" name="shippingRegion" placeholder="Región" required />
                 </div>
 
                 <h3 style={{ marginTop: '30px' }}>Método de Pago</h3>
@@ -132,8 +186,9 @@ const Checkout: React.FC = () => {
                   </label>
                 </div>
 
-                <button type="submit" className="btn-pay-now">
-                  Pagar {formatPrice(total)}
+                {error && <p role="alert">{error}</p>}
+                <button type="submit" className="btn-pay-now" disabled={isSubmitting || !cartItems.length}>
+                  {isSubmitting ? 'Procesando…' : `Pagar ${formatPrice(total)}`}
                 </button>
               </form>
             </div>

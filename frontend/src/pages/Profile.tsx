@@ -1,17 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonContent, IonHeader, IonIcon, IonButton } from '@ionic/react';
 import { logOutOutline, bagHandleOutline, personOutline, mailOutline, callOutline, mapOutline } from 'ionicons/icons';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Profile.css';
-import { ORDER_STATUSES } from '../services/orderService';
+import { apiService, ApiError, Order, money } from '../services/apiService';
+import { localOrderService } from '../services/localOrderService';
+import { Link } from 'react-router-dom';
 import { authService, useAuth } from '../services/authService';
 
 const Profile: React.FC = () => {
 
   const user = useAuth();
   const role = user?.role;
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setOrders([]);
+    setError('');
+    setOffline(false);
+    if (role !== 'client' || !user) return;
+    setLoading(true);
+    apiService.orders().then(result => {
+      if (active) setOrders(result);
+    }).catch(requestError => {
+      if (!active) return;
+      if (requestError instanceof ApiError) {
+        setError(requestError.message);
+      } else {
+        setOrders(localOrderService.orders(user.email));
+        setOffline(true);
+      }
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [role, user]);
 
   const handleLogout = () => {
     authService.logout();
@@ -77,29 +104,28 @@ const Profile: React.FC = () => {
                 </div>
                 <div className="card-body">
 
-                  <div className="order-item">
-                    <div className="order-header">
-                      <span className="order-id">#ORD-94A2X</span>
-                      <span className="order-date">18 Sept 2026</span>
-                    </div>
-                    <div className="order-details">
-                      <span>3 Productos</span>
-                      <span className="order-total">$64.000</span>
-                    </div>
-                    <div className="order-status status-enviado">{ORDER_STATUSES[2]}</div>
-                  </div>
-
-                  <div className="order-item">
-                    <div className="order-header">
-                      <span className="order-id">#ORD-28B4L</span>
-                      <span className="order-date">02 Sept 2026</span>
-                    </div>
-                    <div className="order-details">
-                      <span>1 Producto</span>
-                      <span className="order-total">$150.000</span>
-                    </div>
-                    <div className="order-status status-entregado">{ORDER_STATUSES[3]}</div>
-                  </div>
+                  {loading && <p role="status">Cargando tus órdenes…</p>}
+                  {error && <p role="alert">{error}</p>}
+                  {offline && <p>Sin conexión: mostrando las órdenes guardadas en este dispositivo.</p>}
+                  {!loading && !error && orders.length === 0 && (
+                    <p>Aún no tienes órdenes. <Link to="/catalog/todos">Explora el catálogo</Link> y encuentra tus próximas cartas.</p>
+                  )}
+                  {orders.map(order => {
+                    const quantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
+                    return (
+                      <div className="order-item" key={order.id}>
+                        <div className="order-header">
+                          <span className="order-id">#{order.orderNumber || order.id}</span>
+                          <span className="order-date">{new Date(order.date).toLocaleDateString('es-CL')}</span>
+                        </div>
+                        <div className="order-details">
+                          <span>{quantity} {quantity === 1 ? 'Producto' : 'Productos'}</span>
+                          <span className="order-total">{money(order.total)}</span>
+                        </div>
+                        <div className={`order-status status-${order.status.toLowerCase()}`}>{order.status}</div>
+                      </div>
+                    );
+                  })}
 
                 </div>
               </div>
