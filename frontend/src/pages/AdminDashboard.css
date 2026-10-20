@@ -664,6 +664,42 @@ select.admin-status {
   transition: border-color .18s,box-shadow .18s;
 }
 
+.admin-custom-color-row {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-custom-color-row input {
+  flex: 1;
+}
+
+.admin-switch-btn {
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 11px 12px;
+  background: white;
+  color: #475569;
+  font-size: 12px;
+}
+
+.admin-switch-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.admin-switch-btn:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+.admin-form input::placeholder {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 400;
+  opacity: 1;
+}
+
 .admin-form input:focus,.admin-form select:focus {
   outline: none;
   border-color: #818cf8;
