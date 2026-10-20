@@ -1,460 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { IonContent, IonIcon } from '@ionic/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { IonContent } from '@ionic/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-  addOutline, cubeOutline, 
-  homeOutline, cartOutline, alertCircleOutline, 
-  trendingUpOutline, createOutline, trashOutline 
-} from 'ionicons/icons';
-import './AdminDashboard.css';
-import catalogData from '../data.json';
+import { apiService, Category, localProducts, money, Order, Product, Stats } from '../services/apiService';
 import { ORDER_STATUSES, OrderStatus } from '../services/orderService';
+import './AdminDashboard.css';
+
+const emptyProduct = (): Omit<Product, 'id'> => ({ title: '', category: '', game: '', edition: '', rarity: 'Common', color: '', cost: 0, cardType: '', condition: 'Near Mint', price: 0, stock: 0, image: '' });
+const initialStats: Stats = { totalSales: 0, totalOrders: 0, totalProducts: localProducts.length, totalStock: localProducts.reduce((sum, p) => sum + p.stock, 0), totalClients: 0, recentOrders: [] };
+const errorMessage = (error: unknown) => error instanceof Error ? error.message : 'No se pudo guardar el cambio';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-
   const location = useLocation();
-  const initialTab = location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard';
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'add-product' | 'orders'>(initialTab);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const tab = location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard';
+  const [products, setProducts] = useState<Product[]>(localProducts);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [stats, setStats] = useState<Stats>(initialStats);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [form, setForm] = useState(emptyProduct);
+  const [modal, setModal] = useState(false);
+  const [detail, setDetail] = useState<Order | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    setActiveTab(location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard');
-  }, [location.pathname]);
-
-  const [orders, setOrders] = useState<{ id: string; client: string; total: number; date: string; status: OrderStatus }[]>([
-    { id: 'ORD-1023', client: 'Juan Pérez', total: 45000, date: '18 Sep 2026', status: 'Pendiente' },
-    { id: 'ORD-1022', client: 'María Gómez', total: 12500, date: '17 Sep 2026', status: 'Pagado' },
-    { id: 'ORD-1021', client: 'Carlos Ruiz', total: 85000, date: '16 Sep 2026', status: 'Enviado' },
-    { id: 'ORD-1020', client: 'Ana Silva', total: 32000, date: '15 Sep 2026', status: 'Enviado' },
-  ]);
-
-  const inventoryProducts = catalogData.sections.Pokemon.slice(0, 6);
-
-  const handleExitDashboard = () => {
-    navigate('/home');
+    let active = true;
+    Promise.allSettled([apiService.products(), apiService.orders(), apiService.categories(), apiService.stats()]).then(results => {
+      if (!active) return;
+      const [p, o, c, s] = results;
+      if (p.status === 'fulfilled') setProducts(p.value);
+      if (o.status === 'fulfilled') setOrders(o.value);
+      if (c.status === 'fulfilled') setCategories(c.value);
+      if (s.status === 'fulfilled') setStats(s.value);
+      const failed = results.find(result => result.status === 'rejected');
+      if (failed?.status === 'rejected') setError(errorMessage(failed.reason));
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, []);
+  useEffect(() => { if (modal) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [modal]);
+  const refreshStats = async () => { try { setStats(await apiService.stats()); } catch (error) { setError(errorMessage(error)); } };
+  const openForm = (product?: Product) => {
+    setEditing(product || null); setForm(product ? { ...product } : { ...emptyProduct(), category: categories[0]?.name || '' });
+    setError(''); setMessage(''); setModal(true);
   };
-
-  const handleAddProduct = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSuccess(true);
-    setTimeout(() => {
-      setIsSuccess(false);
-      setActiveTab('inventory');
-    }, 2000);
+  const save = async (event: React.FormEvent) => {
+    event.preventDefault(); setBusy(true); setError(''); setMessage('');
+    try {
+      const saved = await apiService.saveProduct(editing ? { title: form.title, price: form.price, stock: form.stock, condition: form.condition } : form, editing?.id);
+      setProducts(previous => editing ? previous.map(p => p.id === saved.id ? saved : p) : [...previous, saved]);
+      setModal(false); setMessage(editing ? 'Producto actualizado correctamente.' : 'Producto creado correctamente.'); await refreshStats();
+    } catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
   };
-
-  return (
-    <IonContent fullscreen className="admin-content">
-        
-        {/* Admin Header */}
-        <header className="admin-header">
-          <div className="admin-logo">TCGStore <span className="admin-badge">ADMIN</span></div>
-          <div className="admin-nav">
-            <span className="admin-user-greeting">Hola, Administrador</span>
-              <button className="admin-logout-btn" onClick={handleExitDashboard}>
-                <IonIcon icon={homeOutline} /> Volver al inicio
-              </button>
-          </div>
-        </header>
-
-        <div className="admin-container">
-          
-          {/* Sidebar */}
-          <div className="admin-sidebar">
-            <ul className="admin-menu">
-              <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => navigate('/admin')}>
-                <IonIcon icon={homeOutline} /> Resumen General
-              </li>
-              <li className={activeTab === 'inventory' || activeTab === 'add-product' ? 'active' : ''} onClick={() => { setActiveTab('inventory'); navigate('/admin/inventario'); }}>
-                <IonIcon icon={cubeOutline} /> Catálogo e Inventario
-              </li>
-              <li className={activeTab === 'orders' ? 'active' : ''} onClick={() => navigate('/admin/ordenes')}>
-                <IonIcon icon={cartOutline} /> Gestión de Órdenes
-              </li>
-            </ul>
-          </div>
-
-          {/* Main Content Area */}
-          <div className="admin-main">
-            
-            {/* TAB: DASHBOARD */}
-            {activeTab === 'dashboard' && (
-              <div className="admin-view fade-in">
-                <div className="admin-header-title">
-                  <h2>Dashboard</h2>
-                  <p>Resumen del rendimiento de la tienda.</p>
-                </div>
-                
-                <div className="dashboard-stats-grid">
-                  <div className="stat-card">
-                    <div className="stat-icon" style={{ backgroundColor: 'rgba(46, 204, 113, 0.1)', color: '#2ecc71' }}>
-                      <IonIcon icon={trendingUpOutline} />
-                    </div>
-                    <div className="stat-info">
-                      <h3>Ventas del Mes</h3>
-                      <p>$1.245.000</p>
-                    </div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-icon" style={{ backgroundColor: 'rgba(52, 152, 219, 0.1)', color: '#3498db' }}>
-                      <IonIcon icon={cartOutline} />
-                    </div>
-                    <div className="stat-info">
-                      <h3>Órdenes Pendientes</h3>
-                      <p>14</p>
-                    </div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-icon" style={{ backgroundColor: 'rgba(231, 76, 60, 0.1)', color: '#e74c3c' }}>
-                      <IonIcon icon={alertCircleOutline} />
-                    </div>
-                    <div className="stat-info">
-                      <h3>Alertas de Stock</h3>
-                      <p>5 agotados</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* NUEVO: Sección de Gráficos y Análisis */}
-                <div className="dashboard-charts-row">
-                  {/* Gráfico de Barras Simulado */}
-                  <div className="dashboard-panel chart-panel">
-                    <div className="flex-between">
-                      <h3>Análisis de Ventas y Visitas</h3>
-                      <div className="chart-legend">
-                        <span className="legend-dot ventas"></span> Ventas
-                        <span className="legend-dot visitas"></span> Visitas
-                      </div>
-                    </div>
-                    <div className="css-chart-container">
-                      <div className="chart-y-axis">
-                        <span>$300k</span><span>$200k</span><span>$100k</span><span>$0</span>
-                      </div>
-                      <div className="chart-grid">
-                        <div className="grid-line"></div>
-                        <div className="grid-line"></div>
-                        <div className="grid-line"></div>
-                        <div className="grid-line"></div>
-                      </div>
-                      <div className="chart-bars">
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '40%'}} title="$120.000"></div>
-                            <div className="bar visitas-bar" style={{height: '60%'}}></div>
-                          </div>
-                          <span>Lun</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '65%'}} title="$195.000"></div>
-                            <div className="bar visitas-bar" style={{height: '80%'}}></div>
-                          </div>
-                          <span>Mar</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '30%'}} title="$90.000"></div>
-                            <div className="bar visitas-bar" style={{height: '50%'}}></div>
-                          </div>
-                          <span>Mie</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '80%'}} title="$240.000"></div>
-                            <div className="bar visitas-bar" style={{height: '75%'}}></div>
-                          </div>
-                          <span>Jue</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '95%'}} title="$285.000"></div>
-                            <div className="bar visitas-bar" style={{height: '90%'}}></div>
-                          </div>
-                          <span>Vie</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar highlight" style={{height: '100%'}} title="$300.000"></div>
-                            <div className="bar visitas-bar" style={{height: '100%'}}></div>
-                          </div>
-                          <span style={{fontWeight:'bold', color:'var(--color-primary)'}}>Sab</span>
-                        </div>
-                        <div className="bar-group">
-                          <div className="bar-double">
-                            <div className="bar ventas-bar" style={{height: '70%'}} title="$210.000"></div>
-                            <div className="bar visitas-bar" style={{height: '85%'}}></div>
-                          </div>
-                          <span>Dom</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Top Productos */}
-                  <div className="dashboard-panel top-products-panel">
-                    <h3>Top Más Vendidos</h3>
-                    <ul className="top-products-list">
-                      <li>
-                        <div className="tp-info"><span>1. Charizard Base Set</span><span>42 uds.</span></div>
-                        <div className="tp-bar-bg"><div className="tp-bar-fill" style={{width: '90%'}}></div></div>
-                      </li>
-                      <li>
-                        <div className="tp-info"><span>2. Booster Box OP-03</span><span>35 uds.</span></div>
-                        <div className="tp-bar-bg"><div className="tp-bar-fill" style={{width: '75%'}}></div></div>
-                      </li>
-                      <li>
-                        <div className="tp-info"><span>3. Black Lotus (Proxy)</span><span>28 uds.</span></div>
-                        <div className="tp-bar-bg"><div className="tp-bar-fill" style={{width: '60%'}}></div></div>
-                      </li>
-                      <li>
-                        <div className="tp-info"><span>4. Pikachu VMAX</span><span>15 uds.</span></div>
-                        <div className="tp-bar-bg"><div className="tp-bar-fill" style={{width: '40%'}}></div></div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* TERCERA FILA: Categorías y Actividad */}
-                <div className="dashboard-charts-row third-row">
-                  
-                  {/* Gráfico de Torta (CSS Conic Gradient) */}
-                  <div className="dashboard-panel donut-panel">
-                    <h3>Ventas por Categoría</h3>
-                    <div className="donut-chart-container">
-                      <div className="css-donut-chart">
-                        <div className="donut-hole">
-                          <span>60%</span>
-                          <small>Pokémon</small>
-                        </div>
-                      </div>
-                      <div className="donut-legend">
-                        <div className="legend-item"><span className="dot poke"></span> Pokémon (60%)</div>
-                        <div className="legend-item"><span className="dot magic"></span> Magic (25%)</div>
-                        <div className="legend-item"><span className="dot one"></span> One Piece (15%)</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Línea de Tiempo de Actividad */}
-                  <div className="dashboard-panel activity-panel">
-                    <h3>Registro de Actividad Reciente</h3>
-                    <div className="activity-timeline">
-                      <div className="activity-item">
-                        <div className="activity-dot new-order"></div>
-                        <div className="activity-content">
-                          <p><strong>Nueva Orden #1024</strong> por $15.000</p>
-                          <small>Hace 5 minutos</small>
-                        </div>
-                      </div>
-                      <div className="activity-item">
-                        <div className="activity-dot warning"></div>
-                        <div className="activity-content">
-                          <p>Alerta: <strong>Charizard VMAX</strong> bajo en stock (Quedan 2)</p>
-                          <small>Hace 35 minutos</small>
-                        </div>
-                      </div>
-                      <div className="activity-item">
-                        <div className="activity-dot user"></div>
-                        <div className="activity-content">
-                          <p>Nuevo usuario registrado: <strong>m.gomez@gmail.com</strong></p>
-                          <small>Hace 2 horas</small>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-
-            {/* TAB: INVENTORY LIST */}
-            {activeTab === 'inventory' && (
-              <div className="admin-view fade-in">
-                <div className="admin-header-title flex-between">
-                  <div>
-                    <h2>Inventario de Productos</h2>
-                    <p>Gestiona los productos disponibles en la tienda.</p>
-                  </div>
-                  <button className="btn-admin-action" onClick={() => setActiveTab('add-product')}>
-                    <IonIcon icon={addOutline} /> Nuevo Producto
-                  </button>
-                </div>
-
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Stock</th>
-                        <th>Precio</th>
-                        <th>Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {inventoryProducts.map((item: any, idx: number) => (
-                        <tr key={idx}>
-                          <td>#{item.id || idx + 100}</td>
-                          <td className="product-cell">
-                            <img src={item.image} alt={item.title} className="table-img" />
-                            <span>{item.title}</span>
-                          </td>
-                          <td>{item.category || 'Pokémon TCG'}</td>
-                          <td>
-                            <span className={`stock-badge ${item.status === 'Sin Stock' ? 'stock-out' : 'stock-ok'}`}>
-                              {item.status === 'Sin Stock' ? '0' : '12'}
-                            </span>
-                          </td>
-                          <td>{typeof item.price === 'number' ? `$${item.price.toLocaleString('es-CL')}` : item.price}</td>
-                          <td>
-                            <button className="action-icon-btn edit"><IonIcon icon={createOutline} /></button>
-                            <button className="action-icon-btn delete"><IonIcon icon={trashOutline} /></button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: ADD PRODUCT */}
-            {activeTab === 'add-product' && (
-              <div className="admin-view fade-in">
-                <div className="admin-header-title flex-between">
-                  <div>
-                    <h2>Ingresar Nuevo Producto</h2>
-                    <p>Agrega nuevas cartas o sellados al catálogo.</p>
-                  </div>
-                  <button className="btn-admin-secondary" onClick={() => { setActiveTab('inventory'); navigate('/admin/inventario'); }}>
-                    Volver al Inventario
-                  </button>
-                </div>
-
-                <div className="admin-card form-card">
-                  {isSuccess && (
-                    <div className="admin-alert-success">
-                      ✅ ¡Producto agregado correctamente al catálogo! Redirigiendo...
-                    </div>
-                  )}
-
-                  <form id="add-product-form" className="admin-form" onSubmit={handleAddProduct}>
-                    <div className="form-group-row">
-                      <div className="form-group">
-                        <label>Nombre del Producto</label>
-                        <input type="text" placeholder="Ej: Charizard Holográfico" required />
-                      </div>
-                      <div className="form-group">
-                        <label>Juego / Categoría</label>
-                        <select required>
-                          <option value="">Selecciona un juego...</option>
-                          <option value="pokemon">Pokémon TCG</option>
-                          <option value="magic">Magic: The Gathering</option>
-                          <option value="onepiece">One Piece TCG</option>
-                          <option value="otros">Otro</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="form-group-row">
-                      <div className="form-group">
-                        <label>Expansión / Set</label>
-                        <input type="text" placeholder="Ej: Base Set 1999" required />
-                      </div>
-                      <div className="form-group">
-                        <label>Condición</label>
-                        <select required>
-                          <option value="nm">Near Mint (NM)</option>
-                          <option value="lp">Lightly Played (LP)</option>
-                          <option value="mp">Moderately Played (MP)</option>
-                          <option value="hp">Heavily Played (HP)</option>
-                          <option value="sealed">Sellado (Nuevo)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="form-group-row">
-                      <div className="form-group">
-                        <label>Stock (Cantidad)</label>
-                        <input type="number" min="1" placeholder="Ej: 5" required />
-                      </div>
-                      <div className="form-group">
-                        <label>Precio (CLP)</label>
-                        <input type="number" min="1" placeholder="Ej: 15000" required />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label>URL de la Imagen</label>
-                      <input type="url" placeholder="https://ejemplo.com/imagen.jpg" required />
-                    </div>
-
-                    <button type="submit" className="btn-admin-submit">
-                      Guardar Producto
-                    </button>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: ORDERS */}
-            {activeTab === 'orders' && (
-              <div className="admin-view fade-in">
-                <div className="admin-header-title">
-                  <h2>Gestión de Órdenes</h2>
-                  <p>Revisa y actualiza el estado de los pedidos.</p>
-                </div>
-
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>N° Orden</th>
-                        <th>Cliente</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((order, idx) => (
-                        <tr key={idx}>
-                          <td><strong>{order.id}</strong></td>
-                          <td>{order.client}</td>
-                          <td>{order.date}</td>
-                          <td>${order.total.toLocaleString('es-CL')}</td>
-                          <td>
-                            <select 
-                              className={`status-select ${order.status.toLowerCase()}`}
-                              value={order.status}
-                              onChange={(e) => {
-                                const newOrders = [...orders];
-                                newOrders[idx] = { ...newOrders[idx], status: e.target.value as OrderStatus };
-                                setOrders(newOrders);
-                              }}
-                            >
-                              {ORDER_STATUSES.map(status => <option key={status} value={status}>{status}</option>)}
-                            </select>
-                          </td>
-                          <td>
-                            <button className="btn-small-outline">Ver Detalle</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </IonContent>
-  );
+  const remove = async (product: Product) => {
+    if (!window.confirm(`¿Eliminar “${product.title}” del inventario?`)) return;
+    setBusy(true); setError(''); setMessage('');
+    try { await apiService.deleteProduct(product.id); setProducts(previous => previous.filter(p => p.id !== product.id)); setMessage('Producto eliminado correctamente.'); await refreshStats(); }
+    catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
+  };
+  const changeStatus = async (id: string, status: OrderStatus) => {
+    setBusy(true); setError(''); setMessage('');
+    try { const saved = await apiService.setOrderStatus(id, status); setOrders(previous => previous.map(order => order.id === id ? saved : order)); setMessage('Estado del pedido actualizado.'); await refreshStats(); }
+    catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
+  };
+  const orderTable = (rows: Order[], editable = false) => <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>
+    {rows.map(order => <tr key={order.id}><td>{order.id}</td><td>{order.customer}</td><td>{new Date(order.date).toLocaleDateString('es-CL')}</td><td>{money(order.total)}</td><td>{editable ? <select aria-label={`Estado del pedido ${order.id}`} disabled={busy} value={order.status} onChange={event => void changeStatus(order.id, event.target.value as OrderStatus)}>{ORDER_STATUSES.map(status => <option key={status}>{status}</option>)}</select> : order.status}</td><td><button className="btn-small-outline" onClick={() => setDetail(order)}>Ver detalle</button></td></tr>)}
+    {!rows.length && <tr><td colSpan={6}>No hay pedidos registrados.</td></tr>}
+  </tbody></table></div>;
+  return <IonContent fullscreen className="admin-content">
+    <header className="admin-header"><div className="admin-logo">TCGStore <span className="admin-badge">ADMIN</span></div><button className="admin-logout-btn" onClick={() => navigate('/home')}>Volver al inicio</button></header>
+    <div className="admin-container"><nav className="admin-sidebar" aria-label="Administración"><ul className="admin-menu">
+      {[['dashboard', '/admin', 'Resumen'], ['inventory', '/admin/inventario', 'Inventario'], ['orders', '/admin/ordenes', 'Órdenes']].map(([key, path, label]) => <li key={key} className={tab === key ? 'active' : ''}><button onClick={() => navigate(path)}>{label}</button></li>)}
+    </ul></nav><main className="admin-main">
+      {loading && <p role="status">Cargando información...</p>}
+      {!localStorage.getItem('tcg.token') && <p className="admin-notice">Vista local. Inicia sesión con el backend disponible para administrar la base de datos.</p>}
+      {stats.offline && <p className="admin-notice">Backend sin conexión. Se muestra el catálogo local; las ventas, los pedidos y los clientes no están disponibles.</p>}
+      {error && !modal && <p role="alert" className="admin-error">{error}</p>}
+      {message && <p role="status" className="admin-success">{message}</p>}
+      {tab === 'dashboard' && <div className="admin-view"><h2>Resumen de la tienda</h2><div className="dashboard-stats-grid">
+        {[['Ventas totales', money(stats.totalSales)], ['Pedidos', stats.totalOrders], ['Productos activos', stats.totalProducts], ['Clientes', stats.totalClients]].map(([label, value]) => <div className="stat-card" key={label}><div className="stat-info"><h3>{label}</h3><p>{value}</p></div></div>)}
+      </div><p>Stock total: {stats.totalStock} unidades</p><h3>Últimos pedidos</h3>{orderTable(stats.recentOrders)}</div>}
+      {tab === 'inventory' && <div className="admin-view"><div className="admin-header-title flex-between"><h2>Catálogo e inventario</h2><button className="btn-admin-submit" disabled={loading || busy || !categories.length} onClick={() => openForm()}>Nuevo Producto</button></div><div className="admin-table-container"><table className="admin-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Condición</th><th>Acciones</th></tr></thead><tbody>
+        {products.map(product => <tr key={product.id}><td><div className="admin-product-cell"><img src={product.image} alt="" /><span>{product.title}</span></div></td><td>{product.category}</td><td>{money(product.price)}</td><td>{product.stock}</td><td>{product.condition}</td><td><div className="admin-actions"><button disabled={busy} className="btn-small-outline" onClick={() => openForm(product)}>Editar</button><button disabled={busy} className="btn-small-outline" onClick={() => void remove(product)}>Eliminar</button></div></td></tr>)}
+        {!products.length && <tr><td colSpan={6}>No hay productos en inventario.</td></tr>}
+      </tbody></table></div></div>}
+      {tab === 'orders' && <div className="admin-view"><h2>Gestión de Órdenes</h2>{orderTable(orders, true)}</div>}
+      {detail && <section className="dashboard-panel" aria-label="Detalle del pedido"><button className="btn-small-outline" onClick={() => setDetail(null)}>Cerrar detalle</button><h3>Pedido {detail.id}</h3><ul>{detail.items.map((item, index) => <li key={index}>{item.title} · {item.quantity} × {money(item.unitPrice)}</li>)}</ul><strong>Total: {money(detail.total)}</strong></section>}
+    </main></div>
+    <dialog ref={dialogRef} className="admin-product-dialog" onCancel={event => { if (busy) event.preventDefault(); else setModal(false); }}>
+      <form className="admin-form" onSubmit={save}><div className="flex-between"><h2>{editing ? 'Editar producto' : 'Nuevo producto'}</h2><button type="button" disabled={busy} onClick={() => setModal(false)} aria-label="Cerrar formulario">&times;</button></div>
+        {error && <p role="alert" className="admin-error">{error}</p>}
+        <div className="admin-form-grid">
+          <label>Título<input autoFocus required maxLength={10000} value={form.title} onChange={event => setForm({ ...form, title: event.target.value })} /></label>
+          {!editing && <><label>Categoría<select required value={form.category} onChange={event => setForm({ ...form, category: event.target.value })}>{categories.map(category => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></label>
+            {([['game', 'Juego'], ['edition', 'Edición'], ['color', 'Color'], ['cardType', 'Tipo de carta'], ['image', 'Imagen (URL o ruta)']] as const).map(([key, label]) => <label key={key}>{label}<input required value={form[key]} onChange={event => setForm({ ...form, [key]: event.target.value })} /></label>)}
+            <label>Rareza<select value={form.rarity} onChange={event => setForm({ ...form, rarity: event.target.value })}>{['Common', 'Uncommon', 'Rare', 'Ultra Rare'].map(value => <option key={value}>{value}</option>)}</select></label>
+            <label>Costo<input type="number" required min="0" step="1" value={form.cost} onChange={event => setForm({ ...form, cost: Number(event.target.value) })} /></label>
+          </>}
+          <label>Condición<select value={form.condition} onChange={event => setForm({ ...form, condition: event.target.value })}>{['Near Mint', 'Lightly Played', 'Moderately Played'].map(value => <option key={value}>{value}</option>)}</select></label>
+          {(['price', 'stock'] as const).map(key => <label key={key}>{key === 'price' ? 'Precio (CLP)' : 'Stock'}<input type="number" required min="0" max="2147483647" step="1" value={form[key]} onChange={event => setForm({ ...form, [key]: Number(event.target.value) })} /></label>)}
+        </div><button className="btn-admin-submit" type="submit" disabled={busy}>{busy ? 'Guardando...' : 'Guardar producto'}</button>
+      </form>
+    </dialog>
+  </IonContent>;
 };
-
 export default AdminDashboard;
-

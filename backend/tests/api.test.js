@@ -155,3 +155,26 @@ test('órdenes: listado por rol, propiedad, detalle y cambio de estado PATCH/PUT
   await s.api.put('/api/orders/missing/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Pagado' }).expect(404);
   s.done();
 });
+
+
+test('estadísticas admin: permisos, totales numéricos y pedidos con items', async () => {
+  const s = setup([
+    { sql: /SUM\(total\)/, rows: [{ total_sales: '26500', total_orders: '1', total_products: '1', total_stock: '5', total_clients: '1' }], check: (p, sql) => { assert.match(sql, /is_active = true/); assert.match(sql, /role = 'client'/); } },
+    { sql: /ORDER BY o.created_at DESC, o.id DESC LIMIT 6/, rows: [order] },
+    { sql: /FROM order_items/, rows: [item] }
+  ]);
+  await s.api.get('/api/admin/stats').expect(401);
+  await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token()}`).expect(403);
+  const { body } = await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token('admin')}`).expect(200);
+  assert.equal(body.totalSales, 26500); assert.equal(body.totalOrders, 1);
+  assert.equal(body.totalProducts, 1); assert.equal(body.totalStock, 5); assert.equal(body.totalClients, 1);
+  assert.equal(body.recentOrders[0].items[0].code, product.code); s.done();
+});
+
+test('estadísticas admin: tienda vacía y error de base de datos', async () => {
+  const s = setup([{ sql: /SUM\(total\)/, rows: [{ total_sales: '0', total_orders: '0', total_products: '0', total_stock: '0', total_clients: '0' }] }, { sql: /LIMIT 6/, rows: [] }, { sql: /SUM\(total\)/, error: new Error('private database error') }]);
+  const { body } = await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token('admin')}`).expect(200);
+  assert.equal(body.totalSales, 0); assert.deepEqual(body.recentOrders, []);
+  const error = await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token('admin')}`).expect(500);
+  assert.ok(!JSON.stringify(error.body).includes('private database')); s.done();
+});

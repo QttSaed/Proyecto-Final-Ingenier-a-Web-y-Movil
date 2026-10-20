@@ -1,3 +1,4 @@
+import { apiRequest, ApiError } from './apiService';
 import { useSyncExternalStore } from 'react';
 
 export type Role = 'client' | 'admin';
@@ -32,6 +33,13 @@ export const authService = {
   subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
   async login(email: string, password: string): Promise<User> {
     const normalized = email.trim().toLowerCase();
+    try {
+      const result = await apiRequest<{ user: User; token: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email: normalized, password }) });
+      localStorage.setItem('tcg.token', result.token);
+      localStorage.setItem(sessionKey, JSON.stringify(result.user));
+      session = result.user; notify(); return result.user;
+    } catch (error) { if (error instanceof ApiError) throw error; }
+    localStorage.removeItem('tcg.token');
     const demo = [
       { email: 'admin@tcgstore.com', name: 'Administrador', role: 'admin' as const },
       { email: 'cliente@tcgstore.com', name: 'Juan Pérez', role: 'client' as const }
@@ -48,6 +56,10 @@ export const authService = {
   async register(name: string, email: string, password: string) {
     const normalized = email.trim().toLowerCase();
     if (!name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) || !/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password)) throw new Error('Revisa los datos y las condiciones de contraseña.');
+    try {
+      await apiRequest('/auth/register', { method: 'POST', body: JSON.stringify({ name, email: normalized, password }) });
+      return;
+    } catch (error) { if (error instanceof ApiError) throw error; }
     const stored = accounts();
     if (stored.some(user => user.email === normalized) || ['admin@tcgstore.com', 'cliente@tcgstore.com'].includes(normalized)) throw new Error('No se pudo registrar este correo. Usa otro o inicia sesión.');
     const salt = crypto.randomUUID();
@@ -55,6 +67,7 @@ export const authService = {
     localStorage.setItem(accountsKey, JSON.stringify(stored));
   },
   logout() {
+    localStorage.removeItem('tcg.token');
     localStorage.removeItem(sessionKey);
     ['isLoggedIn', 'role', 'userName', 'userEmail'].forEach(key => localStorage.removeItem(key));
     session = null; notify();

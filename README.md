@@ -21,6 +21,9 @@
     - [Justificación Técnica](#justificación-técnica)
 5. [Bocetos UX/UI](#bocetos-uiux)
 6. [Frontend con Ionic-React](#tecnologías)
+7. [Instalación y Configuración Local](#instalación-y-configuración-local)
+8. [Endpoints de la API REST](#endpoints-de-la-api-rest)
+9. [Pruebas y Testing](#pruebas-y-testing)
 
 ---
 
@@ -342,16 +345,90 @@ El diseño de la interfaz y la experiencia de usuario (Wireframes y Prototipos) 
 
 ### Stack Tecnológico del Proyecto
 - **Frontend:** Ionic Framework (v7+), React, Vite.
-- **Backend (Próximas fases):** Node.js, Express.
-- **Base de Datos (Próximas fases):** PostgreSQL.
+- **Backend implementado:** Node.js, Express, PostgreSQL (`pg`), JWT (`jsonwebtoken`), bcryptjs, Helmet, CORS y Rate Limit (`express-rate-limit`).
+- **Base de datos implementada:** PostgreSQL con esquema relacional normalizado en `database/esquema.sql`.
+
+## Instalación y Configuración Local
+
+### Prerrequisitos
+
+- Node.js v18+ y npm. Para las versiones actuales de Vite y sus plugins se recomienda Node.js 22.12+.
+- PostgreSQL v14+ y acceso al usuario `postgres`.
+
+### Configuración de la Base de Datos
+
+Desde la raíz del proyecto, crea la base `tcgstore` y ejecuta el esquema:
+
+```sh
+createdb -U postgres tcgstore
+psql -U postgres -d tcgstore -f database/esquema.sql
+```
+
+También puedes crear la base y ejecutar el archivo desde pgAdmin. El script incluye datos de demostración y recrea las tablas: ejecútalo sobre una base destinada al proyecto.
+
+### Configuración del Backend
+
+```sh
+cd backend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+En PowerShell, puedes usar `Copy-Item .env.example .env`. Antes de iniciar el servidor, configura en `backend/.env` la contraseña de PostgreSQL (`DB_PASSWORD`) y un `JWT_SECRET` privado de al menos 32 caracteres. Revisa `DB_HOST`, `DB_PORT`, `DB_USER` y `DB_NAME=tcgstore`. El servidor escucha en `http://localhost:3000`; también puedes iniciarlo con `npm start`.
+
+### Configuración del Frontend
+
+En otra terminal, desde la raíz del proyecto:
+
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+Abre la dirección que muestre Vite (por defecto `http://localhost:5173`). La API se consulta en `http://localhost:3000/api`. Para cambiarla, copia `frontend/.env.example` a `frontend/.env` y configura `VITE_API_URL`. Si cambias el origen del frontend, actualiza `CORS_ORIGIN` en el backend.
+
+## Endpoints de la API REST
+
+Las rutas protegidas requieren `Authorization: Bearer <token>` obtenido al iniciar sesión.
+
+| Método | Endpoint | Acceso / Rol | Descripción |
+|---|---|---|---|
+| POST | `/api/auth/register` | Público | Registra una cuenta de cliente. |
+| POST | `/api/auth/login` | Público | Autentica y devuelve el usuario y su JWT. |
+| GET | `/api/auth/me` | Cliente / Admin | Consulta el perfil autenticado. |
+| PUT | `/api/auth/me` | Cliente / Admin | Actualiza el perfil autenticado. |
+| GET | `/api/categories` | Público | Lista las categorías del catálogo. |
+| GET | `/api/products` | Público / Admin | Lista y filtra productos; admin puede incluir inactivos. |
+| GET | `/api/products/:id` | Público / Admin | Consulta un producto por código o identificador. |
+| POST | `/api/products` | Admin | Crea un producto. |
+| PUT | `/api/products/:id` | Admin | Actualiza un producto. |
+| DELETE | `/api/products/:id` | Admin | Desactiva un producto. |
+| GET | `/api/orders` | Cliente / Admin | Lista órdenes propias del cliente o todas para admin. |
+| GET | `/api/orders/:id` | Cliente propietario / Admin | Consulta una orden con sus productos. |
+| POST | `/api/orders` | Cliente | Crea una orden, valida y descuenta stock y calcula el total. |
+| PATCH | `/api/orders/:id/status` | Admin | Cambia el estado a Pendiente, Pagado, Enviado o Entregado. |
+| PUT | `/api/orders/:id/status` | Admin | Alternativa compatible para actualizar el estado. |
+| GET | `/api/admin/stats` | Admin | Consulta estadísticas y órdenes recientes. |
+| GET | `/api/health` | Público | Comprueba que el servidor responde. |
+
+El checkout envía `items: [{ code, quantity }]`, `shippingName`, `shippingEmail`, `shippingAddress`, `shippingCity`, `shippingRegion` y `paymentMethod`. El servidor devuelve el número de orden y el total calculado. Los errores de la API se muestran sin vaciar el carrito. Si no hay conexión, la demostración guarda una orden local asociada al correo del cliente; el perfil muestra ese respaldo cuando no puede conectarse. Las órdenes locales no se sincronizan automáticamente con PostgreSQL ni procesan pagos reales.
+
+## Pruebas y Testing
+
+- **Backend:** desde `backend/`, ejecuta `npm test` (12 pruebas automáticas).
+- **Frontend:** desde `frontend/`, ejecuta `npm run test.unit` (14 pruebas unitarias originales y 3 nuevas de órdenes: 17 en total). Para una ejecución sin modo observación, usa `npm run test.unit -- --run`.
+- **Compilación:** desde `frontend/`, ejecuta `npm run build`.
+- **Postman:** importa la colección `testing/TCGStore_EP2.postman_collection.json` y el entorno `testing/TCGStore_Local.postman_environment.json`. Inicia PostgreSQL y el backend antes de ejecutar la colección.
 
 ## 🌐 Acceso a la Plataforma
 El proyecto se encuentra desplegado y accesible en línea a través de Vercel. No es necesario realizar instalación local.
 
 👉 **Enlace del proyecto:** [proyecto-web-y-movil.vercel.app](https://proyecto-web-y-movil.vercel.app/)
 
-### 🔑 Cuentas de Prueba (Mock Login)
-Para evaluar las rutas protegidas y los distintos roles sin un backend conectado, el sistema cuenta con autenticación simulada. Utiliza las siguientes credenciales (la contraseña para ambas es `123456`):
+### 🔑 Cuentas de Prueba
+El esquema PostgreSQL incluye las siguientes cuentas de demostración, con contraseña `123456`. Las mismas credenciales permiten evaluar los roles mediante el respaldo local cuando el backend está desconectado:
 
 - **Rol Cliente:** `cliente@tcgstore.com` (Habilita el Checkout y el perfil "Mi Cuenta" con historial de órdenes).
 - **Rol Administrador:** `admin@tcgstore.com` (Da acceso exclusivo al Dashboard de gestión y bloquea vistas de cliente).

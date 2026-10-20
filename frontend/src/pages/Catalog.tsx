@@ -9,16 +9,21 @@ import ProductCard from '../components/ProductCard';
 import './Catalog.css';
 
 import appData from '../data.json';
+import { useLocation } from 'react-router-dom';
+import { apiService, localProducts, money } from '../services/apiService';
 
-type CatalogProduct = (typeof appData.sections)[keyof typeof appData.sections][number];
+type CatalogProduct = (typeof appData.sections)[keyof typeof appData.sections][number] & { categorySlug?: string; description?: string };
 
 const Catalog: React.FC = () => {
+  const location = useLocation();
+  const [catalog, setCatalog] = useState<CatalogProduct[]>(localProducts.map(p => ({ ...p, hasButton: p.hasButton ?? true, price: money(p.price) })));
+  useEffect(() => { let active = true; apiService.products().then(products => { if (active) setCatalog(products.map(p => ({ ...p, hasButton: p.hasButton ?? true, price: money(p.price) }))); }).catch(() => {}); return () => { active = false; }; }, [location.key]);
   const { category } = useParams<{ category: string }>();
   const contentRef = useRef<HTMLIonContentElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [productsPerPage, setProductsPerPage] = useState(12);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('search') || '');
   const [sortBy, setSortBy] = useState('Más reciente');
   const attributes = [
     ['category', 'Categoría'], ['game', 'Juego'], ['edition', 'Edición'], ['rarity', 'Rareza'],
@@ -33,20 +38,18 @@ const Catalog: React.FC = () => {
   const normalizedBase = normalize(baseCategoryName);
 
   let categoryProducts: CatalogProduct[] = [];
-  let matchedSectionKey: string | undefined = undefined;
 
   if (normalizedBase === 'todos') {
-    categoryProducts = Object.values(appData.sections).flat();
+    categoryProducts = [...catalog];
   } else if (normalizedBase === 'ofertas') {
-    const allProducts = Object.values(appData.sections).flat();
+    const allProducts = [...catalog];
     categoryProducts = allProducts.sort((a, b) => {
       const pA = parseInt(a.price.replace(/[^0-9]/g, '')) || 999999;
       const pB = parseInt(b.price.replace(/[^0-9]/g, '')) || 999999;
       return pA - pB;
     }).slice(0, 36);
   } else {
-    matchedSectionKey = Object.keys(appData.sections).find(k => normalize(k) === normalizedBase);
-    const allFromSection = matchedSectionKey ? appData.sections[matchedSectionKey as keyof typeof appData.sections] : [];
+    const allFromSection = catalog.filter(p => normalize(p.category) === normalizedBase || normalize(p.categorySlug || '') === normalizedBase);
     if (isSinglesQuery) {
       const sealedWords = ['caja', 'sobre', 'mazo', 'pack', 'kit', 'set', 'booster', 'starter', 'box'];
       categoryProducts = allFromSection.filter((p) =>
@@ -59,7 +62,7 @@ const Catalog: React.FC = () => {
 
   if (searchQuery.trim() !== '') {
     categoryProducts = categoryProducts.filter((p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase())
+      `${p.title} ${p.description || ''}`.toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
   }
 
@@ -96,9 +99,9 @@ const Catalog: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-    setSearchQuery('');
+    setSearchQuery(new URLSearchParams(location.search).get('search') || '');
     setFilters({});
-  }, [category]);
+  }, [category, location.search]);
 
   // Al cambiar productos por pagina, volver a pagina 1
   const handlePerPageChange = (val: number) => {

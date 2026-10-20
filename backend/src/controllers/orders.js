@@ -70,3 +70,5 @@ exports.status = async (req, res) => {
   const { rows } = await db.query('UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *', [status, existing.id]);
   res.json(await withItems(db, rows[0]));
 };
+
+exports.withItems = withItems;
