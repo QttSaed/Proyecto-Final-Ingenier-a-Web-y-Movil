@@ -6,6 +6,7 @@ import { ORDER_STATUSES, OrderStatus } from '../services/orderService';
 import { homeOutline, statsChartOutline, cubeOutline, receiptOutline, cashOutline, bagHandleOutline, albumsOutline, peopleOutline, pencilOutline, trashOutline, eyeOutline, searchOutline, addOutline, closeOutline } from 'ionicons/icons';
 import './AdminDashboard.css';
 
+const COLOR_PRESETS = ['No aplica', 'Sin especificar', 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Negro', 'Blanco', 'Incoloro', 'Morado', 'Turquesa'];
 const emptyProduct = (): Omit<Product, 'id'> => ({ title: '', category: '', game: '', edition: '', rarity: 'Common', color: '', cost: 0, cardType: '', condition: 'Near Mint', price: 0, stock: 0, image: '' });
 const initialStats: Stats = { totalSales: 0, totalOrders: 0, totalProducts: localProducts.length, totalStock: localProducts.reduce((sum, p) => sum + p.stock, 0), totalClients: 0, recentOrders: [] };
 const errorMessage = (error: unknown) => error instanceof Error ? error.message : 'No se pudo guardar el cambio';
@@ -24,6 +25,7 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyProduct);
+  const [customColor, setCustomColor] = useState(false);
   const [modal, setModal] = useState(false);
   const [detail, setDetail] = useState<Order | null>(null);
   const [search, setSearch] = useState('');
@@ -46,10 +48,12 @@ const AdminDashboard: React.FC = () => {
   }, []);
   useEffect(() => { if (modal) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [modal]);
   useEffect(() => { if (detail) detailRef.current?.showModal(); else detailRef.current?.close(); }, [detail]);
+  const colorOptions = [...new Set([...COLOR_PRESETS, ...products.map(p => p.color).filter(Boolean)])];
   const filteredProducts = products.filter(product => `${product.title} ${product.category}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')));
   const refreshStats = async () => { try { setStats(await apiService.stats()); } catch (error) { setError(errorMessage(error)); } };
   const openForm = (product?: Product) => {
     setEditing(product || null); setForm(product ? { ...product } : { ...emptyProduct(), category: categories[0]?.name || '' });
+    setCustomColor(Boolean(product?.color && !COLOR_PRESETS.includes(product.color)));
     setError(''); setMessage(''); setModal(true);
   };
   const save = async (event: React.FormEvent) => {
@@ -102,14 +106,29 @@ const AdminDashboard: React.FC = () => {
       <form className="admin-form" onSubmit={save}><div className="admin-dialog-heading flex-between"><h2 id="admin-product-title">{editing ? 'Editar producto' : 'Nuevo producto'}</h2><button type="button" disabled={busy} onClick={() => setModal(false)} className="admin-close" aria-label="Cerrar formulario"><IonIcon icon={closeOutline} aria-hidden="true" /></button></div>
         {error && <p role="alert" className="admin-error">{error}</p>}
         <div className="admin-form-grid">
-          <label>Título<input autoFocus required maxLength={10000} value={form.title} onChange={event => setForm({ ...form, title: event.target.value })} /></label>
+          <label>Título<input autoFocus required placeholder="Ej: Charizard ex, Black Lotus, Fundas..." maxLength={10000} value={form.title} onChange={event => setForm({ ...form, title: event.target.value })} /></label>
           {!editing && <><label>Categoría<select required value={form.category} onChange={event => setForm({ ...form, category: event.target.value })}>{categories.map(category => <option key={category.slug} value={category.name}>{category.name}</option>)}</select></label>
-            {([['game', 'Juego'], ['edition', 'Edición'], ['color', 'Color'], ['cardType', 'Tipo de carta'], ['image', 'Imagen (URL o ruta)']] as const).map(([key, label]) => <label key={key}>{label}<input required value={form[key]} onChange={event => setForm({ ...form, [key]: event.target.value })} /></label>)}
+            <label>Juego<select required value={form.game} onChange={event => setForm({ ...form, game: event.target.value })}><option value="" disabled>Selecciona un juego...</option>{['Pokemon', 'Magic', 'One Piece', 'Digimon', 'Gundam', 'Riftbound', 'Multijuego', 'Otro'].map(value => <option key={value}>{value}</option>)}</select></label>
+            <label>Edición<input required placeholder="Ej: Obsidian Flames, Modern Horizons 3, Sin especificar..." value={form.edition} onChange={event => setForm({ ...form, edition: event.target.value })} /></label>
+            <label>Color{customColor ? <span className="admin-custom-color-row">
+              <input autoFocus required placeholder="Escribe el color (ej: Fuego, Dorado)..." value={form.color} onChange={event => setForm({ ...form, color: event.target.value })} />
+              <button type="button" className="admin-switch-btn" onClick={() => { setCustomColor(false); setForm({ ...form, color: '' }); }}>Elegir de la lista</button>
+            </span> : <select required value={form.color} onChange={event => {
+              if (event.target.value === '__custom__') {
+                setCustomColor(true); setForm({ ...form, color: '' });
+              } else setForm({ ...form, color: event.target.value });
+            }}>
+              <option value="" disabled>Selecciona un color...</option>
+              {colorOptions.map(color => <option key={color} value={color}>{color}</option>)}
+              <option value="__custom__">Escribir otro color...</option>
+            </select>}
+            </label>
+            {([['cardType', 'Tipo de carta', 'Ej: Pokemon Básico, Criatura, Entrenador, Deck Box...'], ['image', 'Imagen (URL o ruta)', 'Ej: https://... o /assets/secciones pagina/...']] as const).map(([key, label, placeholder]) => <label key={key}>{label}<input required placeholder={placeholder} value={form[key]} onChange={event => setForm({ ...form, [key]: event.target.value })} /></label>)}
             <label>Rareza<select value={form.rarity} onChange={event => setForm({ ...form, rarity: event.target.value })}>{['Common', 'Uncommon', 'Rare', 'Ultra Rare'].map(value => <option key={value}>{value}</option>)}</select></label>
-            <label>Costo<input type="number" required min="0" step="1" value={form.cost} onChange={event => setForm({ ...form, cost: Number(event.target.value) })} /></label>
+            <label>Costo<input placeholder="Ej: 0, 1, 2..." type="number" required min="0" step="1" value={form.cost} onChange={event => setForm({ ...form, cost: Number(event.target.value) })} /></label>
           </>}
           <label>Condición<select value={form.condition} onChange={event => setForm({ ...form, condition: event.target.value })}>{['Near Mint', 'Lightly Played', 'Moderately Played'].map(value => <option key={value}>{value}</option>)}</select></label>
-          {(['price', 'stock'] as const).map(key => <label key={key}>{key === 'price' ? 'Precio (CLP)' : 'Stock'}<input type="number" required min="0" max="2147483647" step="1" value={form[key]} onChange={event => setForm({ ...form, [key]: Number(event.target.value) })} /></label>)}
+          {(['price', 'stock'] as const).map(key => <label key={key}>{key === 'price' ? 'Precio (CLP)' : 'Stock'}<input placeholder={key === 'price' ? 'Ej: 15000 (sin puntos)...' : 'Ej: 10 (unidades)...'} type="number" required min="0" max="2147483647" step="1" value={form[key]} onChange={event => setForm({ ...form, [key]: Number(event.target.value) })} /></label>)}
         </div><button className="btn-admin-submit" type="submit" disabled={busy}>{busy ? 'Guardando...' : 'Guardar producto'}</button>
       </form>
     </dialog>
