@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env'), quiet: true });
 let adapter;
 function getAdapter() {
   if (!adapter) {
-    const ssl = process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined;
+    const ssl = process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined;
     adapter = new Pool(process.env.DATABASE_URL
       ? { connectionString: process.env.DATABASE_URL, ssl }
       : { host: process.env.DB_HOST, port: Number(process.env.DB_PORT || 5432), user: process.env.DB_USER,
