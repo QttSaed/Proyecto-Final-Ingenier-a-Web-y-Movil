@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiRequest, apiService, localProducts } from './apiService';
 import { localOrderService } from './localOrderService';
 
-beforeEach(() => { localStorage.clear(); });
+beforeEach(() => { localStorage.clear(); sessionStorage.clear(); });
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe('cliente REST', () => {
@@ -10,7 +10,8 @@ describe('cliente REST', () => {
     const order = { id: 'TCG-1', orderNumber: 'TCG-1', total: 13500 };
     const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => order });
     vi.stubGlobal('fetch', fetch);
-    localStorage.setItem('tcg.token', 'client-token');
+    localStorage.setItem('tcg.token', 'old-token');
+    sessionStorage.setItem('tcg.token', 'client-token');
     const input = { items: [{ code: 'carta-1', quantity: 2 }], shippingName: 'Cliente',
       shippingEmail: 'cliente@example.com', shippingAddress: 'Calle 123', shippingCity: 'Santiago',
       shippingRegion: 'Metropolitana', paymentMethod: 'transfer' };
@@ -43,7 +44,7 @@ describe('cliente REST', () => {
   it('envía el JWT y guarda los atributos de un producto', async () => {
     const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ id: 'nuevo', title: 'Carta' }) });
     vi.stubGlobal('fetch', fetch);
-    localStorage.setItem('tcg.token', 'admin-token');
+    sessionStorage.setItem('tcg.token', 'admin-token');
     await apiService.saveProduct({ title: 'Carta', price: 15000, stock: 3 });
     const [url, options] = fetch.mock.calls[0];
     expect(url).toMatch(/\/api\/products$/);

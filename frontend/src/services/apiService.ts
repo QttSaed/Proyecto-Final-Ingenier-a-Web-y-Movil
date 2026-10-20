@@ -4,7 +4,7 @@ import { OrderStatus } from './orderService';
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
 export class ApiError extends Error {}
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('tcg.token');
+  const token = sessionStorage.getItem('tcg.token');
   const response = await fetch(`${API_URL}${path}`, { ...options, signal: options.signal ?? AbortSignal.timeout(8000), headers: {
     'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers
   } });

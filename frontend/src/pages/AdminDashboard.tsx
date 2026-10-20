@@ -76,7 +76,7 @@ const AdminDashboard: React.FC = () => {
       {[['dashboard', '/admin', 'Resumen'], ['inventory', '/admin/inventario', 'Inventario'], ['orders', '/admin/ordenes', 'Órdenes']].map(([key, path, label]) => <li key={key} className={tab === key ? 'active' : ''}><button onClick={() => navigate(path)}>{label}</button></li>)}
     </ul></nav><main className="admin-main">
       {loading && <p role="status">Cargando información...</p>}
-      {!localStorage.getItem('tcg.token') && <p className="admin-notice">Vista local. Inicia sesión con el backend disponible para administrar la base de datos.</p>}
+      {!sessionStorage.getItem('tcg.token') && <p className="admin-notice">Vista local. Inicia sesión con el backend disponible para administrar la base de datos.</p>}
       {stats.offline && <p className="admin-notice">Backend sin conexión. Se muestra el catálogo local; las ventas, los pedidos y los clientes no están disponibles.</p>}
       {error && !modal && <p role="alert" className="admin-error">{error}</p>}
       {message && <p role="status" className="admin-success">{message}</p>}
