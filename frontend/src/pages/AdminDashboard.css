@@ -8,7 +8,7 @@
   box-sizing: border-box;
 }
 
-.admin-content button,.admin-content input,.admin-content select {
+.admin-content button,.admin-content input,.admin-content select,.admin-content textarea {
   font: inherit;
 }
 
@@ -449,6 +449,73 @@ select.admin-status {
   background: #ffe4e6;
   color: #be123c;
   border-color: #fecdd3;
+}
+
+.admin-status.reembolsado {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.admin-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.admin-filter-tab {
+  padding: 10px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: white;
+  color: #475569;
+  font-size: 13px!important;
+  font-weight: 600!important;
+}
+
+.admin-filter-tab:hover {
+  background: #f1f5f9;
+  border-color: #a5b4fc;
+}
+
+.admin-filter-tab.active {
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: #a5b4fc;
+}
+
+.admin-order-notes {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-order-notes h3 {
+  margin: 0 0 12px;
+  color: #334155;
+  font-size: 14px;
+}
+
+.admin-order-notes textarea {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-order-notes textarea:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px #6366f11a;
 }
 
 .admin-toolbar {

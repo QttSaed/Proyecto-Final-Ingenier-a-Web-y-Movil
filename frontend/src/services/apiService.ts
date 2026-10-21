@@ -19,6 +19,7 @@ export interface Product {
   price: number; stock: number; image: string; hasButton?: boolean; description?: string;
 }
 export interface Order {
+  adminNotes?: string | null;
   id: string; orderNumber?: string; customer: string; total: number; date: string; status: OrderStatus;
   items: { title: string; quantity: number; unitPrice: number }[];
 }
@@ -56,5 +57,5 @@ export const apiService = {
   },
   saveProduct: (product: Partial<Product>, id?: string) => apiRequest<Product>(`/products${id ? `/${encodeURIComponent(id)}` : ''}`, { method: id ? 'PUT' : 'POST', body: JSON.stringify(product) }),
   deleteProduct: (id: string) => apiRequest(`/products/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  setOrderStatus: (id: string, status: OrderStatus) => apiRequest<Order>(`/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', body: JSON.stringify({ status }) })
+  setOrderStatus: (id: string, status: OrderStatus, adminNotes?: string | null) => apiRequest<Order>(`/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', body: JSON.stringify({ status, ...(adminNotes !== undefined ? { adminNotes } : {}) }) })
 };

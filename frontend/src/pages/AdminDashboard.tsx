@@ -17,6 +17,7 @@ const AdminDashboard: React.FC = () => {
   const tab = location.pathname.endsWith('/inventario') ? 'inventory' : location.pathname.endsWith('/ordenes') ? 'orders' : 'dashboard';
   const [products, setProducts] = useState<Product[]>(localProducts);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [orderFilter, setOrderFilter] = useState<'all' | 'active' | 'delivered' | 'cancelled'>('all');
   const [categories, setCategories] = useState<Category[]>([]);
   const [stats, setStats] = useState<Stats>(initialStats);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,9 @@ const AdminDashboard: React.FC = () => {
   const [customColor, setCustomColor] = useState(false);
   const [modal, setModal] = useState(false);
   const [detail, setDetail] = useState<Order | null>(null);
+  const [notesDraft, setNotesDraft] = useState('');
+  const [notesMessage, setNotesMessage] = useState('');
+  const [notesError, setNotesError] = useState('');
   const [search, setSearch] = useState('');
   const detailRef = useRef<HTMLDialogElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -48,6 +52,27 @@ const AdminDashboard: React.FC = () => {
   }, []);
   useEffect(() => { if (modal) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [modal]);
   useEffect(() => { if (detail) detailRef.current?.showModal(); else detailRef.current?.close(); }, [detail]);
+  const orderFilters = [
+    { key: 'all', label: 'Todos', rows: orders },
+    { key: 'active', label: 'En proceso', rows: orders.filter(order => ['Pendiente', 'Pagado', 'Enviado'].includes(order.status)) },
+    { key: 'delivered', label: 'Entregados', rows: orders.filter(order => order.status === 'Entregado') },
+    { key: 'cancelled', label: 'Cancelados', rows: orders.filter(order => ['Cancelado', 'Reembolsado'].includes(order.status)) }
+  ] as const;
+  const filteredOrders = orderFilters.find(filter => filter.key === orderFilter)!.rows;
+  const openDetail = (order: Order) => {
+    setNotesDraft(order.adminNotes || ''); setNotesMessage(''); setNotesError(''); setDetail(order);
+  };
+  const saveNotes = async () => {
+    if (!detail) return;
+    setBusy(true); setNotesMessage(''); setNotesError('');
+    try {
+      const saved = await apiService.setOrderStatus(detail.id, detail.status, notesDraft);
+      setOrders(previous => previous.map(order => order.id === saved.id ? saved : order));
+      setStats(previous => ({ ...previous, recentOrders: previous.recentOrders.map(order => order.id === saved.id ? saved : order) }));
+      setDetail(previous => previous?.id === saved.id ? saved : previous);
+      setNotesMessage('Nota guardada correctamente.');
+    } catch (error) { setNotesError(errorMessage(error)); } finally { setBusy(false); }
+  };
   const colorOptions = [...new Set([...COLOR_PRESETS, ...products.map(p => p.color).filter(Boolean)])];
   const filteredProducts = products.filter(product => `${product.title} ${product.category}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')));
   const refreshStats = async () => { try { setStats(await apiService.stats()); } catch (error) { setError(errorMessage(error)); } };
@@ -77,7 +102,7 @@ const AdminDashboard: React.FC = () => {
   };
   const statusClass = (status: string) => `admin-status ${status.toLowerCase()}`;
   const orderTable = (rows: Order[], editable = false) => <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>
-    {rows.map(order => <tr key={order.id}><td className="admin-order-id">{order.id}</td><td>{order.customer}</td><td>{new Date(order.date).toLocaleDateString('es-CL')}</td><td className="admin-amount">{money(order.total)}</td><td>{editable ? <select className={statusClass(order.status)} aria-label={`Estado del pedido ${order.id}`} disabled={busy} value={order.status} onChange={event => void changeStatus(order.id, event.target.value as OrderStatus)}>{ORDER_STATUSES.map(status => <option key={status}>{status}</option>)}</select> : <span className={statusClass(order.status)}>{order.status}</span>}</td><td><button className="admin-action admin-action-detail" onClick={() => setDetail(order)}><IonIcon icon={eyeOutline} aria-hidden="true" />Ver detalle</button></td></tr>)}
+    {rows.map(order => <tr key={order.id}><td className="admin-order-id">{order.id}</td><td>{order.customer}</td><td>{new Date(order.date).toLocaleDateString('es-CL')}</td><td className="admin-amount">{money(order.total)}</td><td>{editable ? <select className={statusClass(order.status)} aria-label={`Estado del pedido ${order.id}`} disabled={busy} value={order.status} onChange={event => void changeStatus(order.id, event.target.value as OrderStatus)}>{ORDER_STATUSES.map(status => <option key={status}>{status}</option>)}</select> : <span className={statusClass(order.status)}>{order.status}</span>}</td><td><button className="admin-action admin-action-detail" onClick={() => openDetail(order)}><IonIcon icon={eyeOutline} aria-hidden="true" />Ver detalle</button></td></tr>)}
     {!rows.length && <tr><td className="admin-empty" colSpan={6}>No hay pedidos registrados.</td></tr>}
   </tbody></table></div>;
   return <IonContent fullscreen className="admin-content">
@@ -97,10 +122,10 @@ const AdminDashboard: React.FC = () => {
         {filteredProducts.map(product => <tr key={product.id}><td><div className="admin-product-cell"><div className="admin-thumbnail"><IonIcon icon={albumsOutline} aria-hidden="true" />{product.image && <img key={product.image} src={product.image} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</div><span>{product.title}</span></div></td><td>{product.category}</td><td className="admin-amount">{money(product.price)}</td><td><span className={`stock-badge ${product.stock > 10 ? 'stock-ok' : product.stock > 0 ? 'stock-low' : 'stock-out'}`}>{product.stock > 0 ? `${product.stock} u.` : 'Agotado'}</span>{product.stock > 0 && product.stock <= 10 && <small className="admin-low-stock">Bajo stock</small>}</td><td><span className="admin-condition">{product.condition}</span></td><td><div className="admin-actions"><button disabled={busy} className="admin-action admin-action-edit" onClick={() => openForm(product)}><IonIcon icon={pencilOutline} aria-hidden="true" />Editar</button><button disabled={busy} className="admin-action admin-action-delete" onClick={() => void remove(product)}><IonIcon icon={trashOutline} aria-hidden="true" />Eliminar</button></div></td></tr>)}
         {!filteredProducts.length && <tr><td className="admin-empty" colSpan={6}>{search.trim() ? 'No hay productos que coincidan con tu búsqueda.' : 'No hay productos en inventario.'}</td></tr>}
       </tbody></table></div></div>}
-      {tab === 'orders' && <div className="admin-view"><div className="admin-header-title"><p className="admin-eyebrow">VENTAS</p><h1>Gestión de Órdenes</h1><p>Consulta cada pedido y actualiza su estado.</p></div>{orderTable(orders, true)}</div>}
+      {tab === 'orders' && <div className="admin-view"><div className="admin-header-title"><p className="admin-eyebrow">VENTAS</p><h1>Gestión de Órdenes</h1><p>Consulta cada pedido y actualiza su estado.</p></div><div className="admin-filter-bar" role="group" aria-label="Filtrar pedidos por estado">{orderFilters.map(filter => <button key={filter.key} type="button" className={`admin-filter-tab${orderFilter === filter.key ? ' active' : ''}`} aria-pressed={orderFilter === filter.key} onClick={() => setOrderFilter(filter.key)}>{filter.label} ({filter.rows.length})</button>)}</div>{orderTable(filteredOrders, true)}</div>}
     </main></div>
     <dialog ref={detailRef} className="admin-dialog admin-order-dialog" aria-labelledby="admin-detail-title" onCancel={() => setDetail(null)} onClose={() => setDetail(null)}>
-      {detail && <><div className="admin-dialog-heading flex-between"><div><p className="admin-eyebrow">DETALLE DEL PEDIDO</p><h2 id="admin-detail-title">Pedido {detail.id}</h2></div><button className="admin-close" type="button" aria-label="Cerrar detalle" onClick={() => setDetail(null)}><IonIcon icon={closeOutline} aria-hidden="true" /></button></div><div className="admin-order-meta"><div><strong>{detail.customer}</strong><p>{new Date(detail.date).toLocaleDateString('es-CL')}</p></div><span className={statusClass(detail.status)}>{detail.status}</span></div><div className="admin-table-container"><table className="admin-table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead><tbody>{detail.items.map((item, index) => <tr key={index}><td>{item.title}</td><td>{item.quantity}</td><td>{money(item.unitPrice)}</td><td className="admin-amount">{money(item.quantity * item.unitPrice)}</td></tr>)}</tbody></table></div><div className="admin-order-total"><span>Total del pedido</span><strong>{money(detail.total)}</strong></div></>}
+      {detail && <><div className="admin-dialog-heading flex-between"><div><p className="admin-eyebrow">DETALLE DEL PEDIDO</p><h2 id="admin-detail-title">Pedido {detail.id}</h2></div><button className="admin-close" type="button" aria-label="Cerrar detalle" onClick={() => setDetail(null)}><IonIcon icon={closeOutline} aria-hidden="true" /></button></div><div className="admin-order-meta"><div><strong>{detail.customer}</strong><p>{new Date(detail.date).toLocaleDateString('es-CL')}</p></div><span className={statusClass(detail.status)}>{detail.status}</span></div><div className="admin-table-container"><table className="admin-table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead><tbody>{detail.items.map((item, index) => <tr key={index}><td>{item.title}</td><td>{item.quantity}</td><td>{money(item.unitPrice)}</td><td className="admin-amount">{money(item.quantity * item.unitPrice)}</td></tr>)}</tbody></table></div><div className="admin-order-total"><span>Total del pedido</span><strong>{money(detail.total)}</strong></div><section className="admin-order-notes" aria-labelledby="admin-notes-title"><h3 id="admin-notes-title"><label htmlFor="admin-notes">Notas del Administrador (Privadas)</label></h3><textarea id="admin-notes" rows={4} disabled={busy} placeholder="Escribe recordatorios o notas sobre este pedido (ej: cliente retira el sábado, comprobante verificado)..." value={notesDraft} onChange={event => { setNotesDraft(event.target.value); setNotesMessage(''); }} />{notesError && <p role="alert" className="admin-error">{notesError}</p>}{notesMessage && <p role="status" className="admin-success">{notesMessage}</p>}<button type="button" className="btn-admin-submit" disabled={busy} onClick={() => void saveNotes()}>{busy ? 'Guardando...' : 'Guardar nota'}</button></section></>}
     </dialog>
     <dialog ref={dialogRef} className="admin-dialog admin-product-dialog" aria-labelledby="admin-product-title" onClose={() => setModal(false)} onCancel={event => { if (busy) event.preventDefault(); else setModal(false); }}>
       <form className="admin-form" onSubmit={save}><div className="admin-dialog-heading flex-between"><h2 id="admin-product-title">{editing ? 'Editar producto' : 'Nuevo producto'}</h2><button type="button" disabled={busy} onClick={() => setModal(false)} className="admin-close" aria-label="Cerrar formulario"><IonIcon icon={closeOutline} aria-hidden="true" /></button></div>
