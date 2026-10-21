@@ -1,11 +1,15 @@
-const { test } = require('node:test');
+const { test, beforeEach } = require('node:test');
+const mailer = require('../src/services/mailer');
+beforeEach(t => {
+  t.mock.method(mailer, 'sendVerificationEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, verificationUrl: `${clientUrl}/verificar-correo?token=${token}` }));
+});
 const assert = require('node:assert/strict');
 const request = require('supertest');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createApp } = require('../src/app');
 const secret = 'test-secret-with-at-least-32-characters';
-const user = { id: 1, name: 'Cliente', email: 'cliente@tcgstore.com', role: 'client', phone: null, address: null, city: null, region: null };
+const user = { id: 1, name: 'Cliente', email: 'cliente@tcgstore.com', role: 'client', is_verified: true, phone: null, address: null, city: null, region: null };
 const product = { id: 1, code: 'pokemon-0', category_id: 8, category: 'Pokemon', category_slug: 'pokemon', title: 'Carta', description: 'Carta', price: 23000, stock: 5, game: 'Pokemon', edition: 'Base', rarity: 'Rare', color: 'Rojo', cost: 0, card_type: 'Carta', condition: 'Near Mint', image_url: '/card.png', is_active: true, has_button: true };
 const order = { id: 1, order_number: 'TCG-TEST', user_id: 1, status: 'Pendiente', admin_notes: null, subtotal: 23000, shipping_cost: 3500, total: 26500, shipping_name: 'Cliente', shipping_email: user.email, shipping_address: 'Calle 1', shipping_city: 'Santiago', shipping_region: 'Metropolitana', payment_method: 'Transferencia', created_at: '2026-10-13' };
 const item = { id: 1, order_id: 1, product_id: 1, quantity: 1, unit_price: 23000, code: product.code, title: product.title, image_url: product.image_url };
@@ -35,15 +39,21 @@ test('health, categorías y rutas inexistentes', async () => {
   await s.api.get('/api/unknown').expect(404);
   s.done();
 });
-test('registro genera hash bcrypt y JWT sin exponer contraseña', async () => {
+test('registro genera hash bcrypt y token de verificación sin exponer contraseña', async () => {
   const s = setup([{ sql: /SELECT id FROM users/, check: p => assert.equal(p[0], 'nuevo@example.com') },
-    { sql: /INSERT INTO users/, rows: [{ ...user, email: 'nuevo@example.com' }], check: async p => {
+    { sql: /INSERT INTO users/, rows: [{ ...user, email: 'nuevo@example.com', is_verified: false }], check: async p => {
       assert.match(p[2], /^\$2[aby]\$10\$/);
     } }]);
   const response = await s.api.post('/api/auth/register').send({ name: ' Cliente ', email: 'NUEVO@example.com', password: 'Password123' }).expect(201);
   assert.equal(response.body.user.role, 'client');
   assert.equal(response.body.user.password_hash, undefined);
-  assert.equal(jwt.verify(response.body.token, secret).sub, '1');
+  assert.equal(response.body.token, undefined);
+  assert.equal(response.body.requiresVerification, true);
+  assert.equal(response.body.user.isVerified, false);
+  assert.equal(response.body.email, 'nuevo@example.com');
+  assert.match(s.calls[1].params[3], /^[a-f0-9]{64}$/);
+  assert.match(s.calls[1].sql, /false, \$4, CURRENT_TIMESTAMP \+ INTERVAL '24 hours'/);
+  assert.equal(new URL(response.body.verificationUrl).searchParams.get('token'), s.calls[1].params[3]);
   assert.equal(await bcrypt.compare('Password123', s.calls[1].params[2]), true);
   s.done();
 });
@@ -62,6 +72,8 @@ test('login acepta hashes del esquema, rechaza credenciales y permite consultar/
     { sql: /FROM users WHERE id/, rows: [] }]);
   const response = await s.api.post('/api/auth/login').send({ email: user.email, password: '123456' }).expect(200);
   assert.equal(response.body.user.password_hash, undefined);
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(jwt.verify(response.body.token, secret).sub, '1');
   const bad = await s.api.post('/api/auth/login').send({ email: user.email, password: 'incorrecta' }).expect(401);
   assert.equal(bad.body.message, 'Correo o contraseña incorrectos');
   await s.api.get('/api/auth/me').expect(401);
@@ -201,4 +213,67 @@ test('estadísticas admin: tienda vacía y error de base de datos', async () => 
   assert.equal(body.totalSales, 0); assert.deepEqual(body.recentOrders, []);
   const error = await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token('admin')}`).expect(500);
   assert.ok(!JSON.stringify(error.body).includes('private database')); s.done();
+});
+
+
+test('login rechaza cuentas pendientes de verificación', async () => {
+  const password_hash = await bcrypt.hash('Password123', 10);
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [{ ...user, is_verified: false, password_hash }] }]);
+  const response = await s.api.post('/api/auth/login').send({ email: user.email, password: 'Password123' }).expect(403);
+  assert.match(response.body.message, /Debes verificar tu correo/);
+  s.done();
+});
+
+test('verificación acepta tokens por POST y GET y devuelve una sesión', async () => {
+  for (const method of ['post', 'get']) {
+    const s = setup([
+      { sql: /WHERE verification_token = \$1/, rows: [{ ...user, is_verified: false, verification_expires_at: new Date(Date.now() + 86400000) }], check: p => assert.deepEqual(p, ['valid-token']) },
+      { sql: /UPDATE users SET is_verified = true, verification_token = NULL, verification_expires_at = NULL/, rows: [user], check: p => assert.deepEqual(p, [user.id]) }
+    ]);
+    const req = s.api[method]('/api/auth/verify-email');
+    const response = await (method === 'post' ? req.send({ token: 'valid-token' }) : req.query({ token: 'valid-token' })).expect(200);
+    assert.equal(response.body.user.isVerified, true);
+    assert.equal(jwt.verify(response.body.token, secret).sub, '1');
+    s.done();
+  }
+});
+
+test('verificación rechaza tokens ausentes, inválidos y expirados', async () => {
+  const s = setup([
+    { sql: /WHERE verification_token/, rows: [] },
+    { sql: /WHERE verification_token/, rows: [{ ...user, verification_expires_at: new Date(Date.now() - 1000) }] }
+  ]);
+  await s.api.post('/api/auth/verify-email').send({}).expect(400);
+  await s.api.get('/api/auth/verify-email').expect(400);
+  const invalid = await s.api.post('/api/auth/verify-email').send({ token: 'invalid' }).expect(400);
+  assert.match(invalid.body.message, /inválido/);
+  const expired = await s.api.get('/api/auth/verify-email').query({ token: 'expired' }).expect(400);
+  assert.match(expired.body.message, /expirado/);
+  s.done();
+});
+
+test('reenvío genera un token nuevo y envía el enlace a cuentas pendientes', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE email/, rows: [{ ...user, is_verified: false }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET verification_token = \$1, verification_expires_at = CURRENT_TIMESTAMP \+ INTERVAL '24 hours'/, check: p => { assert.match(p[0], /^[a-f0-9]{64}$/); assert.equal(p[1], user.id); } }
+  ]);
+  const response = await s.api.post('/api/auth/resend-verification').send({ email: user.email.toUpperCase() }).expect(200);
+  assert.equal(response.body.email, user.email);
+  assert.equal(new URL(response.body.verificationUrl).searchParams.get('token'), s.calls[1].params[0]);
+  const call = mailer.sendVerificationEmail.mock.calls[0].arguments[0];
+  assert.equal(call.email, user.email);
+  assert.equal(call.name, user.name);
+  assert.equal(call.token, s.calls[1].params[0]);
+  s.done();
+});
+
+test('reenvío valida el correo, admite cuentas desconocidas y rechaza cuentas verificadas', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [] }, { sql: /FROM users WHERE email/, rows: [user] }]);
+  await s.api.post('/api/auth/resend-verification').send({ email: 'invalid' }).expect(400);
+  const missing = await s.api.post('/api/auth/resend-verification').send({ email: 'missing@example.com' }).expect(200);
+  assert.match(missing.body.message, /Si el correo está registrado/);
+  const verified = await s.api.post('/api/auth/resend-verification').send({ email: user.email }).expect(400);
+  assert.match(verified.body.message, /ya se encuentra verificada/);
+  assert.equal(mailer.sendVerificationEmail.mock.callCount(), 0);
+  s.done();
 });

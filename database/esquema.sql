@@ -16,6 +16,9 @@ CREATE TABLE users (
     address TEXT,
     city VARCHAR(100),
     region VARCHAR(100),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    verification_token VARCHAR(255),
+    verification_expires_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -93,9 +96,9 @@ CREATE INDEX idx_order_items_order ON order_items(order_id);
 CREATE INDEX idx_order_items_product ON order_items(product_id);
 
 -- Cuentas de prueba: bcrypt de 10 rondas; reemplazarlas antes de produccion.
-INSERT INTO users (name, email, password_hash, role, phone, address, city, region) VALUES
-('Administrador', 'admin@tcgstore.com', '$2b$10$d/yDCuwtT9GqoctibjudGemuKbLjMI6W4GgViw.93msxcLA3YxUB.', 'admin', '+56911111111', 'Av. Demo 100', 'Santiago', 'Metropolitana'),
-('Cliente Demo', 'cliente@tcgstore.com', '$2b$10$d/yDCuwtT9GqoctibjudGemuKbLjMI6W4GgViw.93msxcLA3YxUB.', 'client', '+56922222222', 'Av. Demo 200', 'Santiago', 'Metropolitana');
+INSERT INTO users (name, email, password_hash, role, phone, address, city, region, is_verified) VALUES
+('Administrador', 'admin@tcgstore.com', '$2b$10$d/yDCuwtT9GqoctibjudGemuKbLjMI6W4GgViw.93msxcLA3YxUB.', 'admin', '+56911111111', 'Av. Demo 100', 'Santiago', 'Metropolitana', true),
+('Cliente Demo', 'cliente@tcgstore.com', '$2b$10$d/yDCuwtT9GqoctibjudGemuKbLjMI6W4GgViw.93msxcLA3YxUB.', 'client', '+56922222222', 'Av. Demo 200', 'Santiago', 'Metropolitana', true);
 
 INSERT INTO categories (slug, name, logo_url) VALUES
 ('accesorios', 'Accesorios', NULL),
