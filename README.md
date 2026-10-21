@@ -65,17 +65,19 @@
 ## Índice
 1. [Acceso a la Plataforma](#-acceso-a-la-plataforma-en-producción)
 2. [Cuentas de Demostración](#-cuentas-de-demostración)
-3. [Estructura y Gestión de Ramas en GitHub](#-estructura-y-gestión-de-ramas-en-github)
-4. [Justificación del Problema](#justificación-del-problema)
-5. [Usuarios y Roles del Sistema](#usuarios-objetivo-quién-usará-la-aplicación)
-6. [Proto-personas](#proto-personas)
-7. [Requerimientos del Sistema](#requerimientos)
-8. [Arquitectura de Información y UX](#arquitectura-de-navegación)
-9. [Prototipo UI/UX en Figma](#bocetos-uiux)
-10. [Stack Tecnológico](#tecnologías-y-herramientas)
-11. [Endpoints de la API REST](#endpoints-de-la-api-rest)
-12. [Instalación y Configuración Local](#instalación-y-configuración-local)
-13. [Pruebas y Testing](#pruebas-y-testing)
+3. [Vistas de la Aplicación en Producción](#-vistas-de-la-aplicación-en-producción)
+4. [Estructura y Gestión de Ramas en GitHub](#-estructura-y-gestión-de-ramas-en-github)
+5. [Justificación del Problema](#justificación-del-problema)
+6. [Usuarios y Roles del Sistema](#usuarios-objetivo-quién-usará-la-aplicación)
+7. [Proto-personas](#proto-personas)
+8. [Requerimientos del Sistema](#requerimientos)
+9. [Arquitectura de Información y UX](#arquitectura-de-navegación)
+10. [Prototipo UI/UX en Figma](#bocetos-uiux)
+11. [Stack Tecnológico](#tecnologías-y-herramientas)
+12. [Endpoints de la API REST](#endpoints-de-la-api-rest)
+13. [Instalación y Configuración Local](#instalación-y-configuración-local)
+14. [Pruebas y Testing](#pruebas-y-testing)
+    - [Evidencia de Pruebas en Postman](#-evidencia-de-pruebas-de-api-en-postman)
 
 ---
 
@@ -100,9 +102,23 @@ El esquema de base de datos incluye credenciales precargadas (contraseña univer
 
 ---
 
+## 📸 Vistas de la Aplicación en Producción
+
+La plataforma cuenta con una interfaz web responsiva, interactiva y adaptada a las necesidades de la comunidad coleccionista de TCG:
+
+| Vista | Captura de Pantalla | Descripción y Funcionalidad |
+|---|---|---|
+| **Página Principal (Landing)** | <img src="docs/screenshots/01-home.png" alt="Inicio" width="480" /> | **Exploración y Novedades:** Banner rotativo de colecciones destacadas, selector interactivo de franquicias (Pokémon, One Piece, Magic, Digimon, Gundam, Riftbound), promociones dinámicas y buscador en vivo. |
+| **Catálogo Interactivo** | <img src="docs/screenshots/02-catalogo.png" alt="Catálogo" width="480" /> | **Filtros y Tarjetas de Producto:** Cuadrícula de cartas y accesorios filtrados por categoría, buscador de texto, selector de elementos por página, etiquetas de precio en CLP y botón directo de adición al carrito. |
+| **Panel de Administración** | <img src="docs/screenshots/03-admin-dashboard.png" alt="Dashboard" width="480" /> | **Control y Métricas de Negocio:** Tarjetas KPI en tiempo real (ventas totales, órdenes, stock en almacén, clientes), tabla de pedidos recientes con semáforo de estado y gestión de inventario. |
+| **Flujo de Checkout** | <img src="docs/screenshots/04-checkout.png" alt="Checkout" width="480" /> | **Proceso de Compra Validado:** Stepper de avance en 4 pasos, formulario de despacho con validación de entradas, selección de medios de pago y desglose transaccional del total. |
+| **Panel del Cliente (Mi Cuenta)** | <img src="docs/screenshots/05-perfil-ordenes.png" alt="Perfil" width="480" /> | **Historial y Seguimiento:** Perfil del usuario autenticado e historial dinámico de órdenes consultadas directamente desde PostgreSQL con badges de estado actualizables. |
+
+---
+
 ## 🌿 Estructura y Gestión de Ramas en GitHub
 
-Cumpliendo con la sección **3.2 (Uso y contenido de las ramas)** de la pauta de evaluación:
+El repositorio implementa una estrategia de ramas estructurada según responsabilidades:
 
 * **`main`:** Rama de producción oficial. Contiene la versión estable, optimizada y conectada a la nube, desplegada automáticamente en Vercel.
 * **`backend`:** Rama de desarrollo del servidor y la base de datos. Contiene la API REST modular en Express, el esquema relacional reproducible [`database/esquema.sql`](database/esquema.sql), pruebas en Postman y la integración completa del sistema.
@@ -347,7 +363,7 @@ TCGStore
 El diseño de la interfaz y la experiencia de usuario (Wireframes y Prototipos interactivos) fue elaborado en **Figma**:
 
 - 🎨 **Prototipo Interactivo:** [Ver diseño en Figma](https://www.figma.com/proto/sfyPtwS7DZlxlQOimMfeaz/TCGStore-Web?node-id=2-3&p=f&t=TFggwOJHHyufxtOT-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A3)
-- 📧 **Accesos de evaluación:** Se remitieron invitaciones oficiales a los correos de los profesores evaluadores de la asignatura.
+- 👥 **Accesibilidad:** El prototipo interactivo se encuentra disponible para navegación y pruebas de usabilidad.
 
 ---
 
@@ -458,4 +474,31 @@ El proyecto cuenta con un conjunto integral de pruebas automatizadas:
   *Verifica la compilación estricta de TypeScript y el empaquetado de producción con Vite.*
 
 * **Colección de Postman:**  
-  Ubicada en [`testing/TCGStore_EP2.postman_collection.json`](testing/TCGStore_EP2.postman_collection.json) junto a su entorno [`testing/TCGStore_Local.postman_environment.json`](testing/TCGStore_Local.postman_environment.json), cubriendo todos los endpoints y casos de prueba requeridos por la rúbrica de la Entrega Parcial 2.
+  Ubicada en [`testing/TCGStore_EP2.postman_collection.json`](testing/TCGStore_EP2.postman_collection.json) junto a su entorno [`testing/TCGStore_Local.postman_environment.json`](testing/TCGStore_Local.postman_environment.json), cubriendo todos los endpoints de la API, flujos de autenticación, reglas de negocio y control de acceso por roles.
+
+---
+
+### 🧪 Evidencia de Pruebas de API en Postman
+
+La API REST fue verificada exhaustivamente mediante una suite automatizada en Postman con **130 validaciones exitosas (130 Passed / 0 Failed)** ejecutadas en secuencia ordenada con el *Collection Runner*:
+
+#### 1. Resumen General de Ejecución (Collection Runner)
+![Resumen de Pruebas en Postman](docs/postman/01-runner-summary.png)
+
+#### 2. Autenticación y Manejo Seguro de Tokens JWT
+* **Inicio de Sesión de Administrador (`200 OK`):** Generación de token JWT y asignación de rol administrativo.  
+  ![Login Admin](docs/postman/02-auth-login-admin.png)
+* **Protección de Rutas Privadas (`401 Unauthorized`):** Bloqueo inmediato de solicitudes a endpoints protegidos sin token de autorización.  
+  ![Perfil sin token](docs/postman/03-auth-sin-token-401.png)
+
+#### 3. Reglas de Negocio y Control Transaccional de Stock
+* **Validación de Inventario Insuficiente (`400 Bad Request`):** Bloqueo automático de pedidos que superan el stock físico disponible en PostgreSQL.  
+  ![Pedido sin stock](docs/postman/04-pedido-sin-stock-400.png)
+* **Creación Exitosa de Orden (`201 Created`):** Validación transaccional, cálculo de totales y descuento de inventario.  
+  ![Crear pedido cliente](docs/postman/05-crear-pedido-cliente-201.png)
+
+#### 4. Control de Acceso por Roles (RBAC)
+* **Intento de Creación denegado a Cliente (`403 Forbidden`):** Un usuario autenticado con rol `cliente` intenta registrar un producto nuevo en el catálogo y el middleware de autorización bloquea la solicitud de forma inmediata.  
+  ![Crear producto como cliente 403](docs/postman/06-rbac-crear-producto-403.png)
+* **Intento de Eliminación denegado a Cliente (`403 Forbidden`):** La API impide que cuentas sin credenciales administrativas puedan dar de baja o suprimir productos del inventario.  
+  ![Eliminar como cliente 403](docs/postman/07-rbac-eliminar-producto-403.png)
