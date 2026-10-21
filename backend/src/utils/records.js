@@ -3,7 +3,7 @@ function identifier(value, alias, column = 'code') {
     ? { sql: `(${alias}.${column} = $1 OR ${alias}.id::text = $1)`, params: [value] }
     : { sql: `${alias}.${column} = $1`, params: [value] };
 }
-const user = (row) => Object.fromEntries(['id', 'name', 'email', 'role', 'phone', 'address', 'city', 'region'].map(key => [key, row[key] ?? null]));
+const user = (row) => ({ ...Object.fromEntries(['id', 'name', 'email', 'role', 'phone', 'address', 'city', 'region'].map(key => [key, row[key] ?? null])), isVerified: Boolean(row.is_verified) });
 const product = p => ({ id: p.code, dbId: p.id, code: p.code, title: p.title, description: p.description,
   price: p.price, priceFormatted: '$' + Number(p.price).toLocaleString('es-CL'), stock: p.stock,
   category: p.category, categorySlug: p.category_slug, game: p.game, edition: p.edition, rarity: p.rarity,
