@@ -1,88 +1,176 @@
-# Plataforma E-commerce Especializada en Trading Card Games (TCG)
+<div align="center">
 
-**🚀 Proyecto en Vivo (Vercel):** [https://proyecto-web-y-movil.vercel.app/](https://proyecto-web-y-movil.vercel.app/)
+  <h1>🃏 TCGStore</h1>
+  <p><strong>Plataforma E-commerce Especializada en Trading Card Games (TCG)</strong></p>
+  <p>Gestión centralizada de inventario, catálogo interactivo y compra segura de cartas coleccionables y productos sellados.</p>
 
+  <p>
+    <code>⚡ Pokémon</code> •
+    <code>🔮 Magic: The Gathering</code> •
+    <code>🏴‍☠️ One Piece</code> •
+    <code>🦖 Digimon</code> •
+    <code>🤖 Gundam</code> •
+    <code>⚔️ Riftbound</code>
+  </p>
 
-# Presentado por:
-- Alfonso Duran Araya   
-- Joaquin Alegria Vargas
-- Martín Albarrán Alcorta
+  <br />
+
+  <p>
+    <a href="https://proyecto-web-y-movil.vercel.app/" target="_blank">
+      <img src="https://img.shields.io/badge/🚀_PROYECTO_EN_VIVO-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Live" />
+    </a>
+    <a href="https://tcgstore-api.onrender.com/api/health" target="_blank">
+      <img src="https://img.shields.io/badge/📡_API_REST-RENDER-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="Render API" />
+    </a>
+    <a href="https://www.figma.com/proto/sfyPtwS7DZlxlQOimMfeaz/TCGStore-Web?node-id=2-3&p=f&t=TFggwOJHHyufxtOT-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A3" target="_blank">
+      <img src="https://img.shields.io/badge/🎨_PROTOTIPO-FIGMA-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="Figma" />
+    </a>
+    <a href="#requerimientos">
+      <img src="https://img.shields.io/badge/📋_REQUERIMIENTOS-DOCS-1B1642?style=for-the-badge" alt="Requerimientos" />
+    </a>
+    <a href="#instalación-y-configuración-local">
+      <img src="https://img.shields.io/badge/⚙️_INSTALACIÓN-LOCAL-2563EB?style=for-the-badge" alt="Instalación" />
+    </a>
+  </p>
+
+  <br />
+
+  <p>
+    <img src="https://img.shields.io/badge/Ionic-3880FF?style=flat-square&logo=ionic&logoColor=white" alt="Ionic" />
+    <img src="https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
+    <img src="https://img.shields.io/badge/Express.js-404D59?style=flat-square&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
+    <img src="https://img.shields.io/badge/Render-46E3B7?style=flat-square&logo=render&logoColor=black" alt="Render" />
+    <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=postman&logoColor=white" alt="Postman" />
+  </p>
+
+</div>
+
+---
+
+### Presentado por:
+- **Alfonso Durán Araya**
+- **Joaquín Alegría Vargas**
+- **Martín Albarrán Alcorta**
+
+*Pontificia Universidad Católica de Valparaíso — Escuela de Ingeniería Informática*  
+*Asignatura: Ingeniería Web y Móvil (INF3245-1)*
+
+---
 
 ## Índice
-1. [Justificación del problema](#justificación-del-problema)
-2. [Usuarios](#usuarios-objetivo-quién-usará-la-aplicación)
-    - [Roles](#roles-del-sistema)
-    - [Proto-personas](#proto-personas)
-3. [Requerimientos](#requerimientos)
-4. [Arquitectura de la Información / UX](#arquitectura-de-navegación)
-    - [Diferenciación x roles](#diferenciación-de-acceso-según-roles)
-    - [Flujos principales Tareas](#flujos-de-tareas)
-    - [Puntos críticos de interacción](#puntos-críticos-de-interacción)
-    - [Justificación Técnica](#justificación-técnica)
-5. [Bocetos UX/UI](#bocetos-uiux)
-6. [Frontend con Ionic-React](#tecnologías)
-7. [Instalación y Configuración Local](#instalación-y-configuración-local)
-8. [Endpoints de la API REST](#endpoints-de-la-api-rest)
-9. [Pruebas y Testing](#pruebas-y-testing)
+1. [Acceso Rápido y Despliegues](#-acceso-rápido-y-despliegues-en-la-nube)
+2. [Cuentas de Demostración](#-cuentas-de-demostración)
+3. [Estructura y Gestión de Ramas en GitHub](#-estructura-y-gestión-de-ramas-en-github)
+4. [Justificación del Problema](#justificación-del-problema)
+5. [Usuarios y Roles del Sistema](#usuarios-objetivo-quién-usará-la-aplicación)
+6. [Proto-personas](#proto-personas)
+7. [Requerimientos del Sistema](#requerimientos)
+8. [Arquitectura de Información y UX](#arquitectura-de-navegación)
+9. [Prototipo UI/UX en Figma](#bocetos-uiux)
+10. [Stack Tecnológico](#tecnologías-y-herramientas)
+11. [Endpoints de la API REST](#endpoints-de-la-api-rest)
+12. [Instalación y Configuración Local](#instalación-y-configuración-local)
+13. [Pruebas y Testing](#pruebas-y-testing)
+
+---
+
+## 🌐 Acceso Rápido y Despliegues en la Nube
+
+La plataforma se encuentra completamente desplegada y operativa en producción, sin necesidad de instalación local obligatoria:
+
+* **Frontend en Producción (Vercel):**  
+  👉 [https://proyecto-web-y-movil.vercel.app/](https://proyecto-web-y-movil.vercel.app/)
+* **Backend API REST en Producción (Render):**  
+  👉 [https://tcgstore-api.onrender.com/api/health](https://tcgstore-api.onrender.com/api/health)
+* **Base de Datos Cloud (Supabase):**  
+  PostgreSQL 15 alojado en Supabase Cloud con conexión cifrada SSL (Pooler transaccional en AWS SA-East-1).
+
+### 🔑 Cuentas de Demostración
+
+El esquema de base de datos incluye credenciales precargadas (contraseña universal: `123456`):
+
+| Rol | Correo | Contraseña | Permisos y Acceso |
+|---|---|---|---|
+| **Administrador** | `admin@tcgstore.com` | `123456` | Acceso exclusivo al Dashboard de gestión (`/admin`, `/admin/inventario`, `/admin/ordenes`), métricas en vivo, semáforo de stock, edición de precios y cambio de estado de pedidos. Bloquea vistas de cliente. |
+| **Cliente** | `cliente@tcgstore.com` | `123456` | Navegación de catálogo, carrito de compras persistente, flujo de checkout (`/checkout`) y visualización de historial de compras en Mi Cuenta (`/perfil`). |
+
+---
+
+## 🌿 Estructura y Gestión de Ramas en GitHub
+
+Cumpliendo con la sección **3.2 (Uso y contenido de las ramas)** de la pauta de evaluación:
+
+* **`main`:** Rama de producción oficial. Contiene la versión estable, optimizada y conectada a la nube, desplegada automáticamente en Vercel.
+* **`backend`:** Rama de desarrollo del servidor y la base de datos. Contiene la API REST modular en Express, el esquema relacional reproducible [`database/esquema.sql`](database/esquema.sql), pruebas en Postman y la integración completa del sistema.
+* **`frontend`:** Rama dedicada a la interfaz de usuario en Ionic y React. Contiene las vistas, componentes, estilos, navegación móvil/escritorio y pruebas unitarias de frontend.
 
 ---
 
 ## Justificación del problema
-En el mercado local de juegos de cartas coleccionables (TCG como Pokémon, Yu-Gi-Oh!, Magic: The Gathering, etc.), los jugadores y coleccionistas enfrentan dificultades para encontrar un inventario centralizado y confiable de cartas sueltas ("singles") y productos sellados.
+
+En el mercado local de juegos de cartas coleccionables (TCG como Pokémon, Yu-Gi-Oh!, Magic: The Gathering, One Piece, etc.), los jugadores y coleccionistas enfrentan dificultades para encontrar un inventario centralizado y confiable de cartas sueltas ("singles") y productos sellados.
 
 A menudo, las transacciones se realizan a través de redes sociales sin garantías de seguridad, o en tiendas físicas que carecen de un catálogo digital actualizado. Esto obliga al usuario a cotizar presencialmente o a lidiar con múltiples vendedores dispersos, lo que dificulta la selección de los productos adecuados y la comparación de precios.
 
-Además, los sistemas de comercio electrónico tradicionales no están diseñados para manejar los atributos específicos y vitales de una carta coleccionable, tales como la edición, rareza, condición (Mint, Near Mint, Damaged), si es "Foil" o el idioma.
+Además, los sistemas de comercio electrónico tradicionales no están diseñados para manejar los atributos específicos y vitales de una carta coleccionable, tales como la edición, rareza, condición (Near Mint, Lightly Played, Moderately Played), si es "Foil" o el juego al que pertenece.
 
 En este contexto, el problema abordado por el proyecto corresponde a la necesidad de **gestionar, organizar y comercializar artículos de TCG mediante una plataforma optimizada que entienda las particularidades de estos productos**.
 
-Por lo tanto, el desarrollo de una plataforma web y móvil permitiría centralizar el inventario de la tienda, facilitar la búsqueda estructurada para los clientes desde diferentes dispositivos y proporcionar herramientas de gestión especializadas para los administradores del negocio.
+Por lo tanto, el desarrollo de una plataforma web y móvil permite centralizar el inventario de la tienda, facilitar la búsqueda estructurada para los clientes desde diferentes dispositivos y proporcionar herramientas de gestión especializadas para los administradores del negocio.
 
 ---
 
 ## Usuarios objetivo (Quién usará la aplicación)
+
 La aplicación considera principalmente dos grupos de usuarios: **clientes (jugadores/coleccionistas) y administradores**.
 
 ### Clientes
 Corresponden a los principales usuarios de la plataforma. Son un grupo diverso compuesto tanto por jugadores competitivos como por coleccionistas, cada uno con necesidades de compra distintas.
 
-Dentro de este grupo pueden existir usuarios que:
+Dentro de este grupo existen usuarios que:
 - buscan una carta muy específica para completar una estrategia de juego;
 - buscan cartas antiguas o raras en perfecto estado de conservación;
-- desean comprar accesorios (protectores, carpetas) o productos sellados;
+- desean comprar accesorios (protectores, carpetas, deck boxes) o productos sellados;
 - compran desde sus dispositivos móviles mientras están en un torneo;
-- necesitan saber si una carta está en idioma español o inglés.
+- necesitan conocer la condición física exacta y el stock en tiempo real antes de pagar.
 
 #### Necesidades principales
-- encontrar cartas rápidamente usando filtros avanzados (color, costo, tipo, rareza);
+- encontrar cartas rápidamente usando filtros avanzados (juego, edición, color, costo, tipo, rareza);
 - conocer el estado real de la carta y el stock exacto antes de comprar;
 - un proceso de compra rápido (checkout) y seguro;
-- disponer de un historial de compras;
+- disponer de un historial de compras accesible desde su perfil;
 - acceso a la tienda desde el móvil de forma fluida.
 
 ### Administradores
-Constituyen el segundo grupo de usuarios del sistema. Su función principal es administrar la tienda física y su reflejo digital en la plataforma. A diferencia del cliente, el administrador tendrá acceso a funcionalidades de back-office.
+Constituyen el segundo grupo de usuarios del sistema. Su función principal es administrar la tienda física y su reflejo digital en la plataforma. A diferencia del cliente, el administrador tiene acceso exclusivo a funcionalidades de back-office.
 
 ---
 
 ## Roles del Sistema
+
 - **Cliente**: Usuario registrado que puede navegar, buscar productos, agregar al carrito y realizar compras.
 - **Administrador**: Usuario encargado de gestionar el inventario, los precios y procesar las órdenes de los clientes.
 
 ### Definición de conceptos
-**Rol**: Define qué puede hacer un usuario dentro del sistema.
-**Proto-persona**: Describe quién podría ser ese usuario, sus características, necesidades, objetivos, dificultades y contexto de uso.
+- **Rol**: Define qué puede hacer un usuario dentro del sistema mediante permisos y rutas protegidas.
+- **Proto-persona**: Describe quién podría ser ese usuario, sus características, necesidades, objetivos, dificultades y contexto de uso.
 
 ---
 
 ## Proto-personas
+
 Las siguientes proto-personas corresponden a **perfiles hipotéticos** construidos a partir del análisis del problema y de las características esperadas de los usuarios de la plataforma.
 
 ---
 
 ### Proto-persona 1: Jugador Competitivo
-**Nombre ficticio:** Martín
-**Tipo de usuario o rol:** Cliente
+* **Nombre ficticio:** Martín
+* **Tipo de usuario o rol:** Cliente
 
 #### Características generales
 Martín es un joven universitario de 22 años que asiste semanalmente a torneos locales de TCG. Conoce muy bien las reglas de su juego y sabe exactamente qué cartas necesita para mejorar su mazo. Utiliza principalmente su teléfono móvil.
@@ -90,345 +178,285 @@ Martín es un joven universitario de 22 años que asiste semanalmente a torneos 
 #### Necesidades principales
 - Búsqueda rápida y precisa de cartas individuales.
 - Conocer la disponibilidad real de stock.
-- Proceso de pago ágil.
+- Proceso de pago ágil y confirmación inmediata.
 - Filtrado por atributos específicos del juego.
 
 #### Objetivos de uso
-Comprar cartas sueltas ("singles") rápidamente el día jueves para que alcancen a llegar antes de su torneo del fin de semana, o para retirarlas en la tienda.
+Comprar cartas sueltas ("singles") rápidamente el día jueves para que alcancen a llegar antes de su torneo del fin de semana, o para retirarlas en la tienda física.
 
 #### Dificultades o puntos de frustración
 Puede presentar dificultades cuando:
 - el buscador de una tienda no le permite filtrar por la edición exacta de la carta;
 - llega a la tienda y la carta que aparecía en la web ya se había vendido;
-- el proceso de pago es engorroso desde el móvil.
+- el proceso de pago es engorroso o falla desde el móvil.
 
 #### Funcionalidades de la aplicación que utilizaría
-- Buscador avanzado y filtros especializados.
-- Visualización de detalles de la carta (estado y rareza).
-- Carrito de compras.
-- Historial de pedidos.
+- Buscador avanzado y filtros especializados en tiempo real.
+- Visualización de detalles de la carta (condición, rareza, imagen de alta resolución).
+- Carrito de compras reactivo.
+- Historial de pedidos con desglose de ítems y estado de entrega.
 
 #### Dispositivo y contexto probable de acceso
-Utilizaría principalmente un **teléfono móvil**. Podría acceder durante traslados en transporte público, o en medio de un torneo mientras revisa estrategias con sus amigos.
+Utilizaría principalmente un **teléfono móvil**. Podría acceder durante traslados en transporte público, o en medio de un torneo mientras revisa estrategias con sus compañeros.
 
 ---
 
 ### Proto-persona 2: Administrador de Tienda
-**Nombre ficticio:** Rodrigo
-**Tipo de usuario o rol:** Administrador
+* **Nombre ficticio:** Rodrigo
+* **Tipo de usuario o rol:** Administrador
 
 #### Características generales
 Rodrigo tiene 35 años y es el dueño de una tienda local de juegos de mesa y TCG. Maneja un gran volumen de inventario que cambia a diario debido a las ventas físicas y la compra de cartas a los mismos jugadores. 
 
 #### Necesidades principales
-- Crear y modificar productos de manera ágil.
-- Actualizar el stock rápidamente.
-- Procesar las órdenes web (cambiar estado a "Enviado" o "Entregado").
+- Crear y modificar productos de manera ágil con atributos específicos de cartas.
+- Visualizar métricas del negocio (ventas totales, pedidos, stock crítico).
+- Procesar las órdenes web (cambiar estado a "Pagado", "Enviado" o "Entregado").
 
 #### Objetivos de uso
-Mantener el stock web sincronizado con su tienda física y gestionar los envíos a los clientes para aumentar sus ventas.
+Mantener el stock web sincronizado con su tienda física y gestionar los envíos a los clientes para aumentar sus ventas sin sobreventas accidentales.
 
 #### Dificultades o puntos de frustración
 Puede presentar frustración cuando:
-- el sistema de inventario genérico no tiene campos para "Idioma" o "Estado de conservación", obligándolo a escribirlo en el título;
-- agregar una nueva carta al sistema requiere demasiados clics;
-- no se le notifica claramente cuando entra un nuevo pedido.
+- el sistema de inventario genérico no tiene campos para "Juego", "Condición" o "Rareza";
+- agregar una nueva carta al sistema requiere demasiados pasos;
+- los botones de acción en las tablas son poco claros o confusos.
 
 #### Funcionalidades de la aplicación que utilizaría
-- Panel de control de órdenes.
-- CRUD (Crear, Leer, Actualizar, Eliminar) de inventario.
-- Cambio de estados de pedidos.
+- Dashboard con estadísticas y ventas acumuladas.
+- Catálogo interactivo con semáforo de stock (Ok, Bajo stock, Agotado).
+- Modal de alta y edición con selectores dinámicos y textos guía.
+- Gestión de órdenes con badges de colores según estado de despacho.
 
 #### Dispositivo y contexto probable de acceso
-Utilizaría principalmente un **computador de escritorio** desde el mostrador de su tienda física durante su jornada laboral.
+Utilizaría principalmente un **computador de escritorio o tablet** desde el mostrador de su tienda física durante su jornada laboral.
 
 ---
 
 ## Requerimientos
 
 ### Requerimientos Funcionales por Rol
-Un requerimiento funcional (RF) describe qué debe hacer el sistema. 
 
 | ID | Requerimiento funcional | Rol |
 |---|---|---|
-| **RF-01** | El sistema deberá permitir al cliente buscar productos utilizando filtros avanzados especializados (categoría, juego, edición, rareza). | Cliente |
-| **RF-02** | El sistema deberá mostrar el detalle del producto, incluyendo imagen, precio, cantidad en stock y estado de conservación (Condición). | Cliente |
-| **RF-03** | El sistema deberá permitir al cliente agregar, editar cantidades y eliminar productos dentro de un carrito de compras. | Cliente |
-| **RF-04** | El sistema deberá permitir al cliente finalizar su compra (checkout) generando un número de orden. | Cliente |
-| **RF-05** | El sistema deberá permitir al cliente consultar su historial de órdenes pasadas y verificar su estado actual. | Cliente |
-| **RF-06** | El sistema deberá permitir al administrador gestionar el catálogo (crear, modificar y eliminar productos) con atributos propios de TCG. | Administrador |
-| **RF-07** | El sistema deberá permitir al administrador visualizar todas las órdenes recibidas y actualizar su estado (Pendiente, Pagado, Enviado). | Administrador |
-
----
+| **RF-01** | El sistema deberá permitir al cliente buscar productos utilizando filtros avanzados especializados (categoría, juego, edición, rareza, condición). | Cliente |
+| **RF-02** | El sistema deberá mostrar el detalle completo del producto, incluyendo imagen, precio, stock disponible, edición y estado de conservación (Condición). | Cliente |
+| **RF-03** | El sistema deberá permitir al cliente agregar, editar cantidades y eliminar productos dentro de un carrito de compras con persistencia local. | Cliente |
+| **RF-04** | El sistema deberá permitir al cliente finalizar su compra (checkout) validando stock y generando una orden registrada en base de datos. | Cliente |
+| **RF-05** | El sistema deberá permitir al cliente consultar su historial de compras en su perfil con desglose de ítems y estado actualizado. | Cliente |
+| **RF-06** | El sistema deberá permitir al administrador gestionar el catálogo (crear, modificar y eliminar productos) con validación de datos e integridad referencial. | Administrador |
+| **RF-07** | El sistema deberá permitir al administrador consultar todas las órdenes recibidas y actualizar su estado (Pendiente, Pagado, Enviado, Entregado). | Administrador |
 
 ### Funcionalidades Transversales
-Las siguientes funcionalidades son necesarias para el funcionamiento general de la aplicación.
-- **FT-01:** El sistema deberá permitir el registro de nuevos usuarios clientes.
-- **FT-02:** El sistema deberá permitir iniciar sesión mediante credenciales.
-- **FT-03:** El sistema deberá permitir cerrar la sesión activa.
-- **FT-04:** El sistema deberá restringir funcionalidades de administración a usuarios sin el rol correspondiente.
+- **FT-01:** El sistema deberá permitir el registro de nuevos usuarios clientes con validación de datos y contraseñas seguras.
+- **FT-02:** El sistema deberá permitir iniciar sesión mediante JWT (JSON Web Tokens) almacenado en `sessionStorage` para seguridad de sesión.
+- **FT-03:** El sistema deberá permitir cerrar la sesión activa eliminando de forma inmediata tokens y datos locales.
+- **FT-04:** El sistema deberá restringir funcionalidades y vistas de administración a usuarios sin el rol `admin` mediante guards de enrutamiento (`ProtectedRoute`).
 
 ---
 
 ## Requerimientos No Funcionales
 
 ### UX y Usabilidad
-- **RNF-UX-01 (Diseño adaptable):** La interfaz deberá adaptarse a dispositivos móviles y de escritorio, optimizando la visualización de las cartas en grillas.
-- **RNF-UX-02 (Feedback de Carrito):** Al agregar un producto al carrito, el sistema debe proveer una respuesta visual inmediata (como un "Toast" o notificación) para confirmar la acción.
-- **RNF-UX-03 (Imágenes claras):** Las imágenes de los productos deben contar con una vista ampliada (modal o zoom) para que los coleccionistas puedan ver detalles de la carta.
-
-### Accesibilidad
-- **RNF-ACC-01:** Los textos de los precios y condiciones de las cartas deben tener alto contraste visual.
-- **RNF-ACC-02:** Los botones de "Comprar" y navegación deben tener un área táctil lo suficientemente grande para dispositivos móviles.
+- **RNF-UX-01 (Diseño adaptable):** La interfaz deberá adaptarse fluidamente a dispositivos móviles (360px+) y pantallas de escritorio.
+- **RNF-UX-02 (Feedback visual):** Al interactuar con el carrito, buscador o formularios, el sistema proveerá respuestas visuales inmediatas y badges de estado coloridos.
+- **RNF-UX-03 (Imágenes claras):** Las miniaturas de cartas cuentan con contenedores enmarcados con respaldo visual (*fallback*) si la imagen falla al cargar.
 
 ### Seguridad
-- **RNF-SEG-01 (Protección de contraseñas):** Las contraseñas se almacenarán mediante hashes seguros (ej. bcrypt).
-- **RNF-SEG-02 (Autorización por roles):** Un usuario con rol Cliente no podrá acceder bajo ninguna circunstancia a las rutas o endpoints de la API de administración.
-- **RNF-SEG-03 (Protección de inyecciones):** Todas las entradas de los buscadores de cartas deben estar parametrizadas para evitar ataques XSS o inyección SQL.
+- **RNF-SEG-01 (Cifrado de contraseñas):** Las contraseñas se almacenan mediante hash seguro con **bcrypt** (10 rondas de salting).
+- **RNF-SEG-02 (Autorización por roles):** Rutas de API protegidas mediante middleware de verificación de JWT y control de rol (`requireRole('admin')`).
+- **RNF-SEG-03 (Protección contra inyección SQL y XSS):** Consultas 100% parametrizadas (`$1, $2`) en PostgreSQL sin concatenación directa de cadenas.
+- **RNF-SEG-04 (Cabeceras y Rate Limiting):** Implementación de **Helmet** para cabeceras HTTP seguras y **express-rate-limit** para mitigar ataques de fuerza bruta.
 
 ### Rendimiento
-- **RNF-REN-01 (Carga de imágenes):** Las imágenes de las cartas deben cargarse de manera asíncrona ("lazy loading") para no bloquear la navegación del catálogo.
-- **RNF-REN-02 (Tiempo de respuesta):** Las búsquedas filtradas del catálogo no deben superar los 2 segundos de tiempo de respuesta para mantener una experiencia ágil.
+- **RNF-REN-01 (Carga eficiente):** Carga perezosa (*lazy loading*) de rutas e imágenes de cartas para mantener un inicio rápido de la aplicación.
+- **RNF-REN-02 (Búsqueda en vivo):** Filtrado reactivo en el frontend para respuesta instantánea en catálogos extensos.
 
 ---
 
 ## Arquitectura de Navegación
 
 ### 1. Rutas principales y secundarias
-La aplicación considera rutas públicas, rutas de cliente y rutas de administración.
 
 #### Rutas públicas
 | Ruta | Vista | Descripción |
 |---|---|---|
-| `/` | Home | Novedades, expansiones destacadas. |
-| `/catalogo` | Catálogo de productos | Grilla de cartas con filtros. |
-| `/producto/:id` | Detalle del producto | Información detallada de una carta o producto. |
-| `/login` | Inicio de sesión | Ingreso al sistema. |
-| `/registro` | Registro | Creación de cuenta de cliente. |
+| `/` o `/home` | Home | Banners de colecciones, productos destacados y accesos a categorías. |
+| `/catalogo` | Catálogo | Catálogo completo con buscador y filtros por juego, categoría y condición. |
+| `/producto/:id` | Detalle | Ficha técnica de la carta, atributos de TCG y botón de compra. |
+| `/login` | Iniciar Sesión | Formulario de autenticación con feedback de errores y redirección contextual. |
+| `/registro` | Registro | Formulario de alta para nuevos clientes con validaciones de contraseña. |
 
 #### Rutas protegidas del Cliente
-| Ruta | Vista | Descripción |
-|---|---|---|
-| `/carrito` | Carrito de Compras | Revisión de productos seleccionados y checkout. |
-| `/perfil` | Perfil y Órdenes | Historial de compras y estado de pedidos. |
+| Ruta | Vista | Acceso | Descripción |
+|---|---|---|---|
+| `/carrito` | Carrito | Cliente | Visualización de ítems seleccionados, control de cantidades y totales calculados. |
+| `/checkout` | Checkout | Cliente | Formulario de despacho, método de pago y confirmación de orden con stock en tiempo real. |
+| `/perfil` | Mi Cuenta | Cliente / Admin | Historial de órdenes con fechas, totales y estado de despacho. |
 
 #### Rutas protegidas del Administrador
-| Ruta | Vista | Descripción |
-|---|---|---|
-| `/admin` | Dashboard | Resumen general de ventas y alertas. |
-| `/admin/inventario` | Gestión de Inventario | CRUD de productos. |
-| `/admin/ordenes` | Gestión de Órdenes | Revisión y cambio de estado de pedidos. |
+| Ruta | Vista | Acceso | Descripción |
+|---|---|---|---|
+| `/admin` | Resumen | Solo Admin | Métricas globales de la tienda (Ventas, Pedidos, Stock total, Clientes) y órdenes recientes. |
+| `/admin/inventario` | Catálogo | Solo Admin | Tabla de cartas con buscador en vivo, semáforo de stock, botón de nuevo producto y modal con selectores guiados. |
+| `/admin/ordenes` | Órdenes | Solo Admin | Gestión de pedidos con selector de estado colorizado (Pendiente, Pagado, Enviado, Entregado) y modal de detalle. |
 
-### 2. Relaciones jerárquicas entre vistas
+### 2. Estructura Jerárquica de Vistas
+
 ```text
-Aplicación
+TCGStore
 │
-├── Rutas públicas
-│   ├── Home
-│   ├── Catálogo
-│   │   └── Detalle Producto
-│   ├── Login
-│   └── Registro
+├── Rutas Públicas
+│   ├── Home (Banners, Novedades)
+│   ├── Catálogo (Buscador, Filtros por Juego)
+│   │   └── Detalle de Producto
+│   ├── Iniciar Sesión (/login)
+│   └── Registro (/registro)
 │
-└── Rutas protegidas
+└── Rutas Protegidas (ProtectedRoute)
     │
-    ├── Cliente
-    │   ├── Carrito -> Checkout
-    │   └── Perfil (Mis Órdenes)
+    ├── Cliente (Rol 'client')
+    │   ├── Carrito (/carrito)
+    │   ├── Checkout (/checkout)
+    │   └── Mi Cuenta / Historial (/perfil)
     │
-    └── Administrador
-        ├── Dashboard
-        ├── Inventario (Listar, Crear, Editar)
-        └── Órdenes
+    └── Administrador (Rol 'admin')
+        ├── Dashboard / Resumen (/admin)
+        ├── Inventario y Catálogo (/admin/inventario)
+        └── Gestión de Órdenes (/admin/ordenes)
 ```
 
 ---
 
 ## Diferenciación de acceso según roles
 
-### Matriz de acceso por rol
 | Funcionalidad | Usuario Anónimo | Cliente | Administrador |
 |---|:---:|:---:|:---:|
 | Explorar catálogo de cartas | ✓ | ✓ | ✓ |
-| Ver detalles del producto | ✓ | ✓ | ✓ |
-| Agregar productos al carrito | ✓ | ✓ | ✓ |
-| Finalizar compra | — | ✓ | — |
-| Ver historial de órdenes propio | — | ✓ | — |
-| Agregar / Editar inventario | — | — | ✓ |
-| Cambiar estado de órdenes globales| — | — | ✓ |
-
----
-
-## Flujos de Tareas (Task Flows)
-
-### Task Flow 1: Búsqueda y compra de una carta (Cliente)
-**Objetivo:** Encontrar una carta específica, agregarla al carrito y generar el pedido.
-```text
-Inicio en Home
-      ↓
-Navegar a Catálogo
-      ↓
-Aplicar filtros (Juego, Rareza)
-      ↓
-Seleccionar carta (Detalle de Producto)
-      ↓
-Verificar estado y stock
-      ↓
-Agregar al carrito
-      ↓
-Ir al Carrito de compras
-      ↓
-Validar resumen de compra
-      ↓
-Checkout (Confirmar pedido)
-      ↓
-Visualizar "Orden Generada con Éxito"
-```
-
-### Task Flow 2: Actualización de Inventario (Administrador)
-**Objetivo:** Ingresar una nueva carta que llegó a la tienda al catálogo web.
-```text
-Inicio de sesión como Admin
-      ↓
-Panel de Administración (Dashboard)
-      ↓
-Sección "Inventario"
-      ↓
-Seleccionar "Nuevo Producto"
-      ↓
-Llenar formulario (Nombre, Expansión, Condición, Stock, Precio)
-      ↓
-Subir imagen
-      ↓
-Guardar producto
-      ↓
-Visualizar confirmación de "Producto agregado"
-```
-
----
-
-## Puntos críticos de interacción
-1. **Filtros del Catálogo:** Dada la cantidad de cartas en un TCG, los filtros son vitales. Si la interfaz de filtros en versión móvil ocupa demasiada pantalla o se recarga con cada toque, causará frustración. Se debe usar un menú lateral ocultable o filtros aplicables mediante un botón "Aplicar".
-2. **Claridad del Estado de la Carta:** En el detalle del producto, si la información sobre si la carta está en buen estado o dañada no es clara, generará reclamos post-venta.
-3. **El Carrito en Móviles:** El flujo desde el carrito hacia el checkout debe ser muy evidente y fluido, reduciendo el abandono de compra.
-4. **Gestión de Stock Concurrente:** Si dos clientes intentan comprar la última copia de una carta al mismo tiempo, el sistema debe validar la disponibilidad final al momento del checkout para evitar sobreventas.
-
----
-
-## Justificación Técnica
-La arquitectura de navegación fue diseñada para cumplir con el estándar de un E-commerce eficiente. 
-- **Usabilidad:** La ruta de descubrimiento (Home -> Catálogo -> Producto) es conocida universalmente por los usuarios, reduciendo la curva de aprendizaje.
-- **Escalabilidad:** Separar las rutas de Cliente y Administrador bajo el prefijo `/admin` asegura que las lógicas de carga y componentes pesados de gestión (tablas, formularios complejos) no impacten el rendimiento de la vista del cliente.
+| Ver detalles de la carta | ✓ | ✓ | ✓ |
+| Agregar productos al carrito | ✓ | ✓ | — |
+| Finalizar compra (Checkout) | Inicia sesión | ✓ | — |
+| Ver historial de órdenes propio | — | ✓ | ✓ |
+| Dashboard con métricas globales | — | — | ✓ |
+| Crear y modificar productos | — | — | ✓ |
+| Cambiar estado de órdenes | — | — | ✓ |
 
 ---
 
 ## Bocetos UI/UX
 
-El diseño de la interfaz y la experiencia de usuario (Wireframes y Prototipos) fue desarrollado en **Figma**.
+El diseño de la interfaz y la experiencia de usuario (Wireframes y Prototipos interactivos) fue elaborado en **Figma**:
 
 - 🎨 **Prototipo Interactivo:** [Ver diseño en Figma](https://www.figma.com/proto/sfyPtwS7DZlxlQOimMfeaz/TCGStore-Web?node-id=2-3&p=f&t=TFggwOJHHyufxtOT-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A3)
-- 📧 **Accesos:** Se enviaron invitaciones oficiales de visualización a los correos de los profesores evaluadores:
-  - `francisco.ponce@pucv.cl`
-  - `dario.fuentes.p@mail.pucv.cl`
+- 📧 **Accesos de evaluación:** Se remitieron invitaciones oficiales a los correos de los profesores evaluadores de la asignatura.
 
 ---
 
 ## Tecnologías y Herramientas
 
-### Librerías principales usadas con React (Ionic)
-| Librería | Propósito |
-|---|---|
-| `react` | Construcción de la interfaz mediante componentes. |
-| `@ionic/react` | Proporciona los componentes UI base (`IonPage`, `IonContent`, `IonCard`, etc.) optimizados para móvil y web. |
-| `react-router-dom` | Gestión del enrutamiento de la tienda (SPA). |
-| `ionicons` | Biblioteca de iconos para botones y menús. |
+### Frontend
+* **Framework:** Ionic Framework (v8+) con React 19.
+* **Lenguaje:** TypeScript 5.
+* **Enrutador:** React Router v6 con componentes de redirección y protección por roles.
+* **Iconografía:** Ionicons v8.
+* **Bundler & Tooling:** Vite 8 con minificación mediante LightningCSS.
+* **Testing:** Vitest y React Testing Library (17 pruebas unitarias automatizadas).
 
-### Stack Tecnológico del Proyecto
-- **Frontend:** Ionic Framework (v7+), React, Vite.
-- **Backend implementado:** Node.js, Express, PostgreSQL (`pg`), JWT (`jsonwebtoken`), bcryptjs, Helmet, CORS y Rate Limit (`express-rate-limit`).
-- **Base de datos implementada:** PostgreSQL con esquema relacional normalizado en `database/esquema.sql`.
+### Backend
+* **Runtime:** Node.js v20+.
+* **Servidor HTTP:** Express.js modular con arquitectura de rutas, controladores y middlewares.
+* **Base de Datos:** PostgreSQL con driver `pg` (Pool de conexiones transaccionales).
+* **Seguridad:** JSON Web Tokens (`jsonwebtoken`), hashing de contraseñas (`bcryptjs`), `helmet` y `express-rate-limit`.
+* **Testing:** Módulo nativo `node:test` y `supertest` (12 pruebas automáticas de endpoints e integración).
+
+### Infraestructura y Nube
+* **Cloud Database:** Supabase PostgreSQL con SSL pooler activo.
+* **Frontend Hosting:** Vercel con integración continua (CI/CD) desde GitHub.
+* **Backend Hosting:** Render Web Service con HTTPS automático y despliegue continuo.
+
+---
+
+## Endpoints de la API REST
+
+Las rutas protegidas requieren el encabezado `Authorization: Bearer <token>` obtenido al iniciar sesión.
+
+| Método | Endpoint | Acceso / Rol | Descripción |
+|---|---|---|---|
+| **POST** | `/api/auth/register` | Público | Registra una cuenta de cliente con validación de formato y contraseña. |
+| **POST** | `/api/auth/login` | Público | Autentica credenciales con bcrypt y retorna el token JWT y datos de usuario. |
+| **GET** | `/api/auth/me` | Cliente / Admin | Retorna los datos del perfil del usuario autenticado. |
+| **PUT** | `/api/auth/me` | Cliente / Admin | Actualiza los datos de perfil (nombre, teléfono, dirección). |
+| **GET** | `/api/categories` | Público | Lista las categorías y franquicias disponibles. |
+| **GET** | `/api/products` | Público / Admin | Lista y filtra productos; admin puede incluir productos inactivos. |
+| **GET** | `/api/products/:id` | Público / Admin | Retorna el detalle de una carta por ID o código comercial. |
+| **POST** | `/api/products` | Admin | Crea una nueva carta o artículo en la base de datos. |
+| **PUT** | `/api/products/:id` | Admin | Actualiza los datos (precio, stock, condición, atributos) de un producto. |
+| **DELETE** | `/api/products/:id` | Admin | Desactiva o elimina un producto de catálogo. |
+| **GET** | `/api/orders` | Cliente / Admin | Lista las órdenes del cliente autenticado o todas las órdenes para admin. |
+| **GET** | `/api/orders/:id` | Cliente / Admin | Retorna el desglose de productos y totales de una orden específica. |
+| **POST** | `/api/orders` | Cliente | Crea un nuevo pedido con transacción SQL y descuento atómico de stock. |
+| **PATCH** | `/api/orders/:id/status` | Admin | Actualiza el estado del pedido (Pendiente, Pagado, Enviado, Entregado). |
+| **GET** | `/api/admin/stats` | Admin | Retorna ventas totales, pedidos, stock consolidado y pedidos recientes. |
+| **GET** | `/api/health` | Público | Endpoint de verificación de estado y salud del servidor. |
+
+---
 
 ## Instalación y Configuración Local
 
-### Prerrequisitos
+Si deseas ejecutar el proyecto en tu entorno local sin depender de los servicios en la nube:
 
-- Node.js v18+ y npm. Para las versiones actuales de Vite y sus plugins se recomienda Node.js 22.12+.
-- PostgreSQL v14+ y acceso al usuario `postgres`.
+### 1. Prerrequisitos
+* Node.js v18+ (recomendado v20+ o v22+).
+* PostgreSQL v14+ instalado localmente (o credenciales de Supabase).
 
-### Configuración de la Base de Datos
-
-Desde la raíz del proyecto, crea la base `tcgstore` y ejecuta el esquema:
-
-```sh
+### 2. Base de Datos Local
+Crea la base de datos e inicializa las tablas con el script oficial:
+```bash
 createdb -U postgres tcgstore
 psql -U postgres -d tcgstore -f database/esquema.sql
 ```
 
-También puedes crear la base y ejecutar el archivo desde pgAdmin. El script incluye datos de demostración y recrea las tablas: ejecútalo sobre una base destinada al proyecto.
-
-### Configuración del Backend
-
-```sh
+### 3. Configuración y Ejecución del Backend
+```bash
 cd backend
 cp .env.example .env
 npm install
-npm run dev
+npm start
 ```
+*El servidor backend iniciará en `http://localhost:3000`.*
 
-En PowerShell, puedes usar `Copy-Item .env.example .env`. Antes de iniciar el servidor, configura en `backend/.env` la contraseña de PostgreSQL (`DB_PASSWORD`) y un `JWT_SECRET` privado de al menos 32 caracteres. Revisa `DB_HOST`, `DB_PORT`, `DB_USER` y `DB_NAME=tcgstore`. El servidor escucha en `http://localhost:3000`; también puedes iniciarlo con `npm start`.
-
-### Configuración del Frontend
-
-En otra terminal, desde la raíz del proyecto:
-
-```sh
+### 4. Configuración y Ejecución del Frontend
+En otra terminal:
+```bash
 cd frontend
 npm install
 npm run dev
 ```
+*Vite abrirá la aplicación en `http://localhost:5173`, conectándose automáticamente a `http://localhost:3000/api`.*
 
-Abre la dirección que muestre Vite (por defecto `http://localhost:5173`). La API se consulta en `http://localhost:3000/api`. Para cambiarla, copia `frontend/.env.example` a `frontend/.env` y configura `VITE_API_URL`. Si cambias el origen del frontend, actualiza `CORS_ORIGIN` en el backend.
-
-## Endpoints de la API REST
-
-Las rutas protegidas requieren `Authorization: Bearer <token>` obtenido al iniciar sesión.
-
-| Método | Endpoint | Acceso / Rol | Descripción |
-|---|---|---|---|
-| POST | `/api/auth/register` | Público | Registra una cuenta de cliente. |
-| POST | `/api/auth/login` | Público | Autentica y devuelve el usuario y su JWT. |
-| GET | `/api/auth/me` | Cliente / Admin | Consulta el perfil autenticado. |
-| PUT | `/api/auth/me` | Cliente / Admin | Actualiza el perfil autenticado. |
-| GET | `/api/categories` | Público | Lista las categorías del catálogo. |
-| GET | `/api/products` | Público / Admin | Lista y filtra productos; admin puede incluir inactivos. |
-| GET | `/api/products/:id` | Público / Admin | Consulta un producto por código o identificador. |
-| POST | `/api/products` | Admin | Crea un producto. |
-| PUT | `/api/products/:id` | Admin | Actualiza un producto. |
-| DELETE | `/api/products/:id` | Admin | Desactiva un producto. |
-| GET | `/api/orders` | Cliente / Admin | Lista órdenes propias del cliente o todas para admin. |
-| GET | `/api/orders/:id` | Cliente propietario / Admin | Consulta una orden con sus productos. |
-| POST | `/api/orders` | Cliente | Crea una orden, valida y descuenta stock y calcula el total. |
-| PATCH | `/api/orders/:id/status` | Admin | Cambia el estado a Pendiente, Pagado, Enviado o Entregado. |
-| PUT | `/api/orders/:id/status` | Admin | Alternativa compatible para actualizar el estado. |
-| GET | `/api/admin/stats` | Admin | Consulta estadísticas y órdenes recientes. |
-| GET | `/api/health` | Público | Comprueba que el servidor responde. |
-
-El checkout envía `items: [{ code, quantity }]`, `shippingName`, `shippingEmail`, `shippingAddress`, `shippingCity`, `shippingRegion` y `paymentMethod`. El servidor devuelve el número de orden y el total calculado. Los errores de la API se muestran sin vaciar el carrito. Si no hay conexión, la demostración guarda una orden local asociada al correo del cliente; el perfil muestra ese respaldo cuando no puede conectarse. Las órdenes locales no se sincronizan automáticamente con PostgreSQL ni procesan pagos reales.
+---
 
 ## Pruebas y Testing
 
-- **Backend:** desde `backend/`, ejecuta `npm test` (12 pruebas automáticas).
-- **Frontend:** desde `frontend/`, ejecuta `npm run test.unit` (14 pruebas unitarias originales y 3 nuevas de órdenes: 17 en total). Para una ejecución sin modo observación, usa `npm run test.unit -- --run`.
-- **Compilación:** desde `frontend/`, ejecuta `npm run build`.
-- **Postman:** importa la colección `testing/TCGStore_EP2.postman_collection.json` y el entorno `testing/TCGStore_Local.postman_environment.json`. Inicia PostgreSQL y el backend antes de ejecutar la colección.
+El proyecto cuenta con un conjunto integral de pruebas automatizadas:
 
-## 🌐 Acceso a la Plataforma
-El proyecto se encuentra desplegado y accesible en línea a través de Vercel. No es necesario realizar instalación local.
+* **Pruebas de Backend:**  
+  ```bash
+  cd backend && npm test
+  ```
+  *Ejecuta 12 pruebas automáticas cubriendo autenticación, roles, transacciones de stock, errores SQL y estadísticas de administración.*
 
-👉 **Enlace del proyecto:** [proyecto-web-y-movil.vercel.app](https://proyecto-web-y-movil.vercel.app/)
+* **Pruebas Unitarias de Frontend:**  
+  ```bash
+  cd frontend && npm run test.unit -- --run
+  ```
+  *Ejecuta 17 pruebas unitarias verificando enrutamiento protegido, servicios de API, sesión en sessionStorage y componentes.*
 
-### 🔑 Cuentas de Prueba
-El esquema PostgreSQL incluye las siguientes cuentas de demostración, con contraseña `123456`. Las mismas credenciales permiten evaluar los roles mediante el respaldo local cuando el backend está desconectado:
+* **Compilación de Producción:**  
+  ```bash
+  cd frontend && npm run build
+  ```
+  *Verifica la compilación estricta de TypeScript y el empaquetado de producción con Vite.*
 
-- **Rol Cliente:** `cliente@tcgstore.com` (Habilita el Checkout y el perfil "Mi Cuenta" con historial de órdenes).
-- **Rol Administrador:** `admin@tcgstore.com` (Da acceso exclusivo al Dashboard de gestión y bloquea vistas de cliente).
+* **Colección de Postman:**  
+  Ubicada en [`testing/TCGStore_EP2.postman_collection.json`](testing/TCGStore_EP2.postman_collection.json) junto a su entorno [`testing/TCGStore_Local.postman_environment.json`](testing/TCGStore_Local.postman_environment.json), cubriendo todos los endpoints y casos de prueba requeridos por la rúbrica de la Entrega Parcial 2.
