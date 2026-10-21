@@ -34,12 +34,27 @@ export const authService = {
     const normalized = email.trim().toLowerCase();
     if (!name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) || !/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password)) throw new Error('Revisa los datos y las condiciones de contraseña.');
     try {
-      await apiRequest('/auth/register', { method: 'POST', body: JSON.stringify({ name, email: normalized, password }) });
-      return;
+      const result = await apiRequest<{ message: string; requiresVerification?: boolean; email?: string; verificationUrl?: string | null }>('/auth/register', { method: 'POST', body: JSON.stringify({ name, email: normalized, password }) });
+      return result;
     } catch (error) {
       if (error instanceof ApiError) throw error;
       throw new Error('No se pudo conectar con el servidor');
     }
+  },
+  async verifyEmail(token: string): Promise<{ message: string; user: User }> {
+    const result = await apiRequest<{ message: string; user: User; token: string }>('/auth/verify-email', {
+      method: 'POST', body: JSON.stringify({ token })
+    });
+    sessionStorage.setItem('tcg.token', result.token);
+    sessionStorage.setItem(sessionKey, JSON.stringify(result.user));
+    session = result.user;
+    notify();
+    return { message: result.message, user: result.user };
+  },
+  async resendVerification(email: string): Promise<{ message: string; verificationUrl?: string | null }> {
+    return apiRequest('/auth/resend-verification', {
+      method: 'POST', body: JSON.stringify({ email: email.trim().toLowerCase() })
+    });
   },
   logout() {
     ['tcg.token', sessionKey, 'isLoggedIn', 'role', 'userName', 'userEmail'].forEach(key => {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IonContent, IonPage, IonHeader } from '@ionic/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
+import { Link } from 'react-router-dom';
+import { mailOpenOutline } from 'ionicons/icons';
+import { VerificationLocalLink } from '../components/VerificationResend';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,7 +10,7 @@ import './Register.css';
 import { authService } from '../services/authService';
 
 const Register: React.FC = () => {
-  const navigate = useNavigate();
+  const [registered, setRegistered] = useState<{ email: string; verificationUrl?: string | null } | null>(null);
 
   const [error, setError] = useState('');
   const errorRef = useRef<HTMLParagraphElement>(null);
@@ -27,8 +29,8 @@ const Register: React.FC = () => {
     if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(value('password'))) { setError('La contraseña debe tener 8 caracteres, una letra y un número como mínimo.'); return; }
     setSubmitting(true);
     try {
-      await authService.register(`${value('nombre')} ${value('apellido')}`, value('email'), value('password'));
-      navigate('/login', { replace: true, state: { registered: true } });
+      const result = await authService.register(`${value('nombre')} ${value('apellido')}`, value('email'), value('password'));
+      setRegistered({ email: result.email || value('email').trim().toLowerCase(), verificationUrl: result.verificationUrl });
     } catch (err) { setError(err instanceof Error ? err.message : 'No se pudo crear la cuenta. Intenta nuevamente.'); }
     finally { setSubmitting(false); }
   };
@@ -44,6 +46,13 @@ const Register: React.FC = () => {
         <div className="register-container">
           <div className="register-card">
             
+            {registered ? <div className="register-confirmation" role="status">
+              <div className="verify-icon"><IonIcon icon={mailOpenOutline} aria-hidden="true" /></div>
+              <h1 className="verify-status-title">¡Cuenta creada con éxito!</h1>
+              <p className="verify-text">Hemos enviado un enlace de activación a <strong>{registered.email}</strong>. Revisa tu bandeja de entrada para verificar tu cuenta antes de iniciar sesión.</p>
+              <VerificationLocalLink url={registered.verificationUrl} />
+              <Link className="btn-verify-primary" to="/login">Ir a Iniciar Sesión</Link>
+            </div> : <>
             <div className="register-header">
               <h1>Crear Cuenta</h1>
               <p>Únete a TCGStore y gestiona tus pedidos fácilmente.</p>
@@ -94,6 +103,7 @@ const Register: React.FC = () => {
               ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión aquí</Link>
             </div>
 
+            </>}
           </div>
         </div>
 

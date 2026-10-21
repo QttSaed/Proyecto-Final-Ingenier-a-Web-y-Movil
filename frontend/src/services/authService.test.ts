@@ -69,4 +69,47 @@ describe('autenticación REST', () => {
     expect(authService.getUser()).toBeNull();
     expect(sessionStorage.getItem('tcg.token')).toBeNull();
   });
+  it('returns registration verification details without starting a session', async () => {
+    const result = { message: 'Cuenta creada', requiresVerification: true, email: user.email, verificationUrl: '/verificar-correo?token=local' };
+    fetchMock.mockResolvedValue({ ok: true, json: async () => result });
+    expect(await authService.register(user.name, user.email, 'Segura123')).toEqual(result);
+    expect(authService.getUser()).toBeNull();
+    expect(sessionStorage.getItem('tcg.token')).toBeNull();
+  });
+  it('verifies the token, stores the session and notifies subscribers', async () => {
+    const listener = vi.fn();
+    const unsubscribe = authService.subscribe(listener);
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ message: 'Correo verificado', user, token: 'verified-token' }) });
+    try {
+      expect(await authService.verifyEmail('email-token')).toEqual({ message: 'Correo verificado', user });
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/api\/auth\/verify-email$/), expect.objectContaining({ method: 'POST', body: JSON.stringify({ token: 'email-token' }) }));
+      expect(sessionStorage.getItem('tcg.token')).toBe('verified-token');
+      expect(JSON.parse(sessionStorage.getItem('tcg.session')!)).toEqual(user);
+      expect(authService.getUser()).toEqual(user);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(localStorage.getItem('tcg.token')).toBeNull();
+    } finally { unsubscribe(); }
+  });
+  it('rejects invalid verification tokens without creating a session', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 400, json: async () => ({ message: 'Enlace vencido' }) });
+    await expect(authService.verifyEmail('expired')).rejects.toThrow('Enlace vencido');
+    expect(authService.getUser()).toBeNull();
+    expect(sessionStorage.getItem('tcg.token')).toBeNull();
+    expect(sessionStorage.getItem('tcg.session')).toBeNull();
+  });
+  it('resends verification to the normalized email and returns the local link', async () => {
+    const result = { message: 'Enlace enviado', verificationUrl: '/verificar-correo?token=new' };
+    fetchMock.mockResolvedValue({ ok: true, json: async () => result });
+    expect(await authService.resendVerification(' CLIENTE@EXAMPLE.CL ')).toEqual(result);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/api\/auth\/resend-verification$/), expect.objectContaining({ method: 'POST', body: JSON.stringify({ email: user.email }) }));
+    expect(authService.getUser()).toBeNull();
+    expect(sessionStorage.getItem('tcg.token')).toBeNull();
+  });
+  it('propagates resend errors and accepts responses without a local link', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 429, json: async () => ({ message: 'Intenta mas tarde' }) });
+    await expect(authService.resendVerification(user.email)).rejects.toThrow('Intenta mas tarde');
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ message: 'Enlace enviado' }) });
+    expect(await authService.resendVerification(user.email)).toEqual({ message: 'Enlace enviado' });
+  });
+
 });

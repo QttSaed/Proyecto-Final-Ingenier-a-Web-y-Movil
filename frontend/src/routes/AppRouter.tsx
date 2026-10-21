@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, useParams } from 'react-router-dom';
+import { Navigate, Route, useParams, useLocation } from 'react-router-dom';
 import { IonRouterOutlet, IonContent } from '@ionic/react';
 import ProtectedRoute from './ProtectedRoute';
 import Home from '../pages/Home';
@@ -7,6 +7,7 @@ import Catalog from '../pages/Catalog';
 import Cart from '../pages/Cart';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import VerifyEmail from '../pages/VerifyEmail';
 import ProductDetail from '../pages/ProductDetail';
 import Checkout from '../pages/Checkout';
 import ComingSoon from '../pages/ComingSoon';
@@ -18,6 +19,10 @@ import ShippingReturns from '../pages/ShippingReturns';
 import Contact from '../pages/Contact';
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 function ProductAlias() { const { id } = useParams(); return <Navigate to={`/product/${id}`} replace />; }
+function VerifyEmailAlias() {
+  const { search } = useLocation();
+  return <Navigate to={`/verificar-correo${search}`} replace />;
+}
 export default function AppRouter() {
   const admin = <ProtectedRoute allowedRoles={['admin']}><Suspense fallback={<IonContent className="admin-content ion-padding">Cargando administración…</IonContent>}><AdminDashboard /></Suspense></ProtectedRoute>;
   return <IonRouterOutlet>
@@ -29,6 +34,8 @@ export default function AppRouter() {
     <Route path="/producto/:id" element={<ProductAlias />} />
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
+    <Route path="/verificar-correo" element={<VerifyEmail />} />
+    <Route path="/verify-email" element={<VerifyEmailAlias />} />
     <Route path="/registro" element={<Navigate to="/register" replace />} />
     <Route path="/coming-soon" element={<ComingSoon />} />
     <Route path="/proximamente" element={<Navigate to="/coming-soon" replace />} />
