@@ -12,6 +12,10 @@ import Checkout from '../pages/Checkout';
 import ComingSoon from '../pages/ComingSoon';
 import Profile from '../pages/Profile';
 import NotFound from '../pages/NotFound';
+import Terms from '../pages/Terms';
+import Privacy from '../pages/Privacy';
+import ShippingReturns from '../pages/ShippingReturns';
+import Contact from '../pages/Contact';
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 function ProductAlias() { const { id } = useParams(); return <Navigate to={`/product/${id}`} replace />; }
 export default function AppRouter() {
@@ -36,6 +40,15 @@ export default function AppRouter() {
     <Route path="/admin" element={admin} />
     <Route path="/admin/inventario" element={admin} />
     <Route path="/admin/ordenes" element={admin} />
+    <Route path="/terminos" element={<Terms />} />
+    <Route path="/terminos-servicio" element={<Terms />} />
+    <Route path="/privacidad" element={<Privacy />} />
+    <Route path="/politica-privacidad" element={<Privacy />} />
+    <Route path="/envios-devoluciones" element={<ShippingReturns />} />
+    <Route path="/envios" element={<ShippingReturns />} />
+    <Route path="/politica-envio" element={<ShippingReturns />} />
+    <Route path="/politica-reembolso" element={<ShippingReturns />} />
+    <Route path="/contacto" element={<Contact />} />
     <Route path="*" element={<NotFound />} />
   </IonRouterOutlet>;
 }

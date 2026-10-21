@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
           <br/>
           <p>Teléfono<br/>+56 9 1234 5678</p>
         </div>
-        
+
         <div className="footer-col">
           <h3>Sucursal Los Leones</h3>
           <p>Dirección ficticia 456, Providencia, Región Metropolitana.</p>
@@ -28,9 +28,9 @@ const Footer: React.FC = () => {
         <div className="footer-col">
           <h3>Nosotros</h3>
           <ul>
-            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Envíos</Link></li>
-            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Términos y condiciones</Link></li>
-            <li><Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none'}}>Contacto</Link></li>
+            <li><Link to="/envios-devoluciones" style={{color: 'inherit', textDecoration: 'none'}}>Envíos</Link></li>
+            <li><Link to="/terminos" style={{color: 'inherit', textDecoration: 'none'}}>Términos y condiciones</Link></li>
+            <li><Link to="/contacto" style={{color: 'inherit', textDecoration: 'none'}}>Contacto</Link></li>
           </ul>
           <div className="footer-socials">
             <Link to="/coming-soon" style={{color: 'inherit'}}><IonIcon icon={logoFacebook} /></Link>
@@ -46,12 +46,12 @@ const Footer: React.FC = () => {
 
       <div className="footer-bottom">
         <div className="footer-links">
-          © 2026, TCGStore • 
-          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de privacidad</Link> • 
-          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de reembolso</Link> • 
-          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Términos del servicio</Link> • 
-          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de envío</Link> • 
-          <Link to="/coming-soon" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Información de contacto</Link>
+          © 2026, TCGStore •
+          <Link to="/privacidad" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de privacidad</Link> •
+          <Link to="/envios-devoluciones" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de reembolso</Link> •
+          <Link to="/terminos" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Términos del servicio</Link> •
+          <Link to="/envios-devoluciones" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Política de envío</Link> •
+          <Link to="/contacto" style={{color: 'inherit', textDecoration: 'none', marginLeft: '5px', marginRight: '5px'}}>Información de contacto</Link>
         </div>
       </div>
     </footer>
