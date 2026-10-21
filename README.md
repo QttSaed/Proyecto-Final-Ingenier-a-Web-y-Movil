@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>🃏 TCGStore</h1>
+  <img src="frontend/public/assets/tcgstore-hero-banner.jpg" alt="TCGStore Banner" width="100%" style="max-width: 960px; border-radius: 12px; margin-bottom: 14px;" />
   <p><strong>Plataforma E-commerce Especializada en Trading Card Games (TCG)</strong></p>
   <p>Gestión centralizada de inventario, catálogo interactivo y compra segura de cartas coleccionables y productos sellados.</p>
 
@@ -19,8 +19,8 @@
     <a href="https://proyecto-web-y-movil.vercel.app/" target="_blank">
       <img src="https://img.shields.io/badge/🚀_PROYECTO_EN_VIVO-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Live" />
     </a>
-    <a href="https://tcgstore-api.onrender.com/api/health" target="_blank">
-      <img src="https://img.shields.io/badge/📡_API_REST-RENDER-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="Render API" />
+    <a href="#endpoints-de-la-api-rest">
+      <img src="https://img.shields.io/badge/📡_API_REST-DOCS-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="API REST Docs" />
     </a>
     <a href="https://www.figma.com/proto/sfyPtwS7DZlxlQOimMfeaz/TCGStore-Web?node-id=2-3&p=f&t=TFggwOJHHyufxtOT-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=2%3A3" target="_blank">
       <img src="https://img.shields.io/badge/🎨_PROTOTIPO-FIGMA-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="Figma" />
@@ -63,7 +63,7 @@
 ---
 
 ## Índice
-1. [Acceso Rápido y Despliegues](#-acceso-rápido-y-despliegues-en-la-nube)
+1. [Acceso a la Plataforma](#-acceso-a-la-plataforma-en-producción)
 2. [Cuentas de Demostración](#-cuentas-de-demostración)
 3. [Estructura y Gestión de Ramas en GitHub](#-estructura-y-gestión-de-ramas-en-github)
 4. [Justificación del Problema](#justificación-del-problema)
@@ -79,16 +79,15 @@
 
 ---
 
-## 🌐 Acceso Rápido y Despliegues en la Nube
+## 🌐 Acceso a la Plataforma en Producción
 
-La plataforma se encuentra completamente desplegada y operativa en producción, sin necesidad de instalación local obligatoria:
+La plataforma se encuentra completamente desplegada y accesible en la nube:
 
-* **Frontend en Producción (Vercel):**  
+* 🚀 **Aplicación Web en Vivo:**  
   👉 [https://proyecto-web-y-movil.vercel.app/](https://proyecto-web-y-movil.vercel.app/)
-* **Backend API REST en Producción (Render):**  
-  👉 [https://tcgstore-api.onrender.com/api/health](https://tcgstore-api.onrender.com/api/health)
-* **Base de Datos Cloud (Supabase):**  
-  PostgreSQL 15 alojado en Supabase Cloud con conexión cifrada SSL (Pooler transaccional en AWS SA-East-1).
+
+> [!NOTE]
+> La aplicación web se comunica de forma integrada y segura con la API REST y la base de datos PostgreSQL en la nube. No es necesario realizar instalaciones locales para probar el funcionamiento completo del sistema.
 
 ### 🔑 Cuentas de Demostración
 
