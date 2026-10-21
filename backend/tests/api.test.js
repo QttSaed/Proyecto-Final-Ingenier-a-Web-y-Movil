@@ -7,7 +7,7 @@ const { createApp } = require('../src/app');
 const secret = 'test-secret-with-at-least-32-characters';
 const user = { id: 1, name: 'Cliente', email: 'cliente@tcgstore.com', role: 'client', phone: null, address: null, city: null, region: null };
 const product = { id: 1, code: 'pokemon-0', category_id: 8, category: 'Pokemon', category_slug: 'pokemon', title: 'Carta', description: 'Carta', price: 23000, stock: 5, game: 'Pokemon', edition: 'Base', rarity: 'Rare', color: 'Rojo', cost: 0, card_type: 'Carta', condition: 'Near Mint', image_url: '/card.png', is_active: true, has_button: true };
-const order = { id: 1, order_number: 'TCG-TEST', user_id: 1, status: 'Pendiente', subtotal: 23000, shipping_cost: 3500, total: 26500, shipping_name: 'Cliente', shipping_email: user.email, shipping_address: 'Calle 1', shipping_city: 'Santiago', shipping_region: 'Metropolitana', payment_method: 'Transferencia', created_at: '2026-10-13' };
+const order = { id: 1, order_number: 'TCG-TEST', user_id: 1, status: 'Pendiente', admin_notes: null, subtotal: 23000, shipping_cost: 3500, total: 26500, shipping_name: 'Cliente', shipping_email: user.email, shipping_address: 'Calle 1', shipping_city: 'Santiago', shipping_region: 'Metropolitana', payment_method: 'Transferencia', created_at: '2026-10-13' };
 const item = { id: 1, order_id: 1, product_id: 1, quantity: 1, unit_price: 23000, code: product.code, title: product.title, image_url: product.image_url };
 const inputProduct = { title: 'Carta', price: 23000, stock: 5, categorySlug: 'pokemon', game: 'Pokemon', edition: 'Base', rarity: 'Rare', color: 'Rojo', cost: 0, cardType: 'Carta', condition: 'Near Mint', image: '/card.png' };
 const inputOrder = { items: [{ code: product.code, quantity: 1 }], shippingName: 'Cliente', shippingEmail: user.email, shippingAddress: 'Calle 1', shippingCity: 'Santiago', shippingRegion: 'Metropolitana', paymentMethod: 'Transferencia' };
@@ -107,7 +107,8 @@ test('productos: CRUD admin, restricciones y desactivación con referencias', as
 });
 test('orden: transacción, cálculo de totales y descuento de stock', async () => {
   const s = setup([{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows: [product] },
-    { sql: /INSERT INTO orders/, rows: [order], check: p => assert.deepEqual(p.slice(1, 5), ['1', 23000, 3500, 26500]) },
+    { sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }], check: p => assert.deepEqual(p, [String.raw`^TCG-${new Date().getFullYear()}-\d+$`]) },
+    { sql: /INSERT INTO orders/, rows: [order], check: p => { assert.equal(p[0], `TCG-${new Date().getFullYear()}-0005`); assert.deepEqual(p.slice(1, 5), ['1', 23000, 3500, 26500]); } },
     { sql: /UPDATE products SET stock = stock -/, check: p => assert.deepEqual(p, [1, 1]) },
     { sql: /INSERT INTO order_items/, check: p => assert.deepEqual(p, [1, 1, 1, 23000]) },
     { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ }]);
@@ -121,7 +122,7 @@ test('orden: transacción, cálculo de totales y descuento de stock', async () =
 test('orden: rollback por stock insuficiente, producto ausente y error SQL', async () => {
   for (const [rows, status, error] of [[[product], 400], [[], 404], [[product], 500, new Error('secret database error')]]) {
     const steps = [{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows }];
-    if (error) steps.push({ sql: /INSERT INTO orders/, error });
+    if (error) steps.push({ sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }] }, { sql: /INSERT INTO orders/, error });
     steps.push({ sql: /^ROLLBACK$/ });
     const s = setup(steps);
     const response = await s.api.post('/api/orders').set('Authorization', `Bearer ${token()}`).send({ ...inputOrder, items: [{ code: product.code, quantity: error ? 1 : 6 }] }).expect(status);
@@ -130,6 +131,7 @@ test('orden: rollback por stock insuficiente, producto ausente y error SQL', asy
 });
 test('orden: agrupa duplicados y aplica envío gratis desde 50000', async () => {
   const s = setup([{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows: [product] }, { sql: /FOR UPDATE/, rows: [product] },
+    { sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }] },
     { sql: /INSERT INTO orders/, rows: [{ ...order, subtotal: 69000, shipping_cost: 0, total: 69000 }], check: p => assert.deepEqual(p.slice(2, 5), [69000, 0, 69000]) },
     { sql: /UPDATE products SET stock/, check: p => assert.equal(p[0], 3) },
     { sql: /INSERT INTO order_items/, check: p => assert.equal(p[2], 3) }, { sql: /FROM order_items/, rows: [{ ...item, quantity: 3 }] }, { sql: /^COMMIT$/ }]);
@@ -141,8 +143,8 @@ test('órdenes: listado por rol, propiedad, detalle y cambio de estado PATCH/PUT
     { sql: /ORDER BY o.created_at/, rows: [order], check: (p, sql) => assert.ok(!sql.includes('WHERE o.user_id')) }, { sql: /FROM order_items/, rows: [item] },
     { sql: /o.order_number = \$1/, rows: [order] }, { sql: /FROM order_items/, rows: [item] },
     { sql: /o.order_number = \$1/, rows: [order] }, { sql: /o.order_number = \$1/, rows: [] },
-    ...['Pagado', 'Enviado'].flatMap(status => [{ sql: /o.id::text = \$1/, rows: [order] }, { sql: /UPDATE orders SET status/, rows: [{ ...order, status }] }, { sql: /FROM order_items/, rows: [item] }]),
-    { sql: /o.order_number = \$1/, rows: [] }]);
+    ...['Pagado', 'Enviado'].flatMap(status => [{ sql: /^BEGIN$/ }, { sql: /o.id::text = \$1/, rows: [order] }, { sql: /UPDATE orders SET status/, rows: [{ ...order, status }], check: p => assert.deepEqual(p, [status, null, 1]) }, { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ }]),
+    { sql: /^BEGIN$/ }, { sql: /o.order_number = \$1/, rows: [] }, { sql: /^ROLLBACK$/ }]);
   await s.api.get('/api/orders').set('Authorization', `Bearer ${token()}`).expect(200);
   await s.api.get('/api/orders').set('Authorization', `Bearer ${token('admin')}`).expect(200);
   await s.api.get('/api/orders/TCG-TEST').set('Authorization', `Bearer ${token()}`).expect(200);
@@ -154,6 +156,28 @@ test('órdenes: listado por rol, propiedad, detalle y cambio de estado PATCH/PUT
   await s.api.put('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Enviado' }).expect(200);
   await s.api.put('/api/orders/missing/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Pagado' }).expect(404);
   s.done();
+  for (const [from, to, stock] of [['Pendiente', 'Cancelado', 5], ['Entregado', 'Reembolsado', 5], ['Cancelado', 'Pagado', 5], ['Reembolsado', 'Pendiente', 0], ['Cancelado', 'Reembolsado', 5]]) {
+    const inactive = status => ['Cancelado', 'Reembolsado'].includes(status);
+    const changed = inactive(from) !== inactive(to);
+    const expected = changed && !inactive(to) && stock === 0 ? 400 : 200;
+    const steps = [{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE OF o/, rows: [{ ...order, status: from }] }];
+    if (changed) {
+      steps.push({ sql: /FROM order_items/, rows: [item] });
+      if (!inactive(to)) steps.push({ sql: /FROM products.*FOR UPDATE/, rows: [{ ...product, stock }] });
+      if (expected === 200) steps.push({ sql: inactive(to) ? /stock = stock \+/ : /stock = stock -/, check: p => assert.deepEqual(p, [1, 1]) });
+    }
+    if (expected === 400) steps.push({ sql: /^ROLLBACK$/ });
+    else steps.push({ sql: /admin_notes = COALESCE/, rows: [{ ...order, status: to, admin_notes: 'Nota' }], check: p => assert.deepEqual(p, [to, 'Nota', 1]) }, { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ });
+    const scenario = setup(steps);
+    const response = await scenario.api.patch('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: to, adminNotes: 'Nota' }).expect(expected);
+    if (expected === 200) assert.equal(response.body.adminNotes, 'Nota');
+    assert.equal(scenario.calls.at(-1).release, true);
+    scenario.done();
+  }
+  const invalid = setup();
+  await invalid.api.patch('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Pagado', adminNotes: 123 }).expect(400);
+  invalid.done();
+
 });
 
 

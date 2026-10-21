@@ -10,6 +10,7 @@ const product = p => ({ id: p.code, dbId: p.id, code: p.code, title: p.title, de
   color: p.color, cost: p.cost, cardType: p.card_type, condition: p.condition, image: p.image_url,
   hasButton: p.has_button, isActive: p.is_active });
 const order = (o, items) => ({ id: o.order_number, dbId: o.id, orderNumber: o.order_number, status: o.status,
+  adminNotes: o.admin_notes ?? null,
   subtotal: o.subtotal, shippingCost: o.shipping_cost, total: o.total, date: o.created_at,
   customer: o.shipping_name, email: o.shipping_email, shippingAddress: o.shipping_address,
   shippingCity: o.shipping_city, shippingRegion: o.shipping_region, paymentMethod: o.payment_method,
