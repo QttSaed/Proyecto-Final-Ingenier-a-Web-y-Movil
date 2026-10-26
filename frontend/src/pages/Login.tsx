@@ -86,10 +86,9 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <p className="form-hint">Contraseñas nuevas: mínimo 8 caracteres, una letra y un número.</p>
               {location.state?.registered && <p role="status">Cuenta creada. Revisa tu correo para verificar tu cuenta antes de iniciar sesión.</p>}
               <div className="forgot-password">
-                <Link to="/coming-soon">¿Olvidaste tu contraseña?</Link>
+                <Link to="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
               </div>
 
               <p ref={errorRef} role="alert" className="form-error">{error}</p>

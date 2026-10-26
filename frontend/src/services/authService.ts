@@ -110,6 +110,18 @@ export const authService = {
       method: 'POST', body: JSON.stringify({ email: email.trim().toLowerCase() })
     });
   },
+  async forgotPassword(email: string): Promise<{ message: string; email?: string; resetUrl?: string | null }> {
+    return apiRequest<{ message: string; email?: string; resetUrl?: string | null }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.trim().toLowerCase() })
+    });
+  },
+  async resetPassword(token: string, password: string): Promise<{ message: string }> {
+    return apiRequest<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password })
+    });
+  },
   logout() {
     ['tcg.token', sessionKey, 'isLoggedIn', 'role', 'userName', 'userEmail'].forEach(key => {
       sessionStorage.removeItem(key);

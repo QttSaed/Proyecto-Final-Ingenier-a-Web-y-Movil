@@ -213,4 +213,26 @@ describe('autenticación REST', () => {
     expect(await authService.resendVerification(user.email)).toEqual({ message: 'Enlace enviado' });
   });
 
+  it('requests password recovery with normalized email and forwards response', async () => {
+    const result = { message: 'Instrucciones enviadas', resetUrl: '/restablecer-contrasena?token=tok' };
+    fetchMock.mockResolvedValue({ ok: true, json: async () => result });
+    expect(await authService.forgotPassword('  CLIENTE@EXAMPLE.CL  ')).toEqual(result);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/auth\/forgot-password$/),
+      expect.objectContaining({ method: 'POST', body: JSON.stringify({ email: 'cliente@example.cl' }) })
+    );
+  });
+
+  it('resets password with token and new password', async () => {
+    const result = { message: 'Contraseña restablecida exitosamente' };
+    fetchMock.mockResolvedValue({ ok: true, json: async () => result });
+    expect(await authService.resetPassword('secret-token', 'NewPassword999')).toEqual(result);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringMatching(/\/api\/auth\/reset-password$/),
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ token: 'secret-token', password: 'NewPassword999' })
+      })
+    );
+  });
 });
