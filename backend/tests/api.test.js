@@ -4,6 +4,7 @@ const googleAuth = require('../src/services/googleAuth');
 const { OAuth2Client } = require('google-auth-library');
 beforeEach(t => {
   t.mock.method(mailer, 'sendVerificationEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, verificationUrl: `${clientUrl}/verificar-correo?token=${token}` }));
+  t.mock.method(mailer, 'sendPasswordResetEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, resetUrl: `${clientUrl}/restablecer-contrasena?token=${token}` }));
 });
 const assert = require('node:assert/strict');
 const request = require('supertest');
@@ -339,7 +340,7 @@ test('verificación rechaza tokens ausentes, inválidos y expirados', async () =
   const invalid = await s.api.post('/api/auth/verify-email').send({ token: 'invalid' }).expect(400);
   assert.match(invalid.body.message, /inválido/);
   const expired = await s.api.get('/api/auth/verify-email').query({ token: 'expired' }).expect(400);
-  assert.match(expired.body.message, /expirado/);
+  assert.match(expired.body.message, /expirad/i);
   s.done();
 });
 
@@ -366,5 +367,55 @@ test('reenvío valida el correo, admite cuentas desconocidas y rechaza cuentas v
   const verified = await s.api.post('/api/auth/resend-verification').send({ email: user.email }).expect(400);
   assert.match(verified.body.message, /ya se encuentra verificada/);
   assert.equal(mailer.sendVerificationEmail.mock.callCount(), 0);
+  s.done();
+});
+
+test('recuperacion de contrasena genera un token de 1 hora y env?a el correo', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE email/, rows: [{ id: user.id, name: user.name, email: user.email }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET reset_password_token = \$1, reset_password_expires_at = CURRENT_TIMESTAMP \+ INTERVAL '1 hour'/, check: p => { assert.match(p[0], /^[a-f0-9]{64}$/); assert.equal(p[1], user.id); } }
+  ]);
+  const response = await s.api.post('/api/auth/forgot-password').send({ email: user.email.toUpperCase() }).expect(200);
+  assert.equal(response.body.email, user.email);
+  assert.match(response.body.message, /hemos enviado las instrucciones/);
+  assert.equal(new URL(response.body.resetUrl).searchParams.get('token'), s.calls[1].params[0]);
+  const call = mailer.sendPasswordResetEmail.mock.calls[0].arguments[0];
+  assert.equal(call.email, user.email);
+  assert.equal(call.name, user.name);
+  assert.equal(call.token, s.calls[1].params[0]);
+  s.done();
+});
+
+test('recuperacion de contrasena responde gen?ricamente para usuarios desconocidos', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [] }]);
+  const res = await s.api.post('/api/auth/forgot-password').send({ email: 'desconocido@example.com' }).expect(200);
+  assert.match(res.body.message, /hemos enviado las instrucciones/);
+  assert.equal(mailer.sendPasswordResetEmail.mock.callCount(), 0);
+  s.done();
+});
+
+test('restablecimiento actualiza la contrasena con token v?lido y permite nuevo login', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE reset_password_token/, rows: [{ id: user.id, name: user.name, email: user.email, reset_password_expires_at: new Date(Date.now() + 3600000) }], check: p => assert.deepEqual(p, ['token-valido']) },
+    { sql: /UPDATE users SET password_hash = \$1, reset_password_token = NULL/, check: (p, sql) => {
+      assert.ok(bcrypt.compareSync('NuevaClave123', p[0]));
+      assert.equal(p[1], user.id);
+    } }
+  ]);
+  const response = await s.api.post('/api/auth/reset-password').send({ token: 'token-valido', password: 'NuevaClave123' }).expect(200);
+  assert.match(response.body.message, /restablecida exitosamente/);
+  s.done();
+});
+
+test('restablecimiento rechaza tokens invalidos, expirados y contrase?as d?biles', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE reset_password_token/, rows: [] },
+    { sql: /FROM users WHERE reset_password_token/, rows: [{ id: user.id, reset_password_expires_at: new Date(Date.now() - 1000) }] }
+  ]);
+  await s.api.post('/api/auth/reset-password').send({ token: 'tok', password: 'corta' }).expect(400);
+  const invalid = await s.api.post('/api/auth/reset-password').send({ token: 'invalido', password: 'NuevaClave123' }).expect(400);
+  assert.match(invalid.body.message, /inv.*lido/i);
+  const expired = await s.api.post('/api/auth/reset-password').send({ token: 'expirado', password: 'NuevaClave123' }).expect(400);
+  assert.match(expired.body.message, /expirado/);
   s.done();
 });

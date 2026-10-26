@@ -21,6 +21,8 @@ CREATE TABLE users (
     is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     verification_token VARCHAR(255),
     verification_expires_at TIMESTAMPTZ,
+    reset_password_token VARCHAR(255),
+    reset_password_expires_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

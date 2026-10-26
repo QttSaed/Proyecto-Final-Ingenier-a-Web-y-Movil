@@ -95,3 +95,42 @@ exports.updateMe = async (req, res) => {
   if (!rows[0]) throw new HttpError(404, 'Usuario no encontrado');
   res.json(user(rows[0]));
 };
+
+exports.forgotPassword = async (req, res) => {
+  const email = v.email(req.body.email);
+  const db = req.app.locals.db;
+  const { rows } = await db.query('SELECT id, name, email FROM users WHERE email = $1', [email]);
+  if (!rows[0]) {
+    return res.json({ message: 'Si el correo está registrado, hemos enviado las instrucciones para restablecer tu contraseña.' });
+  }
+  const token = crypto.randomBytes(32).toString('hex');
+  await db.query(
+    "UPDATE users SET reset_password_token = $1, reset_password_expires_at = CURRENT_TIMESTAMP + INTERVAL '1 hour', updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+    [token, rows[0].id]
+  );
+  const mailResult = await mailer.sendPasswordResetEmail({ email, name: rows[0].name, token, clientUrl: clientUrl(req) });
+  res.json({
+    message: 'Si el correo está registrado, hemos enviado las instrucciones para restablecer tu contraseña.',
+    email,
+    resetUrl: mailResult.resetUrl || null
+  });
+};
+exports.resetPassword = async (req, res) => {
+  const token = v.text(req.body?.token, 'token', 255);
+  const password = req.body?.password;
+  if (typeof password !== 'string' || password.length < 8 || Buffer.byteLength(password) > 72 || !/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+    v.fail('password debe tener al menos 8 caracteres, una letra y un número, y hasta 72 bytes');
+  }
+  const db = req.app.locals.db;
+  const { rows } = await db.query('SELECT id, name, email, reset_password_expires_at FROM users WHERE reset_password_token = $1', [token]);
+  if (!rows[0]) throw new HttpError(400, 'El enlace para restablecer la contraseña es inválido.');
+  if (rows[0].reset_password_expires_at && new Date(rows[0].reset_password_expires_at) < new Date()) {
+    throw new HttpError(400, 'El enlace para restablecer la contraseña ha expirado.');
+  }
+  const hash = await bcrypt.hash(password, 10);
+  await db.query(
+    'UPDATE users SET password_hash = $1, reset_password_token = NULL, reset_password_expires_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+    [hash, rows[0].id]
+  );
+  res.status(200).json({ message: 'Tu contraseña ha sido restablecida exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.' });
+};

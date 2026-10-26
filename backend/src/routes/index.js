@@ -14,6 +14,8 @@ router.post('/auth/register', body, auth.register);
 router.post('/auth/verify-email', body, auth.verifyEmail);
 router.get('/auth/verify-email', auth.verifyEmail);
 router.post('/auth/resend-verification', body, auth.resendVerification);
+router.post('/auth/forgot-password', body, auth.forgotPassword);
+router.post('/auth/reset-password', body, auth.resetPassword);
 router.post('/auth/login', body, auth.login);
 router.post('/auth/google', body, auth.googleLogin);
 router.get('/auth/me', authenticateJWT, auth.me);
