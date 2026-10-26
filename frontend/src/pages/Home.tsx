@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
+import React, { useState, useRef } from 'react';
+import { IonContent, IonPage, IonHeader, IonIcon, useIonViewDidEnter } from '@ionic/react';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Link } from 'react-router-dom';
 import './Home.css';
@@ -13,12 +13,23 @@ import appData from '../data.json';
 
 const Home: React.FC = () => {
   const [pageState, setPageState] = useState<Record<string, number>>({});
+  const contentRef = useRef<HTMLIonContentElement>(null);
+
+  useIonViewDidEnter(() => {
+    contentRef.current?.scrollToTop(0);
+  });
 
   const getSectionTitle = (name: string) => {
-    const lowerName = name.toLowerCase();
+    const lowerName = name.toLowerCase().replace(/[\s-]/g, '');
     if (lowerName === 'eventos') return 'Eventos';
-    if (lowerName === 'lotesdcarta') return 'Lotes De Cartas';
+    if (lowerName === 'lotesdcarta' || lowerName === 'lotes' || lowerName === 'lotesdecartas') return 'Lotes de Cartas';
     return name;
+  };
+
+  const getSectionCatalogLink = (name: string) => {
+    const lower = name.toLowerCase().replace(/[\s-]/g, '');
+    if (lower === 'lotesdcarta' || lower === 'lotes') return 'lotes-de-cartas';
+    return lower;
   };
 
   return (
@@ -27,7 +38,8 @@ const Home: React.FC = () => {
         <TopBar />
         <Header />
       </IonHeader>
-      <IonContent className="main-content">
+      <IonContent ref={contentRef} className="main-content">
+        <h1 className="home-title">TCGStore: cartas coleccionables y accesorios en Chile</h1>
 
         <div className="banners-container">
           <Link to="/catalog/gundam" className="banner-large" style={{ padding: 0, textDecoration: 'none' }}>
@@ -64,13 +76,13 @@ const Home: React.FC = () => {
             }).map((logo, i) => {
               const cleanName = logo.name.replace(/icono /i, '');
               let targetId = cleanName.toLowerCase().replace(/[\s-]/g, '');
-              if (targetId === 'lotes') targetId = 'lotesdcarta';
+              if (targetId === 'lotes') targetId = 'lotes-de-cartas';
 
               return (
                 <Link to={`/catalog/${targetId}`} key={i} style={{ textDecoration: 'none' }}>
                   <div className="circular-icon">
                     <div className="circle-placeholder" style={{ backgroundImage: `url('${logo.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                    <span className="circle-label" style={{ textTransform: 'capitalize' }}>{cleanName}</span>
+                    <span className="circle-label">{cleanName.toLowerCase() === 'lotes' ? 'Lotes de Cartas' : cleanName}</span>
                   </div>
                 </Link>
               );
@@ -138,7 +150,7 @@ const Home: React.FC = () => {
                     <IonIcon icon={chevronForwardOutline} />
                   </button>
                 </div>
-                <Link to={`/catalog/${sectionId}`}>
+                <Link to={`/catalog/${getSectionCatalogLink(sectionName)}`}>
                   <button className="btn-view-all">Ver todo</button>
                 </Link>
               </div>

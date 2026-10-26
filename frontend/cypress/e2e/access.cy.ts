@@ -32,9 +32,6 @@ describe('Acceso por roles y navegación Ionic', () => {
     cy.get('.ion-page:not(.ion-page-hidden) nav.header-links').contains('Eventos').click();
     cy.location('pathname').should('eq', '/catalog/eventos');
     cy.get('.admin-content').should('not.be.visible');
-    cy.get('.ion-page:not(.ion-page-hidden) .header-icons a[href="/search"]').click();
-    cy.location('pathname').should('eq', '/search');
-    cy.get('.admin-content').should('not.be.visible');
     cy.visit('/admin/inventario');
     cy.contains('Inventario de Productos').should('be.visible');
     cy.visit('/admin/ordenes');

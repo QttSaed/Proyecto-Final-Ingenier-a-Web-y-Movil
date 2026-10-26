@@ -50,6 +50,8 @@ export default function AppRouter() {
     <IonRouterOutlet>
       <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/catalog/lotesdcarta" element={<Navigate to="/catalog/lotes-de-cartas" replace />} />
+      <Route path="/catalog/lotes" element={<Navigate to="/catalog/lotes-de-cartas" replace />} />
       <Route path="/catalog/:category" element={<Catalog />} />
       <Route path="/catalogo" element={<Navigate to="/catalog/todos" replace />} />
       <Route path="/product/:id" element={<ProductDetail />} />
@@ -65,7 +67,6 @@ export default function AppRouter() {
       <Route path="/registro" element={<Navigate to="/register" replace />} />
       <Route path="/coming-soon" element={<ComingSoon />} />
       <Route path="/proximamente" element={<Navigate to="/coming-soon" replace />} />
-      <Route path="/search" element={<ComingSoon />} />
       <Route path="/perfil" element={<ProtectedRoute allowedRoles={['client', 'admin']}><Profile /></ProtectedRoute>} />
       <Route path="/cart" element={<ProtectedRoute allowedRoles={['client']} allowGuest><Cart /></ProtectedRoute>} />
       <Route path="/carrito" element={<Navigate to="/cart" replace />} />

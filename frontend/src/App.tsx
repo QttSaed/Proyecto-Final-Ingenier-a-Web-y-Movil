@@ -25,6 +25,7 @@ import './theme/variables.css';
 import { CartProvider } from './context/CartContext';
 
 import SettingsBubble from './components/SettingsBubble';
+import ScrollToTop from './components/ScrollToTop';
 
 setupIonicReact();
 
@@ -33,6 +34,7 @@ const App: React.FC = () => (
     <IonApp>
       <CartProvider>
         <IonReactRouter>
+          <ScrollToTop />
           <AppRouter />
         </IonReactRouter>
         <SettingsBubble />

@@ -26,6 +26,8 @@ const Profile: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [avatarError, setAvatarError] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', address: '', city: '', region: '' });
+  const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
+  const toggleOrder = (orderId: string) => { setExpandedOrders(prev => ({ ...prev, [orderId]: !prev[orderId] })); };
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -217,6 +219,7 @@ const Profile: React.FC = () => {
                   )}
                   {orders.map(order => {
                     const quantity = order.items.reduce((sum, item) => sum + item.quantity, 0);
+                    const isExpanded = !!expandedOrders[order.id];
                     return (
                       <div className="order-item" key={order.id}>
                         <div className="order-header">
@@ -227,7 +230,41 @@ const Profile: React.FC = () => {
                           <span>{quantity} {quantity === 1 ? 'Producto' : 'Productos'}</span>
                           <span className="order-total">{money(order.total)}</span>
                         </div>
-                        <div className={`order-status status-${order.status.toLowerCase()}`}>{order.status}</div>
+                        <div className="order-actions-bar">
+                          <span className={`order-status status-${order.status.toLowerCase()}`}>{order.status}</span>
+                          {order.items && order.items.length > 0 && (
+                            <button
+                              type="button"
+                              className="btn-toggle-order-items"
+                              onClick={() => toggleOrder(order.id)}
+                              aria-expanded={isExpanded}
+                              aria-label={isExpanded ? 'Ocultar detalle de cartas' : 'Ver detalle de cartas'}
+                            >
+                              {isExpanded ? 'Ocultar cartas ▲' : 'Ver detalle de cartas ▼'}
+                            </button>
+                          )}
+                        </div>
+
+                        {isExpanded && order.items && order.items.length > 0 && (
+                          <div className="order-items-accordion">
+                            <div className="order-items-header">
+                              <span className="col-item-title">Carta / Producto</span>
+                              <span className="col-item-qty">Cant.</span>
+                              <span className="col-item-price">Precio</span>
+                              <span className="col-item-subtotal">Subtotal</span>
+                            </div>
+                            <div className="order-items-body">
+                              {order.items.map((item, idx) => (
+                                <div className="order-item-row" key={idx}>
+                                  <span className="col-item-title" title={item.title}>{item.title}</span>
+                                  <span className="col-item-qty">x{item.quantity}</span>
+                                  <span className="col-item-price">{money(item.unitPrice)}</span>
+                                  <span className="col-item-subtotal">{money(item.unitPrice * item.quantity)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

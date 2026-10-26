@@ -95,11 +95,11 @@ const Header: React.FC = () => {
           <NavLink to="/catalog/riftbound" className={({isActive}) => isActive ? "active-link" : ""}><span>Riftbound</span></NavLink>
 
           <div className="nav-dropdown">
-            <span className={`dropdown-trigger ${['/catalog/digimon', '/catalog/gundam', '/catalog/lotesdcarta'].includes(location.pathname) ? 'active-link' : ''}`}>Otros ⌄</span>
+            <span className={`dropdown-trigger ${['/catalog/digimon', '/catalog/gundam', '/catalog/lotes-de-cartas', '/catalog/lotesdcarta'].includes(location.pathname) ? 'active-link' : ''}`}>Otros ⌄</span>
             <div className="dropdown-menu">
               <NavLink to="/catalog/digimon" className={({isActive}) => isActive ? "active-link" : ""}>Digimon</NavLink>
               <NavLink to="/catalog/gundam" className={({isActive}) => isActive ? "active-link" : ""}>Gundam</NavLink>
-              <NavLink to="/catalog/lotesdcarta" className={({isActive}) => isActive ? "active-link" : ""}>Lotes de Cartas</NavLink>
+              <NavLink to="/catalog/lotes-de-cartas" className={({isActive}) => isActive ? "active-link" : ""}>Lotes de Cartas</NavLink>
             </div>
           </div>
 
@@ -193,7 +193,7 @@ const Header: React.FC = () => {
                 <div className="mobile-nav-title">Otros</div>
                 <NavLink to="/catalog/digimon" onClick={closeMenu}>Digimon</NavLink>
                 <NavLink to="/catalog/gundam" onClick={closeMenu}>Gundam</NavLink>
-                <NavLink to="/catalog/lotesdcarta" onClick={closeMenu}>Lotes de Cartas</NavLink>
+                <NavLink to="/catalog/lotes-de-cartas" onClick={closeMenu}>Lotes de Cartas</NavLink>
               </div>
             </div>
           </div>

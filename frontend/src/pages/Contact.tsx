@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react';
-import { IonContent, IonHeader, IonPage } from '@ionic/react';
+import { useState, useRef, type FormEvent } from 'react';
+import { IonContent, IonHeader, IonPage, useIonViewDidEnter } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { scrollToTop } from '../utils/scrollToTop';
 import './Legal.css';
 
 const emptyForm = { name: '', email: '', subject: '', message: '' };
@@ -11,6 +12,12 @@ const emptyForm = { name: '', email: '', subject: '', message: '' };
 export default function Contact() {
   const [form, setForm] = useState(emptyForm);
   const [success, setSuccess] = useState(false);
+  const contentRef = useRef<HTMLIonContentElement>(null);
+
+  useIonViewDidEnter(() => {
+    contentRef.current?.scrollToTop(0);
+    scrollToTop(false);
+  });
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,7 +29,7 @@ export default function Contact() {
   return (
     <IonPage>
       <IonHeader><TopBar /><Header /></IonHeader>
-      <IonContent className="main-content legal-content">
+      <IonContent ref={contentRef} className="main-content legal-content">
         <main className="legal-container">
           <article className="legal-card">
             <header className="legal-header">
