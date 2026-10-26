@@ -15,6 +15,7 @@ router.post('/auth/verify-email', body, auth.verifyEmail);
 router.get('/auth/verify-email', auth.verifyEmail);
 router.post('/auth/resend-verification', body, auth.resendVerification);
 router.post('/auth/login', body, auth.login);
+router.post('/auth/google', body, auth.googleLogin);
 router.get('/auth/me', authenticateJWT, auth.me);
 router.put('/auth/me', authenticateJWT, body, auth.updateMe);
 router.get('/categories', categories.list);

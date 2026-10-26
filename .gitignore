@@ -23,3 +23,7 @@ temp/
 Thumbs.db
 
 .offline-markdown-preview/
+# Credenciales de Google OAuth
+*client_secret*.json
+google-oauth-credentials.json
+*credentials*.json
