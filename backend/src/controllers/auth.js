@@ -2,10 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('node:crypto');
 const mailer = require('../services/mailer');
+const googleAuth = require('../services/googleAuth');
 const v = require('../middlewares/validate');
 const { HttpError } = require('../middlewares/errorHandler');
 const { user } = require('../utils/records');
-const fields = 'id, name, email, role, phone, address, city, region, is_verified';
+const fields = 'id, name, email, role, phone, address, city, region, is_verified, avatar_url';
 const clientUrl = req => process.env.CLIENT_URL || req.app.locals.clientUrl || 'http://localhost:5173';
 function session(req, row) {
   return { token: jwt.sign({ email: row.email, role: row.role, name: row.name }, req.app.locals.jwtSecret,
@@ -28,9 +29,32 @@ exports.login = async (req, res) => {
   const email = v.email(req.body.email);
   if (typeof req.body.password !== 'string' || !req.body.password) v.fail('password es obligatorio');
   const { rows } = await req.app.locals.db.query(`SELECT ${fields}, password_hash FROM users WHERE email = $1`, [email]);
-  if (!rows[0] || !await bcrypt.compare(req.body.password, rows[0].password_hash)) throw new HttpError(401, 'Correo o contraseña incorrectos');
+  if (!rows[0]?.password_hash || !await bcrypt.compare(req.body.password, rows[0].password_hash)) throw new HttpError(401, 'Correo o contraseña incorrectos');
   if (rows[0].is_verified === false) throw new HttpError(403, 'Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.');
   res.json(session(req, rows[0]));
+};
+exports.googleLogin = async (req, res) => {
+  const idToken = req.body.idToken || req.body.credential;
+  if (!idToken || typeof idToken !== 'string') v.fail('idToken es obligatorio');
+  let googlePayload;
+  try {
+    googlePayload = await googleAuth.verifyGoogleIdToken(idToken);
+  } catch {
+    throw new HttpError(401, 'Token de Google inválido');
+  }
+  if (!googlePayload || !googlePayload.email) throw new HttpError(401, 'No se pudo verificar la cuenta de Google');
+  const email = googlePayload.email.trim().toLowerCase();
+  const db = req.app.locals.db;
+  const { rows } = await db.query(`SELECT ${fields}, google_id, password_hash FROM users WHERE email = $1`, [email]);
+  let userRow;
+  if (rows[0]) {
+    const updated = await db.query(`UPDATE users SET google_id = COALESCE(google_id, $1), avatar_url = COALESCE(avatar_url, $2), is_verified = true, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING ${fields}`, [googlePayload.sub, googlePayload.picture, rows[0].id]);
+    userRow = updated.rows[0];
+  } else {
+    const inserted = await db.query(`INSERT INTO users (name, email, password_hash, role, is_verified, google_id, avatar_url) VALUES ($1, $2, NULL, 'client', true, $3, $4) RETURNING ${fields}`, [googlePayload.name || 'Usuario Google', email, googlePayload.sub, googlePayload.picture]);
+    userRow = inserted.rows[0];
+  }
+  res.json({ message: 'Inicio de sesión exitoso con Google.', ...session(req, userRow) });
 };
 exports.verifyEmail = async (req, res) => {
   const token = v.text(req.body?.token || req.query.token, 'token', 255);

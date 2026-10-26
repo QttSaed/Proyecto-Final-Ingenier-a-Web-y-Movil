@@ -1,5 +1,7 @@
 const { test, beforeEach } = require('node:test');
 const mailer = require('../src/services/mailer');
+const googleAuth = require('../src/services/googleAuth');
+const { OAuth2Client } = require('google-auth-library');
 beforeEach(t => {
   t.mock.method(mailer, 'sendVerificationEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, verificationUrl: `${clientUrl}/verificar-correo?token=${token}` }));
 });
@@ -32,6 +34,95 @@ function setup(steps = []) {
   };
   return { api: request(createApp({ db, jwtSecret: secret, authRateLimit: 1000 })), calls, done() { assert.equal(steps.length, 0); } };
 }
+
+function googleClientId(t, value) {
+  const previous = process.env.GOOGLE_CLIENT_ID;
+  process.env.GOOGLE_CLIENT_ID = value;
+  t.after(() => {
+    if (previous === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previous;
+  });
+}
+
+test('Google vincula el perfil de un usuario existente y devuelve una sesión', async t => {
+  googleClientId(t, '');
+  const picture = 'https://example.com/avatar.png';
+  const s = setup([
+    { sql: /SELECT .*avatar_url, google_id, password_hash FROM users WHERE email = \$1/, rows: [{ ...user, is_verified: false }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET google_id = COALESCE\(google_id, \$1\), avatar_url = COALESCE\(avatar_url, \$2\), is_verified = true/, rows: [{ ...user, avatar_url: picture }], check: (p, sql) => {
+      assert.deepEqual(p, ['google-1', picture, user.id]);
+      assert.match(sql, /WHERE id = \$3 RETURNING/);
+    } }
+  ]);
+  const idToken = jwt.sign({ sub: 'google-1', email: ` ${user.email.toUpperCase()} `, name: 'Cliente Google', picture, email_verified: true }, 'google-test');
+  const response = await s.api.post('/api/auth/google').send({ idToken }).expect(200);
+  assert.equal(response.body.user.id, user.id);
+  assert.equal(response.body.user.avatarUrl, picture);
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(response.body.user.password_hash, undefined);
+  assert.equal(response.body.user.google_id, undefined);
+  assert.equal(jwt.verify(response.body.token, secret).sub, String(user.id));
+  s.done();
+});
+
+test('Google registra un cliente verificado con credential y un perfil JSON', async t => {
+  googleClientId(t, '');
+  const email = 'nuevo@example.com';
+  const s = setup([
+    { sql: /FROM users WHERE email = \$1/, check: p => assert.deepEqual(p, [email]) },
+    { sql: /INSERT INTO users .*VALUES \(\$1, \$2, NULL, 'client', true, \$3, \$4\)/, rows: [{ ...user, id: 2, name: 'nuevo', email }], check: p => assert.deepEqual(p, ['nuevo', email, 'google-2', null]) }
+  ]);
+  const response = await s.api.post('/api/auth/google').send({ credential: JSON.stringify({ sub: 'google-2', email, email_verified: true }) }).expect(200);
+  assert.equal(response.body.user.role, 'client');
+  assert.equal(response.body.user.name, 'nuevo');
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(response.body.user.avatarUrl, null);
+  assert.equal(jwt.verify(response.body.token, secret).sub, '2');
+  s.done();
+});
+
+test('Google rechaza tokens ausentes, malformados y perfiles sin correo', async t => {
+  googleClientId(t, '');
+  const s = setup();
+  for (const idToken of [undefined, '', 123, {}, []]) {
+    const response = await s.api.post('/api/auth/google').send({ idToken }).expect(400);
+    assert.equal(response.body.message, 'idToken es obligatorio');
+  }
+  for (const idToken of ['invalid', 'null', '[]', '{}', '{"email":123}', jwt.sign({ sub: 'no-email' }, 'google-test')]) {
+    const response = await s.api.post('/api/auth/google').send({ idToken }).expect(401);
+    assert.equal(response.body.message, 'Token de Google inválido');
+    await assert.rejects(googleAuth.verifyGoogleIdToken(idToken), /Token de Google inválido/);
+  }
+  t.mock.method(googleAuth, 'verifyGoogleIdToken', async () => null);
+  const response = await s.api.post('/api/auth/google').send({ idToken: 'no-profile' }).expect(401);
+  assert.equal(response.body.message, 'No se pudo verificar la cuenta de Google');
+  assert.equal(s.calls.length, 0);
+  s.done();
+});
+
+test('Google verifica el token y la audiencia cuando hay un client ID', async t => {
+  googleClientId(t, 'google-client-id');
+  const verify = t.mock.method(OAuth2Client.prototype, 'verifyIdToken', async options => {
+    assert.deepEqual(options, { idToken: 'signed-google-token', audience: 'google-client-id' });
+    return { getPayload: () => ({ sub: 'google-3', email: user.email, name: user.name, picture: 'https://example.com/photo.png', email_verified: true }) };
+  });
+  assert.deepEqual(await googleAuth.verifyGoogleIdToken('signed-google-token'), {
+    sub: 'google-3', email: user.email, name: user.name, picture: 'https://example.com/photo.png', emailVerified: true
+  });
+  assert.equal(verify.mock.callCount(), 1);
+  verify.mock.restore();
+  t.mock.method(OAuth2Client.prototype, 'verifyIdToken', async () => { throw new Error('Invalid signature'); });
+  const s = setup();
+  await s.api.post('/api/auth/google').send({ idToken: JSON.stringify({ email: user.email }) }).expect(401);
+  assert.equal(s.calls.length, 0);
+  s.done();
+});
+
+test('login con contraseña rechaza cuentas de Google sin hash', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [{ ...user, password_hash: null }] }]);
+  await s.api.post('/api/auth/login').send({ email: user.email, password: 'Password123' }).expect(401);
+  s.done();
+});
 test('health, categorías y rutas inexistentes', async () => {
   const s = setup([{ sql: /FROM categories ORDER BY name/, rows: [{ id: 8, name: 'Pokemon', slug: 'pokemon' }] }]);
   assert.deepEqual((await s.api.get('/api/health').expect(200)).body, { status: 'ok' });
