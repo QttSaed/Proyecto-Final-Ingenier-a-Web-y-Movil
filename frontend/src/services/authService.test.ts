@@ -1,5 +1,6 @@
 ﻿import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { authService } from './authService';
+import { ApiError } from './apiService';
 
 const fetchMock = vi.fn();
 const user = { name: 'Cliente', email: 'cliente@example.cl', role: 'client' };
@@ -12,6 +13,106 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('autenticación REST', () => {
+  it('refreshes profile data, stores it and notifies subscribers', async () => {
+    const profile = { ...user, id: 7, phone: '+56 9 8765 4321', address: 'Los Robles 12', city: 'Santiago', region: 'Metropolitana', avatarUrl: '/avatar.jpg', isVerified: true };
+    const listener = vi.fn();
+    const unsubscribe = authService.subscribe(listener);
+    sessionStorage.setItem('tcg.token', 'profile-token');
+    fetchMock.mockResolvedValue({ ok: true, json: async () => profile });
+    try {
+      expect(await authService.getProfile()).toEqual(profile);
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/api\/auth\/me$/), expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: 'Bearer profile-token' })
+      }));
+      expect(authService.getUser()).toEqual(profile);
+      expect(JSON.parse(sessionStorage.getItem('tcg.session')!)).toEqual(profile);
+      expect(listener).toHaveBeenCalledTimes(1);
+    } finally { unsubscribe(); }
+  });
+
+  it('uses the current session for profile network failures and an empty user without a session', async () => {
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
+    expect(await authService.getProfile()).toEqual({ email: '', name: '', role: 'client' });
+    expect(authService.getUser()).toBeNull();
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ user, token: 'token' }) });
+    await authService.login(user.email, 'Segura123');
+    expect(await authService.getProfile()).toEqual(user);
+    expect(authService.getUser()).toEqual(user);
+  });
+
+  it('propagates profile API errors', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 401, json: async () => ({ message: 'Sesión vencida' }) });
+    await expect(authService.getProfile()).rejects.toMatchObject({ message: 'Sesión vencida', status: 401 });
+    expect(authService.getUser()).toBeNull();
+  });
+
+  it('saves contact and shipping changes and publishes the returned profile', async () => {
+    const changes = { name: 'Cliente actualizado', phone: null, address: 'Los Robles 12', city: 'Santiago', region: 'Metropolitana' };
+    const updated = { ...user, ...changes };
+    const listener = vi.fn();
+    const unsubscribe = authService.subscribe(listener);
+    fetchMock.mockResolvedValue({ ok: true, json: async () => updated });
+    try {
+      expect(await authService.updateProfile(changes)).toEqual(updated);
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/api\/auth\/me$/), expect.objectContaining({
+        method: 'PUT', body: JSON.stringify(changes)
+      }));
+      expect(authService.getUser()).toEqual(updated);
+      expect(JSON.parse(sessionStorage.getItem('tcg.session')!)).toEqual(updated);
+      expect(listener).toHaveBeenCalledTimes(1);
+    } finally { unsubscribe(); }
+  });
+
+  it('preserves the session when profile updates fail', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ user, token: 'token' }) });
+    await authService.login(user.email, 'Segura123');
+    const listener = vi.fn();
+    const unsubscribe = authService.subscribe(listener);
+    try {
+      fetchMock.mockResolvedValueOnce({ ok: false, status: 400, json: async () => ({ message: 'Teléfono inválido' }) });
+      await expect(authService.updateProfile({ phone: 'invalid' })).rejects.toBeInstanceOf(ApiError);
+      fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+      await expect(authService.updateProfile({ name: 'Nuevo' })).rejects.toThrow('No se pudo actualizar el perfil. Intenta nuevamente.');
+      expect(authService.getUser()).toEqual(user);
+      expect(JSON.parse(sessionStorage.getItem('tcg.session')!)).toEqual(user);
+      expect(listener).not.toHaveBeenCalled();
+    } finally { unsubscribe(); }
+  });
+
+  it('stores the Google login token and session and notifies subscribers', async () => {
+    const listener = vi.fn();
+    const unsubscribe = authService.subscribe(listener);
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ message: 'Sesión iniciada', user, token: 'google-token' }) });
+    try {
+      expect(await authService.loginWithGoogle('google-credential')).toEqual(user);
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/api\/auth\/google$/), expect.objectContaining({
+        method: 'POST', body: JSON.stringify({ idToken: 'google-credential' })
+      }));
+      expect(sessionStorage.getItem('tcg.token')).toBe('google-token');
+      expect(JSON.parse(sessionStorage.getItem('tcg.session')!)).toEqual(user);
+      expect(authService.getUser()).toEqual(user);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(localStorage.getItem('tcg.token')).toBeNull();
+      expect(localStorage.getItem('tcg.session')).toBeNull();
+    } finally { unsubscribe(); }
+  });
+  it('propagates Google login backend errors without starting a session', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 401, json: async () => ({ message: 'Credencial de Google inválida' }) });
+    await expect(authService.loginWithGoogle('invalid')).rejects.toMatchObject({
+      message: 'Credencial de Google inválida', status: 401
+    });
+    await expect(authService.loginWithGoogle('invalid')).rejects.toBeInstanceOf(ApiError);
+    expect(authService.getUser()).toBeNull();
+    expect(sessionStorage.getItem('tcg.token')).toBeNull();
+    expect(sessionStorage.getItem('tcg.session')).toBeNull();
+  });
+  it('reports Google login network failures without starting a session', async () => {
+    fetchMock.mockRejectedValue(new TypeError('Failed to fetch'));
+    await expect(authService.loginWithGoogle('google-credential')).rejects.toThrow('No se pudo autenticar con Google. Intenta nuevamente.');
+    expect(authService.getUser()).toBeNull();
+    expect(sessionStorage.getItem('tcg.token')).toBeNull();
+    expect(sessionStorage.getItem('tcg.session')).toBeNull();
+  });
   it('propaga los rechazos del backend sin iniciar sesión', async () => {
     fetchMock.mockResolvedValue({ ok: false, json: async () => ({ message: 'Credenciales incorrectas' }) });
     await expect(authService.login('admin@tcgstore.com', '123456')).rejects.toThrow('Credenciales incorrectas');

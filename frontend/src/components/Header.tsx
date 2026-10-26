@@ -79,6 +79,7 @@ const Header: React.FC = () => {
         </div>
         
         <nav className="nav-links desktop-only">
+          <NavLink to="/catalog/todos" className={({isActive}) => isActive ? "active-link" : ""}><span>Todos los productos</span></NavLink>
           <div className="nav-dropdown">
             <span className={`dropdown-trigger ${['/catalog/pokemon-singles', '/catalog/onepiece-singles', '/catalog/riftbound-singles'].includes(location.pathname) ? 'active-link' : ''}`}>Singles ⌄</span>
             <div className="dropdown-menu">
@@ -152,6 +153,7 @@ const Header: React.FC = () => {
           <div className="mobile-menu-slider-container">
             <div className={`mobile-menu-pane ${activeSubMenu === 'main' ? 'active' : 'hidden-left'}`}>
               <div className="mobile-menu-links">
+                <NavLink to="/catalog/todos" onClick={closeMenu}>Todos los productos</NavLink>
                 <div className="mobile-nav-item" onClick={() => setActiveSubMenu('singles')}>
                   Singles <IonIcon icon={chevronForwardOutline} />
                 </div>

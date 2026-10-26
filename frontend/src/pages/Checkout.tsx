@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonHeader, useIonViewWillEnter } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
@@ -11,6 +11,7 @@ import './Checkout.css';
 import { useAuth } from '../services/authService';
 import { apiService, ApiError, Order } from '../services/apiService';
 import { localOrderService } from '../services/localOrderService';
+import { REGIONES_CHILE, getComunasPorRegion } from '../utils/chileData';
 
 const Checkout: React.FC = () => {
   const { cartItems, clearCart } = useCart();
@@ -22,6 +23,13 @@ const Checkout: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [finalTotal, setFinalTotal] = useState(0);
   const [orderId, setOrderId] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState(user?.region || '');
+  const [selectedCity, setSelectedCity] = useState(user?.city || '');
+
+  useEffect(() => {
+    if (user?.region && !selectedRegion) setSelectedRegion(user.region);
+    if (user?.city && !selectedCity) setSelectedCity(user.city);
+  }, [user?.region, user?.city]);
 
   useIonViewWillEnter(() => {
     setIsSuccess(false);
@@ -91,14 +99,16 @@ const Checkout: React.FC = () => {
     }
   };
 
+  const comunasDisponibles = getComunasPorRegion(selectedRegion);
+
   if (isSuccess) {
     return (
       <>
         <IonHeader>
-      <TopBar />
-      <Header />
-    </IonHeader>
-    <IonContent className="main-content">
+          <TopBar />
+          <Header />
+        </IonHeader>
+        <IonContent className="main-content">
           <div className="checkout-success-container">
             <div className="success-card">
               <h2>🎉 ¡Orden Generada con Éxito!</h2>
@@ -109,7 +119,8 @@ const Checkout: React.FC = () => {
                 setIsSuccess(false);
                 navigate('/home');
               }}>
-                <IonIcon icon={homeOutline} style={{ verticalAlign: "middle", marginRight: "8px" }} />Volver a la Tienda</button>
+                <IonIcon icon={homeOutline} style={{ verticalAlign: "middle", marginRight: "8px" }} />Volver a la Tienda
+              </button>
             </div>
           </div>
           <Footer />
@@ -121,11 +132,10 @@ const Checkout: React.FC = () => {
   return (
     <>
       <IonHeader>
-      <TopBar />
-      <Header />
-    </IonHeader>
-    <IonContent className="main-content">
-
+        <TopBar />
+        <Header />
+      </IonHeader>
+      <IonContent className="main-content">
         <div className="section-container" style={{ minHeight: '60vh' }}>
           <h1 className="section-title" style={{ textAlign: 'left' }}>Finalizar Compra</h1>
           
@@ -159,17 +169,50 @@ const Checkout: React.FC = () => {
               <form onSubmit={handlePayment} className="checkout-form">
                 <h3>Datos de Envío</h3>
                 <div className="form-group">
-                  <input type="text" name="shippingName" placeholder="Nombre completo" required />
+                  <input type="text" name="shippingName" placeholder="Nombre completo" defaultValue={user?.name || ''} required />
                 </div>
                 <div className="form-group">
-                  <input type="email" name="shippingEmail" placeholder="Correo electrónico" required />
+                  <input type="email" name="shippingEmail" placeholder="Correo electrónico" defaultValue={user?.email || ''} required />
                 </div>
                 <div className="form-group">
-                  <input type="text" name="shippingAddress" placeholder="Dirección (Ej. Av. Siempreviva 742)" required />
+                  <input type="text" name="shippingAddress" placeholder="Dirección (Calle, número, depto)" defaultValue={user?.address || ''} required />
                 </div>
                 <div className="form-group-row">
-                  <input type="text" name="shippingCity" placeholder="Comuna" required />
-                  <input type="text" name="shippingRegion" placeholder="Región" required />
+                  <select
+                    name="shippingRegion"
+                    required
+                    value={selectedRegion}
+                    onChange={e => {
+                      setSelectedRegion(e.target.value);
+                      setSelectedCity('');
+                    }}
+                  >
+                    <option value="">-- Región --</option>
+                    {REGIONES_CHILE.map(r => (
+                      <option key={r.nombre} value={r.nombre}>
+                        {r.nombre}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="shippingCity"
+                    required
+                    value={selectedCity}
+                    onChange={e => setSelectedCity(e.target.value)}
+                    disabled={!selectedRegion}
+                  >
+                    <option value="">
+                      {selectedRegion ? '-- Comuna --' : 'Elige región'}
+                    </option>
+                    {selectedCity && !comunasDisponibles.includes(selectedCity) && (
+                      <option value={selectedCity}>{selectedCity}</option>
+                    )}
+                    {comunasDisponibles.map(c => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <h3 style={{ marginTop: '30px' }}>Método de Pago</h3>
@@ -229,5 +272,3 @@ const Checkout: React.FC = () => {
 };
 
 export default Checkout;
-
-

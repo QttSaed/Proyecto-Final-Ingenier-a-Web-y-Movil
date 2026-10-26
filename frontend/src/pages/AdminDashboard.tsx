@@ -3,7 +3,11 @@ import { IonContent, IonIcon } from '@ionic/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { apiService, Category, localProducts, money, Order, Product, Stats } from '../services/apiService';
 import { ORDER_STATUSES, OrderStatus } from '../services/orderService';
-import { homeOutline, statsChartOutline, cubeOutline, receiptOutline, cashOutline, bagHandleOutline, albumsOutline, peopleOutline, pencilOutline, trashOutline, eyeOutline, searchOutline, addOutline, closeOutline } from 'ionicons/icons';
+import {
+  homeOutline, statsChartOutline, cubeOutline, receiptOutline, cashOutline,
+  bagHandleOutline, albumsOutline, peopleOutline, pencilOutline, trashOutline,
+  eyeOutline, searchOutline, addOutline, closeOutline, chevronBackOutline, chevronForwardOutline
+} from 'ionicons/icons';
 import './AdminDashboard.css';
 
 const COLOR_PRESETS = ['No aplica', 'Sin especificar', 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Negro', 'Blanco', 'Incoloro', 'Morado', 'Turquesa'];
@@ -33,8 +37,14 @@ const AdminDashboard: React.FC = () => {
   const [notesMessage, setNotesMessage] = useState('');
   const [notesError, setNotesError] = useState('');
   const [search, setSearch] = useState('');
+  const [stockFilter, setStockFilter] = useState<'all' | 'ok' | 'low' | 'out'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [gameFilter, setGameFilter] = useState<string>('all');
+  const [inventoryPage, setInventoryPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(20);
   const detailRef = useRef<HTMLDialogElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
     let active = true;
     Promise.allSettled([apiService.products(), apiService.orders(), apiService.categories(), apiService.stats()]).then(results => {
@@ -50,18 +60,23 @@ const AdminDashboard: React.FC = () => {
     });
     return () => { active = false; };
   }, []);
+
   useEffect(() => { if (modal) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [modal]);
   useEffect(() => { if (detail) detailRef.current?.showModal(); else detailRef.current?.close(); }, [detail]);
+
   const orderFilters = [
     { key: 'all', label: 'Todos', rows: orders },
     { key: 'active', label: 'En proceso', rows: orders.filter(order => ['Pendiente', 'Pagado', 'Enviado'].includes(order.status)) },
     { key: 'delivered', label: 'Entregados', rows: orders.filter(order => order.status === 'Entregado') },
     { key: 'cancelled', label: 'Cancelados', rows: orders.filter(order => ['Cancelado', 'Reembolsado'].includes(order.status)) }
   ] as const;
+
   const filteredOrders = orderFilters.find(filter => filter.key === orderFilter)!.rows;
+
   const openDetail = (order: Order) => {
     setNotesDraft(order.adminNotes || ''); setNotesMessage(''); setNotesError(''); setDetail(order);
   };
+
   const saveNotes = async () => {
     if (!detail) return;
     setBusy(true); setNotesMessage(''); setNotesError('');
@@ -73,14 +88,61 @@ const AdminDashboard: React.FC = () => {
       setNotesMessage('Nota guardada correctamente.');
     } catch (error) { setNotesError(errorMessage(error)); } finally { setBusy(false); }
   };
+
   const colorOptions = [...new Set([...COLOR_PRESETS, ...products.map(p => p.color).filter(Boolean)])];
-  const filteredProducts = products.filter(product => `${product.title} ${product.category}`.toLocaleLowerCase('es').includes(search.trim().toLocaleLowerCase('es')));
+
+  const stockCounts = {
+    all: products.length,
+    ok: products.filter(p => p.stock > 10).length,
+    low: products.filter(p => p.stock > 0 && p.stock <= 10).length,
+    out: products.filter(p => p.stock === 0).length
+  };
+
+  const availableCategories = categories.length
+    ? categories.map(c => c.name)
+    : [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+
+  const availableGames = [...new Set(products.map(p => p.game).filter(Boolean))].sort();
+
+  const filteredProducts = products.filter(product => {
+    if (search.trim()) {
+      const q = search.trim().toLocaleLowerCase('es');
+      const match = `${product.title} ${product.category} ${product.game} ${product.edition}`.toLocaleLowerCase('es').includes(q);
+      if (!match) return false;
+    }
+    if (stockFilter === 'ok' && product.stock <= 10) return false;
+    if (stockFilter === 'low' && (product.stock <= 0 || product.stock > 10)) return false;
+    if (stockFilter === 'out' && product.stock > 0) return false;
+    if (categoryFilter !== 'all' && product.category !== categoryFilter) return false;
+    if (gameFilter !== 'all' && product.game !== gameFilter) return false;
+    return true;
+  });
+
+  const totalInventoryPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const validInventoryPage = Math.min(inventoryPage, totalInventoryPages);
+  const inventoryStart = (validInventoryPage - 1) * itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(inventoryStart, inventoryStart + itemsPerPage);
+  const showingStart = filteredProducts.length === 0 ? 0 : inventoryStart + 1;
+  const showingEnd = Math.min(inventoryStart + itemsPerPage, filteredProducts.length);
+
+  const hasActiveInventoryFilters = search.trim() !== '' || stockFilter !== 'all' || categoryFilter !== 'all' || gameFilter !== 'all';
+
+  const clearInventoryFilters = () => {
+    setSearch('');
+    setStockFilter('all');
+    setCategoryFilter('all');
+    setGameFilter('all');
+    setInventoryPage(1);
+  };
+
   const refreshStats = async () => { try { setStats(await apiService.stats()); } catch (error) { setError(errorMessage(error)); } };
+
   const openForm = (product?: Product) => {
     setEditing(product || null); setForm(product ? { ...product } : { ...emptyProduct(), category: categories[0]?.name || '' });
     setCustomColor(Boolean(product?.color && !COLOR_PRESETS.includes(product.color)));
     setError(''); setMessage(''); setModal(true);
   };
+
   const save = async (event: React.FormEvent) => {
     event.preventDefault(); setBusy(true); setError(''); setMessage('');
     try {
@@ -89,22 +151,27 @@ const AdminDashboard: React.FC = () => {
       setModal(false); setMessage(editing ? 'Producto actualizado correctamente.' : 'Producto creado correctamente.'); await refreshStats();
     } catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
   };
+
   const remove = async (product: Product) => {
     if (!window.confirm(`¿Eliminar “${product.title}” del inventario?`)) return;
     setBusy(true); setError(''); setMessage('');
     try { await apiService.deleteProduct(product.id); setProducts(previous => previous.filter(p => p.id !== product.id)); setMessage('Producto eliminado correctamente.'); await refreshStats(); }
     catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
   };
+
   const changeStatus = async (id: string, status: OrderStatus) => {
     setBusy(true); setError(''); setMessage('');
     try { const saved = await apiService.setOrderStatus(id, status); setOrders(previous => previous.map(order => order.id === id ? saved : order)); setMessage('Estado del pedido actualizado.'); await refreshStats(); }
     catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
   };
+
   const statusClass = (status: string) => `admin-status ${status.toLowerCase()}`;
+
   const orderTable = (rows: Order[], editable = false) => <div className="admin-table-container"><table className="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>
     {rows.map(order => <tr key={order.id}><td className="admin-order-id">{order.id}</td><td>{order.customer}</td><td>{new Date(order.date).toLocaleDateString('es-CL')}</td><td className="admin-amount">{money(order.total)}</td><td>{editable ? <select className={statusClass(order.status)} aria-label={`Estado del pedido ${order.id}`} disabled={busy} value={order.status} onChange={event => void changeStatus(order.id, event.target.value as OrderStatus)}>{ORDER_STATUSES.map(status => <option key={status}>{status}</option>)}</select> : <span className={statusClass(order.status)}>{order.status}</span>}</td><td><button className="admin-action admin-action-detail" onClick={() => openDetail(order)}><IonIcon icon={eyeOutline} aria-hidden="true" />Ver detalle</button></td></tr>)}
     {!rows.length && <tr><td className="admin-empty" colSpan={6}>No hay pedidos registrados.</td></tr>}
   </tbody></table></div>;
+
   return <IonContent fullscreen className="admin-content">
     <header className="admin-header"><div className="admin-logo">TCGStore <span className="admin-badge">ADMIN</span></div><button className="admin-logout-btn" onClick={() => navigate('/home')}><IonIcon icon={homeOutline} aria-hidden="true" />Volver al inicio</button></header>
     <div className="admin-container"><nav className="admin-sidebar" aria-label="Administración"><p className="admin-nav-label">ADMINISTRACIÓN</p><ul className="admin-menu">
@@ -118,10 +185,225 @@ const AdminDashboard: React.FC = () => {
       {tab === 'dashboard' && <div className="admin-view"><div className="admin-header-title"><p className="admin-eyebrow">TU TIENDA, EN UN VISTAZO</p><h1>Resumen de la tienda</h1><p>Ventas, inventario y actividad reciente.</p></div><div className="dashboard-stats-grid">
         {[{ label: 'Ventas totales', value: money(stats.totalSales), icon: cashOutline, tone: 'emerald' }, { label: 'Pedidos', value: stats.totalOrders.toLocaleString('es-CL'), icon: bagHandleOutline, tone: 'blue' }, { label: 'Productos activos', value: stats.totalProducts.toLocaleString('es-CL'), icon: albumsOutline, tone: 'purple' }, { label: 'Clientes', value: stats.totalClients.toLocaleString('es-CL'), icon: peopleOutline, tone: 'amber' }].map(({ label, value, icon, tone }) => <article className="stat-card" key={label}><div className={`stat-icon ${tone}`}><IonIcon icon={icon} aria-hidden="true" /></div><div className="stat-info"><h2>{label}</h2><p>{value}</p></div>{tone === 'purple' && <span className="admin-stock-summary">{stats.totalStock.toLocaleString('es-CL')} unidades en almacén</span>}</article>)}
       </div><section className="admin-section"><div className="admin-section-heading"><div><h2>Últimos pedidos</h2><p>Revisa las compras más recientes de tu tienda.</p></div><button className="admin-action admin-action-detail" onClick={() => navigate('/admin/ordenes')}>Ver todos<IonIcon icon={receiptOutline} aria-hidden="true" /></button></div>{orderTable(stats.recentOrders)}</section></div>}
-      {tab === 'inventory' && <div className="admin-view"><div className="admin-header-title flex-between"><div><p className="admin-eyebrow">PRODUCTOS</p><h1>Catálogo e inventario</h1><p>Administra tus cartas y mantén el stock al día.</p></div><button className="btn-admin-submit" disabled={loading || busy || !categories.length} onClick={() => openForm()}><IonIcon icon={addOutline} aria-hidden="true" />Nuevo Producto</button></div><div className="admin-toolbar"><label className="admin-search"><IonIcon icon={searchOutline} aria-hidden="true" /><input type="search" aria-label="Buscar productos por título o categoría" placeholder="Buscar por título o categoría..." value={search} onChange={event => setSearch(event.target.value)} /></label><span>{filteredProducts.length.toLocaleString('es-CL')} productos</span></div><div className="admin-table-container"><table className="admin-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Condición</th><th>Acciones</th></tr></thead><tbody>
-        {filteredProducts.map(product => <tr key={product.id}><td><div className="admin-product-cell"><div className="admin-thumbnail"><IonIcon icon={albumsOutline} aria-hidden="true" />{product.image && <img key={product.image} src={product.image} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none'; }} />}</div><span>{product.title}</span></div></td><td>{product.category}</td><td className="admin-amount">{money(product.price)}</td><td><span className={`stock-badge ${product.stock > 10 ? 'stock-ok' : product.stock > 0 ? 'stock-low' : 'stock-out'}`}>{product.stock > 0 ? `${product.stock} u.` : 'Agotado'}</span>{product.stock > 0 && product.stock <= 10 && <small className="admin-low-stock">Bajo stock</small>}</td><td><span className="admin-condition">{product.condition}</span></td><td><div className="admin-actions"><button disabled={busy} className="admin-action admin-action-edit" onClick={() => openForm(product)}><IonIcon icon={pencilOutline} aria-hidden="true" />Editar</button><button disabled={busy} className="admin-action admin-action-delete" onClick={() => void remove(product)}><IonIcon icon={trashOutline} aria-hidden="true" />Eliminar</button></div></td></tr>)}
-        {!filteredProducts.length && <tr><td className="admin-empty" colSpan={6}>{search.trim() ? 'No hay productos que coincidan con tu búsqueda.' : 'No hay productos en inventario.'}</td></tr>}
-      </tbody></table></div></div>}
+
+      {tab === 'inventory' && <div className="admin-view">
+        <div className="admin-header-title flex-between">
+          <div>
+            <p className="admin-eyebrow">PRODUCTOS</p>
+            <h1>Catálogo e inventario</h1>
+            <p>Administra tus cartas y mantén el stock al día.</p>
+          </div>
+          <button className="btn-admin-submit" disabled={loading || busy || !categories.length} onClick={() => openForm()}>
+            <IonIcon icon={addOutline} aria-hidden="true" />Nuevo Producto
+          </button>
+        </div>
+
+        {/* Filtros rápidos por estado de stock */}
+        <div className="admin-filter-bar" role="group" aria-label="Filtrar inventario por estado de stock">
+          <button
+            type="button"
+            className={`admin-filter-tab${stockFilter === 'all' ? ' active' : ''}`}
+            onClick={() => { setStockFilter('all'); setInventoryPage(1); }}
+          >
+            Todos ({stockCounts.all})
+          </button>
+          <button
+            type="button"
+            className={`admin-filter-tab${stockFilter === 'ok' ? ' active' : ''}`}
+            onClick={() => { setStockFilter('ok'); setInventoryPage(1); }}
+          >
+            Con stock ({stockCounts.ok})
+          </button>
+          <button
+            type="button"
+            className={`admin-filter-tab${stockFilter === 'low' ? ' active' : ''}`}
+            onClick={() => { setStockFilter('low'); setInventoryPage(1); }}
+          >
+            Bajo stock ({stockCounts.low})
+          </button>
+          <button
+            type="button"
+            className={`admin-filter-tab${stockFilter === 'out' ? ' active' : ''}`}
+            onClick={() => { setStockFilter('out'); setInventoryPage(1); }}
+          >
+            Agotados ({stockCounts.out})
+          </button>
+        </div>
+
+        {/* Barra de herramientas: buscador y filtros desplegables */}
+        <div className="admin-toolbar admin-inventory-toolbar">
+          <div className="admin-toolbar-filters">
+            <label className="admin-search">
+              <IonIcon icon={searchOutline} aria-hidden="true" />
+              <input
+                type="search"
+                aria-label="Buscar productos por título o categoría"
+                placeholder="Buscar por título, categoría, juego..."
+                value={search}
+                onChange={event => { setSearch(event.target.value); setInventoryPage(1); }}
+              />
+            </label>
+
+            <select
+              className="admin-select-filter"
+              value={categoryFilter}
+              onChange={event => { setCategoryFilter(event.target.value); setInventoryPage(1); }}
+              aria-label="Filtrar por categoría"
+            >
+              <option value="all">Todas las categorías</option>
+              {availableCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            </select>
+
+            <select
+              className="admin-select-filter"
+              value={gameFilter}
+              onChange={event => { setGameFilter(event.target.value); setInventoryPage(1); }}
+              aria-label="Filtrar por juego"
+            >
+              <option value="all">Todos los juegos</option>
+              {availableGames.map(game => <option key={game} value={game}>{game}</option>)}
+            </select>
+
+            {hasActiveInventoryFilters && (
+              <button
+                type="button"
+                className="admin-clear-filters-btn"
+                onClick={clearInventoryFilters}
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          <div className="admin-toolbar-count">
+            <span>{filteredProducts.length.toLocaleString('es-CL')} productos encontrados</span>
+          </div>
+        </div>
+
+        {/* Tabla paginada */}
+        <div className="admin-table-container">
+          <table className="admin-table">
+            <thead>
+              <tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Condición</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+              {paginatedProducts.map(product => (
+                <tr key={product.id}>
+                  <td>
+                    <div className="admin-product-cell">
+                      <div className="admin-thumbnail">
+                        <IonIcon icon={albumsOutline} aria-hidden="true" />
+                        {product.image && (
+                          <img
+                            key={product.image}
+                            src={product.image}
+                            alt=""
+                            loading="lazy"
+                            onError={event => { event.currentTarget.style.display = 'none'; }}
+                          />
+                        )}
+                      </div>
+                      <span>{product.title}</span>
+                    </div>
+                  </td>
+                  <td>{product.category}</td>
+                  <td className="admin-amount">{money(product.price)}</td>
+                  <td>
+                    <span className={`stock-badge ${product.stock > 10 ? 'stock-ok' : product.stock > 0 ? 'stock-low' : 'stock-out'}`}>
+                      {product.stock > 0 ? `${product.stock} u.` : 'Agotado'}
+                    </span>
+                    {product.stock > 0 && product.stock <= 10 && <small className="admin-low-stock">Bajo stock</small>}
+                  </td>
+                  <td><span className="admin-condition">{product.condition}</span></td>
+                  <td>
+                    <div className="admin-actions">
+                      <button disabled={busy} className="admin-action admin-action-edit" onClick={() => openForm(product)}>
+                        <IonIcon icon={pencilOutline} aria-hidden="true" />Editar
+                      </button>
+                      <button disabled={busy} className="admin-action admin-action-delete" onClick={() => void remove(product)}>
+                        <IonIcon icon={trashOutline} aria-hidden="true" />Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!filteredProducts.length && (
+                <tr>
+                  <td className="admin-empty" colSpan={6}>
+                    {hasActiveInventoryFilters
+                      ? 'No hay productos que coincidan con los filtros seleccionados.'
+                      : 'No hay productos en inventario.'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Barra de paginación */}
+        {filteredProducts.length > 0 && (
+          <div className="admin-pagination-bar">
+            <div className="admin-pagination-summary">
+              Mostrando <strong>{showingStart}</strong> - <strong>{showingEnd}</strong> de <strong>{filteredProducts.length}</strong> productos
+              <label className="admin-per-page-label">
+                <span>Mostrar:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={e => {
+                    setItemsPerPage(Number(e.target.value));
+                    setInventoryPage(1);
+                  }}
+                >
+                  <option value={15}>15 por pág.</option>
+                  <option value={20}>20 por pág.</option>
+                  <option value={50}>50 por pág.</option>
+                  <option value={100}>100 por pág.</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="admin-pagination-controls">
+              <button
+                type="button"
+                className="admin-pagination-btn"
+                disabled={validInventoryPage <= 1}
+                onClick={() => setInventoryPage(validInventoryPage - 1)}
+              >
+                <IonIcon icon={chevronBackOutline} aria-hidden="true" />
+                Anterior
+              </button>
+
+              <div className="admin-pagination-pages">
+                {Array.from({ length: totalInventoryPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalInventoryPages || Math.abs(p - validInventoryPage) <= 1)
+                  .map((p, idx, arr) => (
+                    <React.Fragment key={p}>
+                      {idx > 0 && arr[idx - 1] !== p - 1 && <span className="admin-pagination-ellipsis">…</span>}
+                      <button
+                        type="button"
+                        className={`admin-pagination-page-btn${p === validInventoryPage ? ' active' : ''}`}
+                        onClick={() => setInventoryPage(p)}
+                      >
+                        {p}
+                      </button>
+                    </React.Fragment>
+                  ))}
+              </div>
+
+              <button
+                type="button"
+                className="admin-pagination-btn"
+                disabled={validInventoryPage >= totalInventoryPages}
+                onClick={() => setInventoryPage(validInventoryPage + 1)}
+              >
+                Siguiente
+                <IonIcon icon={chevronForwardOutline} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>}
+
       {tab === 'orders' && <div className="admin-view"><div className="admin-header-title"><p className="admin-eyebrow">VENTAS</p><h1>Gestión de Órdenes</h1><p>Consulta cada pedido y actualiza su estado.</p></div><div className="admin-filter-bar" role="group" aria-label="Filtrar pedidos por estado">{orderFilters.map(filter => <button key={filter.key} type="button" className={`admin-filter-tab${orderFilter === filter.key ? ' active' : ''}`} aria-pressed={orderFilter === filter.key} onClick={() => setOrderFilter(filter.key)}>{filter.label} ({filter.rows.length})</button>)}</div>{orderTable(filteredOrders, true)}</div>}
     </main></div>
     <dialog ref={detailRef} className="admin-dialog admin-order-dialog" aria-labelledby="admin-detail-title" onCancel={() => setDetail(null)} onClose={() => setDetail(null)}>

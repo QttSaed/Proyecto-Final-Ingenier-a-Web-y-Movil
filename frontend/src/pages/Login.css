@@ -143,6 +143,14 @@
   padding: 0 10px;
 }
 
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0;
+  min-height: 44px;
+}
+
 .btn-google {
   width: 100%;
   background-color: var(--color-bg-white);

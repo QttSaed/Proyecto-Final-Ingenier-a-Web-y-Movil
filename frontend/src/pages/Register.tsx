@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IonContent, IonPage, IonHeader, IonIcon } from '@ionic/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { mailOpenOutline } from 'ionicons/icons';
 import { VerificationLocalLink } from '../components/VerificationResend';
 import TopBar from '../components/TopBar';
@@ -10,6 +11,7 @@ import './Register.css';
 import { authService } from '../services/authService';
 
 const Register: React.FC = () => {
+  const navigate = useNavigate();
   const [registered, setRegistered] = useState<{ email: string; verificationUrl?: string | null } | null>(null);
 
   const [error, setError] = useState('');
@@ -90,7 +92,7 @@ const Register: React.FC = () => {
               <div className="terms-group">
                 <input type="checkbox" id="terms" required />
                 <label htmlFor="terms">
-                  He leído y acepto los <Link to="/coming-soon">Términos de Servicio</Link> y la <Link to="/coming-soon">Política de Privacidad</Link> de TCGStore.
+                  He leído y acepto los <Link to="/terminos">Términos de Servicio</Link> y la <Link to="/privacidad">Política de Privacidad</Link> de TCGStore.
                 </label>
               </div>
 
@@ -98,6 +100,30 @@ const Register: React.FC = () => {
               <button type="submit" className="btn-register" disabled={submitting}>{submitting ? "Creando cuenta…" : "Crear mi cuenta"}</button>
 
             </form>
+
+            <div className="google-btn-container">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (!credentialResponse.credential) return;
+                  setSubmitting(true);
+                  setError('');
+                  try {
+                    const user = await authService.loginWithGoogle(credentialResponse.credential);
+                    navigate(user.role === 'admin' ? '/admin' : '/perfil', { replace: true });
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Error al registrarse con Google');
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                onError={() => setError('No se pudo completar el registro con Google')}
+                text="signup_with"
+                shape="rectangular"
+                theme="outline"
+                size="large"
+                width="100%"
+              />
+            </div>
 
             <div className="login-link">
               ¿Ya tienes una cuenta? <Link to="/login">Inicia sesión aquí</Link>

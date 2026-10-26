@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IonContent, IonPage, IonIcon, IonHeader } from '@ionic/react';
-import { logoGoogle, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { GoogleLogin } from '@react-oauth/google';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Header from '../components/Header';
@@ -105,12 +106,32 @@ const Login: React.FC = () => {
               <span>O ingresar con</span>
             </div>
 
-            <Link to="/coming-soon" style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
-              <button className="btn-google">
-                <IonIcon icon={logoGoogle} style={{ fontSize: '20px' }} />
-                Continuar con Google
-              </button>
-            </Link>
+            <div className="google-btn-container">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  if (!credentialResponse.credential) return;
+                  setSubmitting(true);
+                  setError('');
+                  setVerificationEmail(null);
+                  try {
+                    const user = await authService.loginWithGoogle(credentialResponse.credential);
+                    const from = location.state?.from;
+                    const destination = typeof from === 'string' && /^\/(?!\/)/.test(from) && !['/login', '/register'].includes(from) ? from : '/perfil';
+                    navigate(user.role === 'admin' ? '/admin' : destination, { replace: true });
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : 'Error al autenticar con Google');
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                onError={() => setError('No se pudo completar el inicio de sesión con Google')}
+                text="continue_with"
+                shape="rectangular"
+                theme="outline"
+                size="large"
+                width="100%"
+              />
+            </div>
 
             <div className="register-link">
               ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
