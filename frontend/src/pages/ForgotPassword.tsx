@@ -64,7 +64,7 @@ const ForgotPassword: React.FC = () => {
 
                 {devResetUrl && (
                   <div className="dev-helper-box">
-                    <p className="dev-tag">Modo local (desarrollo):</p>
+                    <p className="dev-tag">Acceso directo:</p>
                     <a href={devResetUrl} className="dev-link">
                       Abrir enlace de restablecimiento directo
                     </a>

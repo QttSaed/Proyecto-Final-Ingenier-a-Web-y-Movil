@@ -34,7 +34,8 @@ test('mailer usa Gmail con credenciales Gmail o SMTP y escapa el nombre', async 
       setEnv(t, 'SMTP_PASS', provider === 'smtp' ? 'app-password' : '');
       let message;
       const transport = t.mock.method(nodemailer, 'createTransport', options => {
-        assert.deepEqual(options, { service: 'gmail', auth: { user: 'sender@gmail.com', pass: 'app-password' } });
+        assert.equal(options.service, 'gmail');
+        assert.deepEqual(options.auth, { user: 'sender@gmail.com', pass: 'app-password' });
         return { async sendMail(mail) { message = mail; } };
       });
       const result = await sendVerificationEmail({ email: 'test@example.com', name: '<Cliente>', token: 'abc', clientUrl: 'https://tcgstore.example' });
@@ -47,4 +48,16 @@ test('mailer usa Gmail con credenciales Gmail o SMTP y escapa el nombre', async 
       assert.match(message.html, /24 horas/);
     });
   }
+});
+
+test('mailer captura errores de SMTP y devuelve enlace directo seguro', async t => {
+  setEnv(t, 'GMAIL_USER', 'sender@gmail.com');
+  setEnv(t, 'GMAIL_APP_PASSWORD', 'app-password');
+  t.mock.method(nodemailer, 'createTransport', () => ({
+    async sendMail() { throw new Error('ETIMEDOUT'); }
+  }));
+  const result = await sendVerificationEmail({ email: 'test@example.com', name: 'Cliente', token: 'xyz', clientUrl: 'https://tcgstore.example' });
+  assert.equal(result.sent, false);
+  assert.equal(result.mock, true);
+  assert.equal(result.verificationUrl, 'https://tcgstore.example/verificar-correo?token=xyz');
 });

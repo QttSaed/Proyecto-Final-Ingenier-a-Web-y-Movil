@@ -5,8 +5,8 @@ import '../pages/VerifyEmail.css';
 export function VerificationLocalLink({ url }: { url?: string | null }) {
   if (!url) return null;
   return <div className="verify-local-box">
-    <p>Modo local: Puedes activar tu cuenta de inmediato haciendo clic aquí:</p>
-    <a className="btn-verify-secondary" href={url}>Activar mi cuenta</a>
+    <p>Si tu correo tarda en llegar o el servidor de hosting bloquea SMTP saliente, puedes activar tu cuenta directamente aquí:</p>
+    <a className="btn-verify-secondary" href={url}>Activar mi cuenta ahora</a>
   </div>;
 }
 

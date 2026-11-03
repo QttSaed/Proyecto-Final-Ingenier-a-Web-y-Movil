@@ -8,18 +8,26 @@ async function sendMail({ email, subject, text, html }) {
   const account = process.env.GMAIL_USER || process.env.SMTP_USER;
   const password = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS;
   if (account && password) {
-    const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: account, pass: password }
-    });
-    await transport.sendMail({
-      from: { name: 'TCGStore', address: account },
-      to: email,
-      subject,
-      text,
-      html
-    });
-    return { sent: true, provider: 'gmail' };
+    try {
+      const transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: account, pass: password },
+        connectionTimeout: 4000,
+        greetingTimeout: 4000,
+        socketTimeout: 4000
+      });
+      await transport.sendMail({
+        from: { name: 'TCGStore', address: account },
+        to: email,
+        subject,
+        text,
+        html
+      });
+      return { sent: true, provider: 'gmail' };
+    } catch (err) {
+      console.warn(`[TCGStore Mailer] No se pudo enviar por SMTP (${err.message}). Activando enlace seguro.`);
+      return { sent: false, mock: true, error: err.message };
+    }
   }
 
   return { sent: false, mock: true };
@@ -59,8 +67,8 @@ exports.sendVerificationEmail = async ({ email, name, token, clientUrl }) => {
   `;
 
   const result = await sendMail({ email, subject, text, html });
-  if (result.mock) {
-    console.log(`[TCGStore Mailer] Modo local: Enlace de verificación para ${email}: ${verificationUrl}`);
+  if (result.mock || !result.sent) {
+    console.log(`[TCGStore Mailer] Modo directo: Enlace de verificación para ${email}: ${verificationUrl}`);
     return { sent: false, mock: true, verificationUrl };
   }
   return result;
@@ -100,8 +108,8 @@ exports.sendPasswordResetEmail = async ({ email, name, token, clientUrl }) => {
   `;
 
   const result = await sendMail({ email, subject, text, html });
-  if (result.mock) {
-    console.log(`[TCGStore Mailer] Modo local: Enlace de restablecimiento para ${email}: ${resetUrl}`);
+  if (result.mock || !result.sent) {
+    console.log(`[TCGStore Mailer] Modo directo: Enlace de restablecimiento para ${email}: ${resetUrl}`);
     return { sent: false, mock: true, resetUrl };
   }
   return result;

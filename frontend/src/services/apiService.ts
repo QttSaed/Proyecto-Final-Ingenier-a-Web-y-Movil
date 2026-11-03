@@ -7,13 +7,27 @@ export class ApiError extends Error {
 }
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem('tcg.token');
-  const response = await fetch(`${API_URL}${path}`, { ...options, signal: options.signal ?? AbortSignal.timeout(8000), headers: {
-    'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers
-  } });
-  const body = await response.json().catch(() => null);
-  if (!response.ok) throw new ApiError(body?.message || 'No se pudo completar la operación', response.status);
-  if (body === null) throw new ApiError('La respuesta del servidor no es válida');
-  return body;
+  try {
+    const response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      signal: options.signal ?? AbortSignal.timeout(25000),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers
+      }
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok) throw new ApiError(body?.message || 'No se pudo completar la operación', response.status);
+    if (body === null) throw new ApiError('La respuesta del servidor no es válida');
+    return body;
+  } catch (error: any) {
+    if (error instanceof ApiError) throw error;
+    if (error?.name === 'AbortError' || error?.name === 'TimeoutError' || String(error?.message).toLowerCase().includes('timed out')) {
+      throw new ApiError('El servidor tardó en responder o se está iniciando (cold start). Por favor, intenta nuevamente en unos segundos.');
+    }
+    throw error;
+  }
 }
 export interface Product {
   id: string; title: string; category: string; categorySlug?: string; game: string; edition: string;
