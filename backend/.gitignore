@@ -21,3 +21,7 @@ temp/
 *~
 .DS_Store
 Thumbs.db
+# Credenciales de Google OAuth
+*client_secret*.json
+google-oauth-credentials.json
+*credentials*.json

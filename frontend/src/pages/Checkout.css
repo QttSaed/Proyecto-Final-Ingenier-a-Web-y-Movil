@@ -44,12 +44,14 @@
   margin-bottom: 18px;
 }
 
-.form-group-row input {
+.form-group-row input,
+.form-group-row select {
   flex: 1;
 }
 
 .checkout-form input[type="text"],
-.checkout-form input[type="email"] {
+.checkout-form input[type="email"],
+.checkout-form select {
   width: 100%;
   padding: 14px;
   background-color: #f9f9f9;
@@ -60,7 +62,18 @@
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.checkout-form input:focus {
+.checkout-form select {
+  cursor: pointer;
+}
+
+.checkout-form select:disabled {
+  background-color: #eee;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus {
   outline: none;
   border-color: var(--color-primary);
   background-color: #fff;

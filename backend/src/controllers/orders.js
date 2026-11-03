@@ -1,4 +1,3 @@
-const { randomUUID } = require('node:crypto');
 const v = require('../middlewares/validate');
 const { HttpError } = require('../middlewares/errorHandler');
 const { identifier, order } = require('../utils/records');
@@ -39,7 +38,17 @@ exports.create = async (req, res) => {
     const subtotal = [...lines.values()].reduce((sum, p) => sum + p.price * p.quantity, 0);
     const shippingCost = subtotal >= 50000 ? 0 : 3500;
     if (!Number.isSafeInteger(subtotal) || subtotal + shippingCost > 2147483647) v.fail('El total del pedido excede el monto permitido');
-    const { rows } = await client.query(`INSERT INTO orders (order_number, user_id, status, subtotal, shipping_cost, total, shipping_name, shipping_email, shipping_address, shipping_city, shipping_region, payment_method) VALUES ($1, $2, 'Pendiente', $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`, [`TCG-${randomUUID()}`, req.user.id, subtotal, shippingCost, subtotal + shippingCost, ...shipping]);
+    const currentYear = new Date().getFullYear();
+    const { rows: seqRows } = await client.query('SELECT order_number FROM orders WHERE order_number ~ $1 ORDER BY id DESC LIMIT 1', [String.raw`^TCG-${currentYear}-\d+$`]);
+    let sequence;
+    if (seqRows.length) {
+      sequence = Number.parseInt(seqRows[0].order_number.split('-')[2], 10) + 1;
+    } else {
+      const { rows: countRows } = await client.query('SELECT COUNT(*) AS count FROM orders');
+      sequence = Number(countRows[0].count) + 1;
+    }
+    const orderNumber = `TCG-${currentYear}-${String(sequence).padStart(4, '0')}`;
+    const { rows } = await client.query(`INSERT INTO orders (order_number, user_id, status, subtotal, shipping_cost, total, shipping_name, shipping_email, shipping_address, shipping_city, shipping_region, payment_method) VALUES ($1, $2, 'Pendiente', $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`, [orderNumber, req.user.id, subtotal, shippingCost, subtotal + shippingCost, ...shipping]);
     for (const p of lines.values()) {
       await client.query('UPDATE products SET stock = stock - $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [p.quantity, p.id]);
       await client.query('INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES ($1, $2, $3, $4)', [rows[0].id, p.id, p.quantity, p.price]);
@@ -64,11 +73,37 @@ exports.detail = async (req, res) => {
   res.json(await withItems(req.app.locals.db, row));
 };
 exports.status = async (req, res) => {
-  const status = v.choice(req.body.status, 'status', ['Pendiente', 'Pagado', 'Enviado', 'Entregado']);
-  const db = req.app.locals.db, existing = await find(db, req.params.id);
-  if (!existing) throw new HttpError(404, 'Pedido no encontrado');
-  const { rows } = await db.query('UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *', [status, existing.id]);
-  res.json(await withItems(db, rows[0]));
+  const active = ['Pendiente', 'Pagado', 'Enviado', 'Entregado'];
+  const status = v.choice(req.body.status, 'status', [...active, 'Cancelado', 'Reembolsado']);
+  if (req.body.adminNotes != null && typeof req.body.adminNotes !== 'string') v.fail('adminNotes debe ser texto o null');
+  const adminNotes = req.body.adminNotes !== undefined ? req.body.adminNotes : null;
+  const client = await req.app.locals.db.getClient();
+  try {
+    await client.query('BEGIN');
+    const where = identifier(req.params.id, 'o', 'order_number');
+    const existing = (await client.query(`${select} WHERE ${where.sql} ORDER BY (o.order_number = $1) DESC LIMIT 1 FOR UPDATE OF o`, where.params)).rows[0];
+    if (!existing) throw new HttpError(404, 'Pedido no encontrado');
+    if (active.includes(existing.status) !== active.includes(status)) {
+      const { rows: items } = await client.query('SELECT product_id, SUM(quantity)::integer AS quantity FROM order_items WHERE order_id = $1 GROUP BY product_id ORDER BY product_id', [existing.id]);
+      if (active.includes(status)) {
+        for (const item of items) {
+          const { rows } = await client.query('SELECT id, title, stock FROM products WHERE id = $1 FOR UPDATE', [item.product_id]);
+          if (!rows[0] || rows[0].stock < item.quantity) throw new HttpError(400, `Stock insuficiente para ${rows[0]?.title ?? item.product_id}`);
+        }
+      }
+      for (const item of items) {
+        const operator = active.includes(status) ? '-' : '+';
+        await client.query(`UPDATE products SET stock = stock ${operator} $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`, [item.quantity, item.product_id]);
+      }
+    }
+    const { rows } = await client.query('UPDATE orders SET status = $1, admin_notes = COALESCE($2, admin_notes), updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *', [status, adminNotes, existing.id]);
+    const result = await withItems(client, rows[0]);
+    await client.query('COMMIT');
+    res.json(result);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally { client.release(); }
 };
 
 exports.withItems = withItems;

@@ -1,0 +1,188 @@
+.legal-content {
+  --background: var(--color-bg-light);
+}
+
+.legal-container {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  padding: 48px 24px;
+  color: var(--color-text-dark);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.legal-card {
+  padding: clamp(24px, 5vw, 56px);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-bg-white);
+}
+
+.legal-header {
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.legal-header h1 {
+  color: var(--color-primary);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.2;
+  margin: 18px 0;
+}
+
+.legal-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--color-bg-light);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.legal-updated {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.legal-section {
+  margin-bottom: 32px;
+}
+
+.legal-container h2 {
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+.legal-container h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.legal-container p {
+  margin: 0 0 16px;
+}
+
+.legal-container li + li {
+  margin-top: 8px;
+}
+
+.legal-container a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-box, .branch-card, .contact-alert {
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg-light);
+}
+
+.legal-box {
+  border-left: 4px solid var(--color-accent);
+  margin: 20px 0;
+}
+
+.legal-box p:last-child, .branch-card p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-branches-grid, .contact-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.branch-card address {
+  font-style: normal;
+  margin-bottom: 16px;
+}
+
+.contact-form-container {
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
+}
+
+.contact-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.contact-group-full {
+  grid-column: 1 / -1;
+}
+
+.contact-group label {
+  font-weight: 600;
+}
+
+.contact-group input, .contact-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-white);
+  color: var(--color-text-dark);
+  font: inherit;
+}
+
+.contact-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contact-btn {
+  justify-self: start;
+  min-height: 48px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--color-text-light);
+  background: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contact-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+.legal-container :is(a, input, textarea, button):focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+.contact-alert {
+  border-left: 4px solid var(--color-accent);
+}
+
+@media (max-width: 600px) {
+  .legal-container {
+    padding: 24px 12px;
+  }
+
+  .legal-card {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .contact-branches-grid, .contact-form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .legal-box, .branch-card, .contact-alert {
+    padding: 16px;
+  }
+
+  .contact-btn {
+    width: 100%;
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IonContent, IonPage, IonIcon, IonHeader } from '@ionic/react';
+import { IonContent, IonPage, IonIcon, IonHeader, useIonViewDidEnter } from '@ionic/react';
 import { optionsOutline } from 'ionicons/icons';
 import { useParams } from 'react-router';
 import TopBar from '../components/TopBar';
@@ -11,8 +11,49 @@ import './Catalog.css';
 import appData from '../data.json';
 import { useLocation } from 'react-router-dom';
 import { apiService, localProducts, money } from '../services/apiService';
+import { scrollToTop } from '../utils/scrollToTop';
 
 type CatalogProduct = (typeof appData.sections)[keyof typeof appData.sections][number] & { categorySlug?: string; description?: string };
+
+const categoryTitles: Record<string, string> = {
+  todos: 'Catálogo',
+  pokemon: 'Pokémon',
+  'pokemon-singles': 'Pokémon (Singles)',
+  magic: 'Magic: The Gathering',
+  'magic-singles': 'Magic (Singles)',
+  onepiece: 'One Piece',
+  'onepiece-singles': 'One Piece (Singles)',
+  'one-piece': 'One Piece',
+  'one-piece-singles': 'One Piece (Singles)',
+  riftbound: 'Riftbound',
+  'riftbound-singles': 'Riftbound (Singles)',
+  digimon: 'Digimon',
+  'digimon-singles': 'Digimon (Singles)',
+  gundam: 'Gundam',
+  'gundam-singles': 'Gundam (Singles)',
+  lotes: 'Lotes de Cartas',
+  lotesdcarta: 'Lotes de Cartas',
+  'lotes-de-cartas': 'Lotes de Cartas',
+  'lotes-de-carta': 'Lotes de Cartas',
+  lotesdecartas: 'Lotes de Cartas',
+  lotesdecarta: 'Lotes de Cartas',
+  accesorios: 'Accesorios',
+  ofertas: 'Ofertas Especiales',
+  preventa: 'Preventas',
+  preventas: 'Preventas',
+  eventos: 'Eventos'
+};
+
+const formatTitle = (cat?: string): string => {
+  if (!cat || cat === 'todos') return 'Catálogo';
+  const lower = cat.toLowerCase();
+  if (categoryTitles[lower]) return categoryTitles[lower];
+  if (lower.endsWith('-singles')) {
+    const base = lower.replace('-singles', '');
+    return `${categoryTitles[base] || base} (Singles)`;
+  }
+  return cat.charAt(0).toUpperCase() + cat.slice(1);
+};
 
 const Catalog: React.FC = () => {
   const location = useLocation();
@@ -20,6 +61,12 @@ const Catalog: React.FC = () => {
   useEffect(() => { let active = true; apiService.products().then(products => { if (active) setCatalog(products.map(p => ({ ...p, hasButton: p.hasButton ?? true, price: money(p.price) }))); }).catch(() => {}); return () => { active = false; }; }, [location.key]);
   const { category } = useParams<{ category: string }>();
   const contentRef = useRef<HTMLIonContentElement>(null);
+
+  useIonViewDidEnter(() => {
+    contentRef.current?.scrollToTop(0);
+    scrollToTop(false);
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [productsPerPage, setProductsPerPage] = useState(12);
@@ -37,6 +84,9 @@ const Catalog: React.FC = () => {
   const baseCategoryName = isSinglesQuery ? category.replace('-singles', '') : category || '';
   const normalizedBase = normalize(baseCategoryName);
 
+  const isLotesCategory = (norm: string) =>
+    norm === 'lotes' || norm === 'lotesdcarta' || norm === 'lotesdecartas' || norm === 'lotesdecarta';
+
   let categoryProducts: CatalogProduct[] = [];
 
   if (normalizedBase === 'todos') {
@@ -49,7 +99,21 @@ const Catalog: React.FC = () => {
       return pA - pB;
     }).slice(0, 36);
   } else {
-    const allFromSection = catalog.filter(p => normalize(p.category) === normalizedBase || normalize(p.categorySlug || '') === normalizedBase);
+    const allFromSection = catalog.filter((p) => {
+      const pCat = normalize(p.category);
+      const pSlug = normalize(p.categorySlug || '');
+
+      if (isLotesCategory(normalizedBase)) {
+        return isLotesCategory(pCat) || isLotesCategory(pSlug);
+      }
+
+      if (normalizedBase === 'onepiece' || normalizedBase === 'one-piece') {
+        return pCat === 'onepiece' || pSlug === 'onepiece';
+      }
+
+      return pCat === normalizedBase || pSlug === normalizedBase;
+    });
+
     if (isSinglesQuery) {
       const sealedWords = ['caja', 'sobre', 'mazo', 'pack', 'kit', 'set', 'booster', 'starter', 'box'];
       categoryProducts = allFromSection.filter((p) =>
@@ -110,12 +174,6 @@ const Catalog: React.FC = () => {
     contentRef.current?.scrollToTop(300);
   };
 
-  const formatTitle = (cat?: string) => {
-    if (!cat || cat === 'todos') return 'Catálogo';
-    if (cat.endsWith('-singles')) return `${cat.replace('-singles', '')} (Singles)`;
-    return cat;
-  };
-
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -134,7 +192,7 @@ const Catalog: React.FC = () => {
 
           <div className="catalog-header">
             <div>
-              <h1 className="catalog-title" style={{ textTransform: 'capitalize' }}>{formatTitle(category)}</h1>
+              <h1 className="catalog-title">{formatTitle(category)}</h1>
               <span className="catalog-results">
                 {totalProducts === 0
                   ? 'Sin productos en esta categoría'

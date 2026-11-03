@@ -1,5 +1,6 @@
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import AppRouter from './routes/AppRouter';
 
 /* Core CSS required for Ionic components to work properly */
@@ -24,18 +25,22 @@ import './theme/variables.css';
 import { CartProvider } from './context/CartContext';
 
 import SettingsBubble from './components/SettingsBubble';
+import ScrollToTop from './components/ScrollToTop';
 
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
-    <CartProvider>
-      <IonReactRouter>
-        <AppRouter />
-      </IonReactRouter>
-      <SettingsBubble />
-    </CartProvider>
-  </IonApp>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'tcgstore-google-client-id'}>
+    <IonApp>
+      <CartProvider>
+        <IonReactRouter>
+          <ScrollToTop />
+          <AppRouter />
+        </IonReactRouter>
+        <SettingsBubble />
+      </CartProvider>
+    </IonApp>
+  </GoogleOAuthProvider>
 );
 
 export default App;

@@ -2,14 +2,16 @@ import data from '../data.json';
 import { OrderStatus } from './orderService';
 
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
-export class ApiError extends Error {}
+export class ApiError extends Error {
+  constructor(message: string, public readonly status?: number) { super(message); }
+}
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = sessionStorage.getItem('tcg.token');
   const response = await fetch(`${API_URL}${path}`, { ...options, signal: options.signal ?? AbortSignal.timeout(8000), headers: {
     'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options.headers
   } });
   const body = await response.json().catch(() => null);
-  if (!response.ok) throw new ApiError(body?.message || 'No se pudo completar la operación');
+  if (!response.ok) throw new ApiError(body?.message || 'No se pudo completar la operación', response.status);
   if (body === null) throw new ApiError('La respuesta del servidor no es válida');
   return body;
 }
@@ -19,6 +21,7 @@ export interface Product {
   price: number; stock: number; image: string; hasButton?: boolean; description?: string;
 }
 export interface Order {
+  adminNotes?: string | null;
   id: string; orderNumber?: string; customer: string; total: number; date: string; status: OrderStatus;
   items: { title: string; quantity: number; unitPrice: number }[];
 }
@@ -56,5 +59,5 @@ export const apiService = {
   },
   saveProduct: (product: Partial<Product>, id?: string) => apiRequest<Product>(`/products${id ? `/${encodeURIComponent(id)}` : ''}`, { method: id ? 'PUT' : 'POST', body: JSON.stringify(product) }),
   deleteProduct: (id: string) => apiRequest(`/products/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  setOrderStatus: (id: string, status: OrderStatus) => apiRequest<Order>(`/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', body: JSON.stringify({ status }) })
+  setOrderStatus: (id: string, status: OrderStatus, adminNotes?: string | null) => apiRequest<Order>(`/orders/${encodeURIComponent(id)}/status`, { method: 'PATCH', body: JSON.stringify({ status, ...(adminNotes !== undefined ? { adminNotes } : {}) }) })
 };

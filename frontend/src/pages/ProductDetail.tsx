@@ -76,7 +76,7 @@ const ProductDetail: React.FC = () => {
 
         <div className="detail-container">
           <p className="detail-breadcrumb">
-            <Link to="/home">Inicio</Link> / <Link to={`/catalog/${encodeURIComponent(category.toLowerCase())}`}>{category}</Link> / {product.title}
+            <Link to="/home">Inicio</Link> / <Link to={`/catalog/${category.toLowerCase().includes('lote') ? 'lotes-de-cartas' : encodeURIComponent(category.toLowerCase())}`}>{category.toLowerCase().includes('lote') ? 'Lotes de Cartas' : category}</Link> / {product.title}
           </p>
 
           <div className="detail-layout">

@@ -1,13 +1,20 @@
-const { test } = require('node:test');
+const { test, beforeEach } = require('node:test');
+const mailer = require('../src/services/mailer');
+const googleAuth = require('../src/services/googleAuth');
+const { OAuth2Client } = require('google-auth-library');
+beforeEach(t => {
+  t.mock.method(mailer, 'sendVerificationEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, verificationUrl: `${clientUrl}/verificar-correo?token=${token}` }));
+  t.mock.method(mailer, 'sendPasswordResetEmail', async ({ token, clientUrl }) => ({ sent: false, mock: true, resetUrl: `${clientUrl}/restablecer-contrasena?token=${token}` }));
+});
 const assert = require('node:assert/strict');
 const request = require('supertest');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createApp } = require('../src/app');
 const secret = 'test-secret-with-at-least-32-characters';
-const user = { id: 1, name: 'Cliente', email: 'cliente@tcgstore.com', role: 'client', phone: null, address: null, city: null, region: null };
+const user = { id: 1, name: 'Cliente', email: 'cliente@tcgstore.com', role: 'client', is_verified: true, phone: null, address: null, city: null, region: null };
 const product = { id: 1, code: 'pokemon-0', category_id: 8, category: 'Pokemon', category_slug: 'pokemon', title: 'Carta', description: 'Carta', price: 23000, stock: 5, game: 'Pokemon', edition: 'Base', rarity: 'Rare', color: 'Rojo', cost: 0, card_type: 'Carta', condition: 'Near Mint', image_url: '/card.png', is_active: true, has_button: true };
-const order = { id: 1, order_number: 'TCG-TEST', user_id: 1, status: 'Pendiente', subtotal: 23000, shipping_cost: 3500, total: 26500, shipping_name: 'Cliente', shipping_email: user.email, shipping_address: 'Calle 1', shipping_city: 'Santiago', shipping_region: 'Metropolitana', payment_method: 'Transferencia', created_at: '2026-10-13' };
+const order = { id: 1, order_number: 'TCG-TEST', user_id: 1, status: 'Pendiente', admin_notes: null, subtotal: 23000, shipping_cost: 3500, total: 26500, shipping_name: 'Cliente', shipping_email: user.email, shipping_address: 'Calle 1', shipping_city: 'Santiago', shipping_region: 'Metropolitana', payment_method: 'Transferencia', created_at: '2026-10-13' };
 const item = { id: 1, order_id: 1, product_id: 1, quantity: 1, unit_price: 23000, code: product.code, title: product.title, image_url: product.image_url };
 const inputProduct = { title: 'Carta', price: 23000, stock: 5, categorySlug: 'pokemon', game: 'Pokemon', edition: 'Base', rarity: 'Rare', color: 'Rojo', cost: 0, cardType: 'Carta', condition: 'Near Mint', image: '/card.png' };
 const inputOrder = { items: [{ code: product.code, quantity: 1 }], shippingName: 'Cliente', shippingEmail: user.email, shippingAddress: 'Calle 1', shippingCity: 'Santiago', shippingRegion: 'Metropolitana', paymentMethod: 'Transferencia' };
@@ -28,6 +35,95 @@ function setup(steps = []) {
   };
   return { api: request(createApp({ db, jwtSecret: secret, authRateLimit: 1000 })), calls, done() { assert.equal(steps.length, 0); } };
 }
+
+function googleClientId(t, value) {
+  const previous = process.env.GOOGLE_CLIENT_ID;
+  process.env.GOOGLE_CLIENT_ID = value;
+  t.after(() => {
+    if (previous === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = previous;
+  });
+}
+
+test('Google vincula el perfil de un usuario existente y devuelve una sesión', async t => {
+  googleClientId(t, '');
+  const picture = 'https://example.com/avatar.png';
+  const s = setup([
+    { sql: /SELECT .*avatar_url, google_id, password_hash FROM users WHERE email = \$1/, rows: [{ ...user, is_verified: false }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET google_id = COALESCE\(google_id, \$1\), avatar_url = COALESCE\(avatar_url, \$2\), is_verified = true/, rows: [{ ...user, avatar_url: picture }], check: (p, sql) => {
+      assert.deepEqual(p, ['google-1', picture, user.id]);
+      assert.match(sql, /WHERE id = \$3 RETURNING/);
+    } }
+  ]);
+  const idToken = jwt.sign({ sub: 'google-1', email: ` ${user.email.toUpperCase()} `, name: 'Cliente Google', picture, email_verified: true }, 'google-test');
+  const response = await s.api.post('/api/auth/google').send({ idToken }).expect(200);
+  assert.equal(response.body.user.id, user.id);
+  assert.equal(response.body.user.avatarUrl, picture);
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(response.body.user.password_hash, undefined);
+  assert.equal(response.body.user.google_id, undefined);
+  assert.equal(jwt.verify(response.body.token, secret).sub, String(user.id));
+  s.done();
+});
+
+test('Google registra un cliente verificado con credential y un perfil JSON', async t => {
+  googleClientId(t, '');
+  const email = 'nuevo@example.com';
+  const s = setup([
+    { sql: /FROM users WHERE email = \$1/, check: p => assert.deepEqual(p, [email]) },
+    { sql: /INSERT INTO users .*VALUES \(\$1, \$2, NULL, 'client', true, \$3, \$4\)/, rows: [{ ...user, id: 2, name: 'nuevo', email }], check: p => assert.deepEqual(p, ['nuevo', email, 'google-2', null]) }
+  ]);
+  const response = await s.api.post('/api/auth/google').send({ credential: JSON.stringify({ sub: 'google-2', email, email_verified: true }) }).expect(200);
+  assert.equal(response.body.user.role, 'client');
+  assert.equal(response.body.user.name, 'nuevo');
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(response.body.user.avatarUrl, null);
+  assert.equal(jwt.verify(response.body.token, secret).sub, '2');
+  s.done();
+});
+
+test('Google rechaza tokens ausentes, malformados y perfiles sin correo', async t => {
+  googleClientId(t, '');
+  const s = setup();
+  for (const idToken of [undefined, '', 123, {}, []]) {
+    const response = await s.api.post('/api/auth/google').send({ idToken }).expect(400);
+    assert.equal(response.body.message, 'idToken es obligatorio');
+  }
+  for (const idToken of ['invalid', 'null', '[]', '{}', '{"email":123}', jwt.sign({ sub: 'no-email' }, 'google-test')]) {
+    const response = await s.api.post('/api/auth/google').send({ idToken }).expect(401);
+    assert.equal(response.body.message, 'Token de Google inválido');
+    await assert.rejects(googleAuth.verifyGoogleIdToken(idToken), /Token de Google inválido/);
+  }
+  t.mock.method(googleAuth, 'verifyGoogleIdToken', async () => null);
+  const response = await s.api.post('/api/auth/google').send({ idToken: 'no-profile' }).expect(401);
+  assert.equal(response.body.message, 'No se pudo verificar la cuenta de Google');
+  assert.equal(s.calls.length, 0);
+  s.done();
+});
+
+test('Google verifica el token y la audiencia cuando hay un client ID', async t => {
+  googleClientId(t, 'google-client-id');
+  const verify = t.mock.method(OAuth2Client.prototype, 'verifyIdToken', async options => {
+    assert.deepEqual(options, { idToken: 'signed-google-token', audience: 'google-client-id' });
+    return { getPayload: () => ({ sub: 'google-3', email: user.email, name: user.name, picture: 'https://example.com/photo.png', email_verified: true }) };
+  });
+  assert.deepEqual(await googleAuth.verifyGoogleIdToken('signed-google-token'), {
+    sub: 'google-3', email: user.email, name: user.name, picture: 'https://example.com/photo.png', emailVerified: true
+  });
+  assert.equal(verify.mock.callCount(), 1);
+  verify.mock.restore();
+  t.mock.method(OAuth2Client.prototype, 'verifyIdToken', async () => { throw new Error('Invalid signature'); });
+  const s = setup();
+  await s.api.post('/api/auth/google').send({ idToken: JSON.stringify({ email: user.email }) }).expect(401);
+  assert.equal(s.calls.length, 0);
+  s.done();
+});
+
+test('login con contraseña rechaza cuentas de Google sin hash', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [{ ...user, password_hash: null }] }]);
+  await s.api.post('/api/auth/login').send({ email: user.email, password: 'Password123' }).expect(401);
+  s.done();
+});
 test('health, categorías y rutas inexistentes', async () => {
   const s = setup([{ sql: /FROM categories ORDER BY name/, rows: [{ id: 8, name: 'Pokemon', slug: 'pokemon' }] }]);
   assert.deepEqual((await s.api.get('/api/health').expect(200)).body, { status: 'ok' });
@@ -35,15 +131,21 @@ test('health, categorías y rutas inexistentes', async () => {
   await s.api.get('/api/unknown').expect(404);
   s.done();
 });
-test('registro genera hash bcrypt y JWT sin exponer contraseña', async () => {
+test('registro genera hash bcrypt y token de verificación sin exponer contraseña', async () => {
   const s = setup([{ sql: /SELECT id FROM users/, check: p => assert.equal(p[0], 'nuevo@example.com') },
-    { sql: /INSERT INTO users/, rows: [{ ...user, email: 'nuevo@example.com' }], check: async p => {
+    { sql: /INSERT INTO users/, rows: [{ ...user, email: 'nuevo@example.com', is_verified: false }], check: async p => {
       assert.match(p[2], /^\$2[aby]\$10\$/);
     } }]);
   const response = await s.api.post('/api/auth/register').send({ name: ' Cliente ', email: 'NUEVO@example.com', password: 'Password123' }).expect(201);
   assert.equal(response.body.user.role, 'client');
   assert.equal(response.body.user.password_hash, undefined);
-  assert.equal(jwt.verify(response.body.token, secret).sub, '1');
+  assert.equal(response.body.token, undefined);
+  assert.equal(response.body.requiresVerification, true);
+  assert.equal(response.body.user.isVerified, false);
+  assert.equal(response.body.email, 'nuevo@example.com');
+  assert.match(s.calls[1].params[3], /^[a-f0-9]{64}$/);
+  assert.match(s.calls[1].sql, /false, \$4, CURRENT_TIMESTAMP \+ INTERVAL '24 hours'/);
+  assert.equal(new URL(response.body.verificationUrl).searchParams.get('token'), s.calls[1].params[3]);
   assert.equal(await bcrypt.compare('Password123', s.calls[1].params[2]), true);
   s.done();
 });
@@ -62,6 +164,8 @@ test('login acepta hashes del esquema, rechaza credenciales y permite consultar/
     { sql: /FROM users WHERE id/, rows: [] }]);
   const response = await s.api.post('/api/auth/login').send({ email: user.email, password: '123456' }).expect(200);
   assert.equal(response.body.user.password_hash, undefined);
+  assert.equal(response.body.user.isVerified, true);
+  assert.equal(jwt.verify(response.body.token, secret).sub, '1');
   const bad = await s.api.post('/api/auth/login').send({ email: user.email, password: 'incorrecta' }).expect(401);
   assert.equal(bad.body.message, 'Correo o contraseña incorrectos');
   await s.api.get('/api/auth/me').expect(401);
@@ -107,7 +211,8 @@ test('productos: CRUD admin, restricciones y desactivación con referencias', as
 });
 test('orden: transacción, cálculo de totales y descuento de stock', async () => {
   const s = setup([{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows: [product] },
-    { sql: /INSERT INTO orders/, rows: [order], check: p => assert.deepEqual(p.slice(1, 5), ['1', 23000, 3500, 26500]) },
+    { sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }], check: p => assert.deepEqual(p, [String.raw`^TCG-${new Date().getFullYear()}-\d+$`]) },
+    { sql: /INSERT INTO orders/, rows: [order], check: p => { assert.equal(p[0], `TCG-${new Date().getFullYear()}-0005`); assert.deepEqual(p.slice(1, 5), ['1', 23000, 3500, 26500]); } },
     { sql: /UPDATE products SET stock = stock -/, check: p => assert.deepEqual(p, [1, 1]) },
     { sql: /INSERT INTO order_items/, check: p => assert.deepEqual(p, [1, 1, 1, 23000]) },
     { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ }]);
@@ -121,7 +226,7 @@ test('orden: transacción, cálculo de totales y descuento de stock', async () =
 test('orden: rollback por stock insuficiente, producto ausente y error SQL', async () => {
   for (const [rows, status, error] of [[[product], 400], [[], 404], [[product], 500, new Error('secret database error')]]) {
     const steps = [{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows }];
-    if (error) steps.push({ sql: /INSERT INTO orders/, error });
+    if (error) steps.push({ sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }] }, { sql: /INSERT INTO orders/, error });
     steps.push({ sql: /^ROLLBACK$/ });
     const s = setup(steps);
     const response = await s.api.post('/api/orders').set('Authorization', `Bearer ${token()}`).send({ ...inputOrder, items: [{ code: product.code, quantity: error ? 1 : 6 }] }).expect(status);
@@ -130,6 +235,7 @@ test('orden: rollback por stock insuficiente, producto ausente y error SQL', asy
 });
 test('orden: agrupa duplicados y aplica envío gratis desde 50000', async () => {
   const s = setup([{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE/, rows: [product] }, { sql: /FOR UPDATE/, rows: [product] },
+    { sql: /SELECT order_number FROM orders/, rows: [{ order_number: 'TCG-2026-0004' }] },
     { sql: /INSERT INTO orders/, rows: [{ ...order, subtotal: 69000, shipping_cost: 0, total: 69000 }], check: p => assert.deepEqual(p.slice(2, 5), [69000, 0, 69000]) },
     { sql: /UPDATE products SET stock/, check: p => assert.equal(p[0], 3) },
     { sql: /INSERT INTO order_items/, check: p => assert.equal(p[2], 3) }, { sql: /FROM order_items/, rows: [{ ...item, quantity: 3 }] }, { sql: /^COMMIT$/ }]);
@@ -141,8 +247,8 @@ test('órdenes: listado por rol, propiedad, detalle y cambio de estado PATCH/PUT
     { sql: /ORDER BY o.created_at/, rows: [order], check: (p, sql) => assert.ok(!sql.includes('WHERE o.user_id')) }, { sql: /FROM order_items/, rows: [item] },
     { sql: /o.order_number = \$1/, rows: [order] }, { sql: /FROM order_items/, rows: [item] },
     { sql: /o.order_number = \$1/, rows: [order] }, { sql: /o.order_number = \$1/, rows: [] },
-    ...['Pagado', 'Enviado'].flatMap(status => [{ sql: /o.id::text = \$1/, rows: [order] }, { sql: /UPDATE orders SET status/, rows: [{ ...order, status }] }, { sql: /FROM order_items/, rows: [item] }]),
-    { sql: /o.order_number = \$1/, rows: [] }]);
+    ...['Pagado', 'Enviado'].flatMap(status => [{ sql: /^BEGIN$/ }, { sql: /o.id::text = \$1/, rows: [order] }, { sql: /UPDATE orders SET status/, rows: [{ ...order, status }], check: p => assert.deepEqual(p, [status, null, 1]) }, { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ }]),
+    { sql: /^BEGIN$/ }, { sql: /o.order_number = \$1/, rows: [] }, { sql: /^ROLLBACK$/ }]);
   await s.api.get('/api/orders').set('Authorization', `Bearer ${token()}`).expect(200);
   await s.api.get('/api/orders').set('Authorization', `Bearer ${token('admin')}`).expect(200);
   await s.api.get('/api/orders/TCG-TEST').set('Authorization', `Bearer ${token()}`).expect(200);
@@ -154,6 +260,28 @@ test('órdenes: listado por rol, propiedad, detalle y cambio de estado PATCH/PUT
   await s.api.put('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Enviado' }).expect(200);
   await s.api.put('/api/orders/missing/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Pagado' }).expect(404);
   s.done();
+  for (const [from, to, stock] of [['Pendiente', 'Cancelado', 5], ['Entregado', 'Reembolsado', 5], ['Cancelado', 'Pagado', 5], ['Reembolsado', 'Pendiente', 0], ['Cancelado', 'Reembolsado', 5]]) {
+    const inactive = status => ['Cancelado', 'Reembolsado'].includes(status);
+    const changed = inactive(from) !== inactive(to);
+    const expected = changed && !inactive(to) && stock === 0 ? 400 : 200;
+    const steps = [{ sql: /^BEGIN$/ }, { sql: /FOR UPDATE OF o/, rows: [{ ...order, status: from }] }];
+    if (changed) {
+      steps.push({ sql: /FROM order_items/, rows: [item] });
+      if (!inactive(to)) steps.push({ sql: /FROM products.*FOR UPDATE/, rows: [{ ...product, stock }] });
+      if (expected === 200) steps.push({ sql: inactive(to) ? /stock = stock \+/ : /stock = stock -/, check: p => assert.deepEqual(p, [1, 1]) });
+    }
+    if (expected === 400) steps.push({ sql: /^ROLLBACK$/ });
+    else steps.push({ sql: /admin_notes = COALESCE/, rows: [{ ...order, status: to, admin_notes: 'Nota' }], check: p => assert.deepEqual(p, [to, 'Nota', 1]) }, { sql: /FROM order_items/, rows: [item] }, { sql: /^COMMIT$/ });
+    const scenario = setup(steps);
+    const response = await scenario.api.patch('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: to, adminNotes: 'Nota' }).expect(expected);
+    if (expected === 200) assert.equal(response.body.adminNotes, 'Nota');
+    assert.equal(scenario.calls.at(-1).release, true);
+    scenario.done();
+  }
+  const invalid = setup();
+  await invalid.api.patch('/api/orders/1/status').set('Authorization', `Bearer ${token('admin')}`).send({ status: 'Pagado', adminNotes: 123 }).expect(400);
+  invalid.done();
+
 });
 
 
@@ -177,4 +305,117 @@ test('estadísticas admin: tienda vacía y error de base de datos', async () => 
   assert.equal(body.totalSales, 0); assert.deepEqual(body.recentOrders, []);
   const error = await s.api.get('/api/admin/stats').set('Authorization', `Bearer ${token('admin')}`).expect(500);
   assert.ok(!JSON.stringify(error.body).includes('private database')); s.done();
+});
+
+
+test('login rechaza cuentas pendientes de verificación', async () => {
+  const password_hash = await bcrypt.hash('Password123', 10);
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [{ ...user, is_verified: false, password_hash }] }]);
+  const response = await s.api.post('/api/auth/login').send({ email: user.email, password: 'Password123' }).expect(403);
+  assert.match(response.body.message, /Debes verificar tu correo/);
+  s.done();
+});
+
+test('verificación acepta tokens por POST y GET y devuelve una sesión', async () => {
+  for (const method of ['post', 'get']) {
+    const s = setup([
+      { sql: /WHERE verification_token = \$1/, rows: [{ ...user, is_verified: false, verification_expires_at: new Date(Date.now() + 86400000) }], check: p => assert.deepEqual(p, ['valid-token']) },
+      { sql: /UPDATE users SET is_verified = true, verification_token = NULL, verification_expires_at = NULL/, rows: [user], check: p => assert.deepEqual(p, [user.id]) }
+    ]);
+    const req = s.api[method]('/api/auth/verify-email');
+    const response = await (method === 'post' ? req.send({ token: 'valid-token' }) : req.query({ token: 'valid-token' })).expect(200);
+    assert.equal(response.body.user.isVerified, true);
+    assert.equal(jwt.verify(response.body.token, secret).sub, '1');
+    s.done();
+  }
+});
+
+test('verificación rechaza tokens ausentes, inválidos y expirados', async () => {
+  const s = setup([
+    { sql: /WHERE verification_token/, rows: [] },
+    { sql: /WHERE verification_token/, rows: [{ ...user, verification_expires_at: new Date(Date.now() - 1000) }] }
+  ]);
+  await s.api.post('/api/auth/verify-email').send({}).expect(400);
+  await s.api.get('/api/auth/verify-email').expect(400);
+  const invalid = await s.api.post('/api/auth/verify-email').send({ token: 'invalid' }).expect(400);
+  assert.match(invalid.body.message, /inválido/);
+  const expired = await s.api.get('/api/auth/verify-email').query({ token: 'expired' }).expect(400);
+  assert.match(expired.body.message, /expirad/i);
+  s.done();
+});
+
+test('reenvío genera un token nuevo y envía el enlace a cuentas pendientes', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE email/, rows: [{ ...user, is_verified: false }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET verification_token = \$1, verification_expires_at = CURRENT_TIMESTAMP \+ INTERVAL '24 hours'/, check: p => { assert.match(p[0], /^[a-f0-9]{64}$/); assert.equal(p[1], user.id); } }
+  ]);
+  const response = await s.api.post('/api/auth/resend-verification').send({ email: user.email.toUpperCase() }).expect(200);
+  assert.equal(response.body.email, user.email);
+  assert.equal(new URL(response.body.verificationUrl).searchParams.get('token'), s.calls[1].params[0]);
+  const call = mailer.sendVerificationEmail.mock.calls[0].arguments[0];
+  assert.equal(call.email, user.email);
+  assert.equal(call.name, user.name);
+  assert.equal(call.token, s.calls[1].params[0]);
+  s.done();
+});
+
+test('reenvío valida el correo, admite cuentas desconocidas y rechaza cuentas verificadas', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [] }, { sql: /FROM users WHERE email/, rows: [user] }]);
+  await s.api.post('/api/auth/resend-verification').send({ email: 'invalid' }).expect(400);
+  const missing = await s.api.post('/api/auth/resend-verification').send({ email: 'missing@example.com' }).expect(200);
+  assert.match(missing.body.message, /Si el correo está registrado/);
+  const verified = await s.api.post('/api/auth/resend-verification').send({ email: user.email }).expect(400);
+  assert.match(verified.body.message, /ya se encuentra verificada/);
+  assert.equal(mailer.sendVerificationEmail.mock.callCount(), 0);
+  s.done();
+});
+
+test('recuperacion de contrasena genera un token de 1 hora y env?a el correo', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE email/, rows: [{ id: user.id, name: user.name, email: user.email }], check: p => assert.deepEqual(p, [user.email]) },
+    { sql: /UPDATE users SET reset_password_token = \$1, reset_password_expires_at = CURRENT_TIMESTAMP \+ INTERVAL '1 hour'/, check: p => { assert.match(p[0], /^[a-f0-9]{64}$/); assert.equal(p[1], user.id); } }
+  ]);
+  const response = await s.api.post('/api/auth/forgot-password').send({ email: user.email.toUpperCase() }).expect(200);
+  assert.equal(response.body.email, user.email);
+  assert.match(response.body.message, /hemos enviado las instrucciones/);
+  assert.equal(new URL(response.body.resetUrl).searchParams.get('token'), s.calls[1].params[0]);
+  const call = mailer.sendPasswordResetEmail.mock.calls[0].arguments[0];
+  assert.equal(call.email, user.email);
+  assert.equal(call.name, user.name);
+  assert.equal(call.token, s.calls[1].params[0]);
+  s.done();
+});
+
+test('recuperacion de contrasena responde gen?ricamente para usuarios desconocidos', async () => {
+  const s = setup([{ sql: /FROM users WHERE email/, rows: [] }]);
+  const res = await s.api.post('/api/auth/forgot-password').send({ email: 'desconocido@example.com' }).expect(200);
+  assert.match(res.body.message, /hemos enviado las instrucciones/);
+  assert.equal(mailer.sendPasswordResetEmail.mock.callCount(), 0);
+  s.done();
+});
+
+test('restablecimiento actualiza la contrasena con token v?lido y permite nuevo login', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE reset_password_token/, rows: [{ id: user.id, name: user.name, email: user.email, reset_password_expires_at: new Date(Date.now() + 3600000) }], check: p => assert.deepEqual(p, ['token-valido']) },
+    { sql: /UPDATE users SET password_hash = \$1, reset_password_token = NULL/, check: (p, sql) => {
+      assert.ok(bcrypt.compareSync('NuevaClave123', p[0]));
+      assert.equal(p[1], user.id);
+    } }
+  ]);
+  const response = await s.api.post('/api/auth/reset-password').send({ token: 'token-valido', password: 'NuevaClave123' }).expect(200);
+  assert.match(response.body.message, /restablecida exitosamente/);
+  s.done();
+});
+
+test('restablecimiento rechaza tokens invalidos, expirados y contrase?as d?biles', async () => {
+  const s = setup([
+    { sql: /FROM users WHERE reset_password_token/, rows: [] },
+    { sql: /FROM users WHERE reset_password_token/, rows: [{ id: user.id, reset_password_expires_at: new Date(Date.now() - 1000) }] }
+  ]);
+  await s.api.post('/api/auth/reset-password').send({ token: 'tok', password: 'corta' }).expect(400);
+  const invalid = await s.api.post('/api/auth/reset-password').send({ token: 'invalido', password: 'NuevaClave123' }).expect(400);
+  assert.match(invalid.body.message, /inv.*lido/i);
+  const expired = await s.api.post('/api/auth/reset-password').send({ token: 'expirado', password: 'NuevaClave123' }).expect(400);
+  assert.match(expired.body.message, /expirado/);
+  s.done();
 });
