@@ -45,6 +45,8 @@
     <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" />
     <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
     <img src="https://img.shields.io/badge/Render-46E3B7?style=flat-square&logo=render&logoColor=black" alt="Render" />
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
+    <img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white" alt="Nginx" />
     <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=postman&logoColor=white" alt="Postman" />
   </p>
 
@@ -77,6 +79,7 @@
 12. [Stack Tecnológico](#tecnologías-y-herramientas)
 13. [Endpoints de la API REST](#endpoints-de-la-api-rest)
 14. [Instalación y Configuración Local](#instalación-y-configuración-local)
+    - [Despliegue Local con Docker y Docker Compose](#despliegue-local-con-docker-y-docker-compose)
 15. [Pruebas Automatizadas y Testing](#pruebas-y-testing)
     - [Evidencia de Pruebas de API en Postman](#-evidencia-de-pruebas-de-api-en-postman)
 
@@ -122,7 +125,7 @@ La plataforma cuenta con una interfaz web responsiva, interactiva y adaptada a l
 El repositorio implementa una estrategia de ramas estructurada según responsabilidades y buenas prácticas de ingeniería de software:
 
 * **`main`:** Rama principal de producción. Contiene la versión definitiva, consolidada y estable, vinculada a los despliegues automáticos en la nube (Vercel y Render).
-* **`backend`:** Rama de desarrollo del servidor y la base de datos. Aloja la API REST modular en Express, el esquema relacional reproducible [`database/esquema.sql`](database/esquema.sql), los servicios de autenticación (JWT, Google OAuth 2.0 y Nodemailer/Gmail) y las suites de pruebas automáticas de backend.
+* **`backend`:** Rama de desarrollo del servidor, la base de datos e infraestructura. Aloja la API REST modular en Express, el esquema relacional reproducible [`database/esquema.sql`](database/esquema.sql), los servicios de autenticación (JWT, Google OAuth 2.0 y Nodemailer/Gmail), la configuración de orquestación con Docker y Docker Compose, y las suites de pruebas automáticas de backend.
 * **`frontend`:** Rama dedicada a la interfaz de usuario con Ionic Framework y React. Contiene las vistas responsivas, componentes de navegación, hooks de scroll, integración de servicios de cliente y pruebas unitarias con Vitest.
 
 ---
@@ -395,12 +398,13 @@ El diseño de la interfaz y la experiencia de usuario (Wireframes y Prototipos i
 * **Base de Datos:** PostgreSQL con driver `pg` (Pool de conexiones transaccionales y soporte SSL).
 * **Seguridad:** JSON Web Tokens (`jsonwebtoken`), hashing de contraseñas (`bcryptjs`), Google OAuth (`google-auth-library`), `helmet` y `express-rate-limit`.
 * **Servicio de Correo:** Nodemailer configurado con Gmail SMTP para activación de cuenta y recuperación de clave.
-* **Testing:** Módulo nativo `node:test` y `supertest` (**30 pruebas automáticas de endpoints e integración**).
+* **Testing:** Módulo nativo `node:test` y `supertest` (**31 pruebas automáticas de endpoints e integración**).
 
 ### Infraestructura y Nube
 * **Cloud Database:** Supabase PostgreSQL con SSL pooler activo.
 * **Frontend Hosting:** Vercel con integración continua (CI/CD) desde GitHub.
 * **Backend Hosting:** Render Web Service con HTTPS automático y despliegue continuo.
+* **Contenedores y Orquestación:** Docker y Docker Compose con servidor web Nginx (para frontend SPA) y PostgreSQL 16 (con persistencia de datos mediante volúmenes).
 
 ---
 
@@ -506,17 +510,43 @@ VITE_GOOGLE_CLIENT_ID=tu_google_client_id.apps.googleusercontent.com
 ```
 *Vite abrirá la aplicación en `http://localhost:5173`, conectándose automáticamente al backend.*
 
+### Despliegue Local con Docker y Docker Compose
+
+Como alternativa a la instalación manual, instala Docker con Docker Compose y asegúrate de que el motor de Docker esté en ejecución y los puertos `80`, `3000` y `5432` estén disponibles. No es necesario instalar Node.js ni PostgreSQL en el equipo para esta modalidad.
+
+Desde la raíz del proyecto, ejecuta:
+
+```bash
+docker-compose up --build
+```
+
+En instalaciones con Compose V2, el comando equivalente es `docker compose up --build`.
+
+Docker Compose construye y orquesta los tres contenedores en la red `tcgstore-network`:
+
+| Contenedor | Servicio | Acceso local |
+|---|---|---|
+| `tcgstore-frontend` | Compila Ionic React y sirve la aplicación SPA con Nginx, compresión gzip y caché de archivos estáticos. | `http://localhost` (puerto `80`) |
+| `tcgstore-backend` | Ejecuta la API Node.js con dependencias de producción y el usuario `node`. Espera a que PostgreSQL esté disponible mediante su healthcheck. | `http://localhost:3000/api` |
+| `tcgstore-db` | Ejecuta PostgreSQL 16 e inicializa la base `tcgstore` con `database/esquema.sql`. | `localhost:5432` |
+
+La inicialización del esquema se ejecuta únicamente cuando el volumen `postgres_data` está vacío. Este volumen conserva los datos entre reinicios y al detener los servicios con `docker-compose down`.
+
+El frontend incorpora `VITE_API_URL=http://localhost:3000/api` durante la compilación. Los archivos `.env` se excluyen de ambas imágenes; las variables locales del backend se definen en `docker-compose.yml`. Los valores de PostgreSQL y JWT incluidos son de demostración para este despliegue local y no corresponden a credenciales de servicios reales. Google OAuth y el envío de correo requieren configuración adicional con valores propios.
+
+Para comprobar el despliegue, abre `http://localhost` y verifica la API en `http://localhost:3000/api/health`. Puedes consultar el estado de los contenedores con `docker-compose ps` y detenerlos con `Ctrl+C`.
+
 ---
 
 ## Pruebas y Testing
 
 El proyecto cuenta con un conjunto integral de pruebas automatizadas en ambos extremos de la aplicación:
 
-* **Pruebas de Backend (30 pruebas automáticas):**  
+* **Pruebas de Backend (31 pruebas automáticas):**  
   ```bash
   cd backend && npm test
   ```
-  *Ejecuta 30 pruebas automáticas nativas (`node:test`) cubriendo autenticación local con bcrypt, Google OAuth 2.0, verificación de correo, recuperación de contraseña, control de roles (RBAC), transacciones ACID de stock con rollback, endpoints de productos, órdenes, notas de administración y servicios de correo con Nodemailer.*
+  *Ejecuta 31 pruebas automáticas nativas (`node:test`) cubriendo autenticación local con bcrypt, Google OAuth 2.0, verificación de correo, recuperación de contraseña, control de roles (RBAC), transacciones ACID de stock con rollback, endpoints de productos, órdenes, notas de administración y servicios de correo con Nodemailer.*
 
 * **Pruebas Unitarias de Frontend (32 pruebas unitarias):**  
   ```bash
